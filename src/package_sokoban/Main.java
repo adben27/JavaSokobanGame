@@ -6,7 +6,6 @@ import java.awt.event.KeyAdapter;
 
 public class Main extends KeyAdapter{
 
-    Matrice mat;
     public static void main(String[] args) {
         Wall a= new Wall();
         Wall b= new Wall();
@@ -28,67 +27,60 @@ public class Main extends KeyAdapter{
         Vide k = new Vide(true);
         Element[][] tab={{a,b,c,d},{e,f,g,h},{i,j,k,l},{m,n,o,p}};
         Matrice mat = new Matrice("test", 4, tab, 1, 1);
-        Main teste = new Main(mat);
         System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
+        print_mat(mat);
+        mat.move();
         System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
+        print_mat(mat);
+        mat.move();
         System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
+        print_mat(mat);
+        mat.move();
         System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
+        print_mat(mat);
+        mat.move();
         System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
+        print_mat(mat);
+        mat.move();
         System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
+        print_mat(mat);
+        mat.move();
         System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
+        print_mat(mat);
+        mat.move();
         System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
+        print_mat(mat);
+        mat.move();
         System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
+        print_mat(mat);
+        mat.move();
         System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
+        print_mat(mat);
+        mat.move();
         System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
+        print_mat(mat);
+        mat.move();
         System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
+        print_mat(mat);
+        mat.move();
         System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
+        print_mat(mat);
+        mat.move();
         System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
-        System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
-        System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
-        System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
-        System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
-        System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
-        System.out.println(mat.getPos_x()+","+mat.getPos_y());
-        teste.mat.move();
+        print_mat(mat);
+        mat.move();
+        
         
     }
 
-
-    public Main(Matrice mat) {
-        this.mat = mat;
+    public static void print_mat(Matrice mat) {/*petit test pour une matrice 4x4*/
+    	int i,j;
+    	for(i=0;i<=3;i++){
+    		for(j=0;j<=3;j++){
+        		System.out.print(mat.getElem(i, j).getSign());
+        		
+        	}
+    		System.out.println();    	
+    	}
     }
-
-
-    public void move_up(){
-        this.mat.move_up();
-    }
-    public void move_down(){
-        this.mat.move_down();
-    }
-    public void move_right(){
-        this.mat.move_right();
-    }
-    public void move_left(){
-        this.mat.move_left();
-    }
-
 }

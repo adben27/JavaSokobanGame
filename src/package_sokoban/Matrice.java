@@ -43,23 +43,24 @@ public class Matrice{
      * @param b pos_y de la cellule 2
      */
     public void swap(int i, int j, int a, int b){
-        Element temp = getLevelindex(i, j);
-        if(getLevelindex(i,j) instanceof Player){
+        Element temp = getElem(i, j);
+        if(!getElem(i,j).isMoveable()||!getElem(a,b).isMoveable()) {
+        	return;/*faut ajouter un catch d'erreur ici*/
+        }
+        if(getElem(i,j) instanceof Player){/*il ne peut pas y avoir deux joueurs normalement faudrait ajouter un test peut être apres*/
             setPos_x(a);
             setPos_y(b);
-            setLevelindex(i, j,getLevelindex(a, b));
-            setLevelindex(a, b, temp);
-            return;
         }
-        if(getLevelindex(a,b) instanceof Player){
+        if(getElem(a,b) instanceof Player){
             setPos_x(i);
             setPos_y(j);
-            setLevelindex(i, j,getLevelindex(a, b));
-            setLevelindex(a, b, temp);
-            return;
-        } 
-        setLevelindex(i, j,getLevelindex(a, b));
-        setLevelindex(a, b, temp);
+        }
+        if(getElem(i,j).isOn_target()||getElem(a,b).isOn_target()) {
+        	getElem(i,j).setOn_target(!getElem(i,j).isOn_target());
+        	getElem(a,b).setOn_target(!getElem(a,b).isOn_target());
+        }
+        setElem(i, j,getElem(a, b));
+        setElem(a, b, temp);
         return;
     }
 
@@ -85,16 +86,16 @@ public class Matrice{
         }
 
     public void move_up(){
-        if(Objects.equals(this.getLevelindex(getPos_x(),getPos_y()-1).getSign(),'#')){
+    	if(this.getElem(getPos_x()-1,getPos_y()) instanceof Wall){
             System.out.println("Can't move there");
         }else{
-            if(Objects.equals(this.getLevelindex(getPos_x(),getPos_y()-1).getSign(),' ')){
-                swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()-1);
+            if(this.getElem(getPos_x()-1,getPos_y()) instanceof Vide){
+                swap(getPos_x(),getPos_y(),getPos_x()-1,getPos_y());
             }else{
-                if(Objects.equals(this.getLevelindex(getPos_x(),getPos_y()-1).getSign(),'B')){
-                    if(Objects.equals(this.getLevelindex(getPos_x(),getPos_y()-2).getSign(),' ')){
-                        swap(getPos_x(),getPos_y()-1,getPos_x(),getPos_y()-2);
-                        swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()-1);
+                if(this.getElem(getPos_x()-1,getPos_y()) instanceof Box){
+                    if(this.getElem(getPos_x()-2,getPos_y()) instanceof Vide){
+                        swap(getPos_x()-1,getPos_y(),getPos_x()-2,getPos_y());
+                        swap(getPos_x(),getPos_y(),getPos_x()-1,getPos_y());
                     }else{
                         System.out.println("Can't move there");
                     }
@@ -104,33 +105,14 @@ public class Matrice{
     }
    
     public void move_down(){
-        if(Objects.equals(this.getLevelindex(getPos_x(),getPos_y()+1).getSign(),'#')){
+    	if(this.getElem(getPos_x()+1,getPos_y()) instanceof Wall){
             System.out.println("Can't move there");
         }else{
-            if(Objects.equals(this.getLevelindex(getPos_x(),getPos_y()+1).getSign(),' ')){
-                swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()+1);
-            }else{
-                if(Objects.equals(this.getLevelindex(getPos_x(),getPos_y()+1).getSign(),'B')){
-                    if(Objects.equals(this.getLevelindex(getPos_x()+1,getPos_y()+2).getSign(),' ')){
-                        swap(getPos_x(),getPos_y()+1,getPos_x(),getPos_y()+2);
-                        swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()+1);
-                    }else{
-                        System.out.println("Can't move there");
-                    }
-                }
-            }
-        }
-    }
-
-    public void move_right(){
-        if(Objects.equals(this.getLevelindex(getPos_x()+1,getPos_y()).getSign(),'#')){
-            System.out.println("Can't move there");
-        }else{
-            if(Objects.equals(this.getLevelindex(getPos_x()+1,getPos_y()).getSign(),' ')){
+            if(this.getElem(getPos_x()+1,getPos_y()) instanceof Vide){
                 swap(getPos_x(),getPos_y(),getPos_x()+1,getPos_y());
             }else{
-                if(Objects.equals(this.getLevelindex(getPos_x()+1,getPos_y()).getSign(),'B')){
-                    if(Objects.equals(this.getLevelindex(getPos_x()+2,getPos_y()).getSign(),' ')){
+                if(this.getElem(getPos_x()+1,getPos_y()) instanceof Box){
+                    if(this.getElem(getPos_x()+2,getPos_y()) instanceof Vide){
                         swap(getPos_x()+1,getPos_y(),getPos_x()+2,getPos_y());
                         swap(getPos_x(),getPos_y(),getPos_x()+1,getPos_y());
                     }else{
@@ -141,17 +123,36 @@ public class Matrice{
         }
     }
 
-    public void move_left(){
-        if(Objects.equals(this.getLevelindex(getPos_x()-1,getPos_y()).getSign(),'#')){
+    public void move_right(){
+    	if(this.getElem(getPos_x(),getPos_y()+1) instanceof Wall){
             System.out.println("Can't move there");
         }else{
-            if(Objects.equals(this.getLevelindex(getPos_x()-1,getPos_y()).getSign(),' ')){
-                swap(getPos_x(),getPos_y(),getPos_x()-1,getPos_y());
+            if(this.getElem(getPos_x(),getPos_y()+1) instanceof Vide){
+                swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()+1);
             }else{
-                if(Objects.equals(this.getLevelindex(getPos_x()-1,getPos_y()).getSign(),'B')){
-                    if(Objects.equals(this.getLevelindex(getPos_x()-2,getPos_y()).getSign(),' ')){
-                        swap(getPos_x()-1,getPos_y(),getPos_x()-2,getPos_y());
-                        swap(getPos_x(),getPos_y(),getPos_x()-1,getPos_y());
+                if(this.getElem(getPos_x(),getPos_y()+1) instanceof Box){
+                    if(this.getElem(getPos_x(),getPos_y()+2) instanceof Vide){
+                        swap(getPos_x(),getPos_y()+1,getPos_x(),getPos_y()+2);
+                        swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()+1);
+                    }else{
+                        System.out.println("Can't move there");
+                    }
+                }
+            }
+        }
+    }
+
+    public void move_left(){
+    	if(this.getElem(getPos_x(),getPos_y()-1) instanceof Wall){
+            System.out.println("Can't move there");
+        }else{
+            if(this.getElem(getPos_x(),getPos_y()-1) instanceof Vide){
+                swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()-1);
+            }else{
+                if(this.getElem(getPos_x(),getPos_y()-1) instanceof Box){
+                    if(this.getElem(getPos_x(),getPos_y()-2) instanceof Vide){
+                        swap(getPos_x(),getPos_y()-1,getPos_x(),getPos_y()-2);
+                        swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()-1);
                     }else{
                         System.out.println("Can't move there");
                     }
@@ -219,11 +220,11 @@ public class Matrice{
         this.level=level;
     }
 
-    public Element getLevelindex(int i, int j) {
+    public Element getElem(int i, int j) {
         return level[i][j];
     }
 
-    public void setLevelindex(int i, int j, Element elem) {
+    public void setElem(int i, int j, Element elem) {
         this.level[i][j] = elem;
     }
     
