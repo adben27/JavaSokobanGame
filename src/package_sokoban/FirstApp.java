@@ -1,19 +1,38 @@
-package package_sokoban; 
+package package_sokoban 
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
 
+//classe FirstApp qui est une JFrame et qui implement l'interface KeyListener
 public class FirstApp extends JFrame implements KeyListener{
     private static final int WIDTH=600, HEIGHT=400; //hauteur et largeur de la fenetre
 
-    private JButton haut, bas, gauche, droite; //boutton qui permettront de ce deplacer si on a la flemme d'utiliser les fleches directionelles
+    private JButton haut, bas, gauche, droite;//boutton qui permettront de ce deplacer si on a la flemme d'utiliser les fleches directionelles
+    private Img joueur, monde, vide, cible, mur;
+    private JPanel niveau;
 
-    public FirstApp() throws IOException{
+    public FirstApp(){
         super("FirstApp");//on creer une fenetre nommée "FirstApp"
+
+        //on cree le JPanel qui contiendra le niveau et on l'ajoute dans la JFrame
+        niveau= new JPanel(new FlowLayout());
+        niveau.setBorder(new EmptyBorder(5, 5, 5, 5)); 
+        niveau.setLayout(null);
+        add(niveau);
+
+        //on met le JPanel en vert
+        niveau.setBackground(new Color(0, 155, 100));
+
+        //on cree les differente images qui vont etre utiliser
+        joueur = new Img("Image/joueur.png", 0, 0);
+        cible = new Img("Image/cible.png", 100, 100);
+        vide = new Img("Image/vide.png", 40, 40);
+        monde = new Img("Image/monde.png", 140, 140);
+        mur = new Img("Image/mur.png", 200, 200);
 
         //pour qu'on puisse utiliser les bouttons de déplacement et les fleches directionelles
         setFocusable(true);
@@ -35,8 +54,10 @@ public class FirstApp extends JFrame implements KeyListener{
 
         add(createConteneurMove(haut, bas, gauche, droite), BorderLayout.SOUTH);
 
-        //on affiche les images qui corespondront au elements du niveau qui occupera le reste de la fenetre
-        add(creerNiveau());
+        add(information(), BorderLayout.WEST); //on rajoute des informations a gauche de la fenetre
+
+        //on affiche les images qui corespondront au elements du niveau (sauf le joueur) qui occupera le reste de la fenetre
+        creerNiveau();
 
         setVisible(true); //On affiche la fenetre 
     }
@@ -44,39 +65,39 @@ public class FirstApp extends JFrame implements KeyListener{
     //les Listener sont les methodes qui appeleront la methode move et appliqueront les modifications qui suivent (KetListener pour le clavier et Listener pour les bouttons)
     //les println seront remplacer par les mouvements que le joueur fera
     private void hautKeyListener() {
-        System.out.println("fleche haut");
+        joueur.deplacementHaut();
     }
 
     private void basKeyListener() {
-        System.out.println("fleche bas");
+        joueur.deplacementBas();
     }
 
     private void gaucheKeyListener() {
-        System.out.println("fleche gauche");
+        joueur.deplacementGauche();
     }
 
     private void droiteKeyListener() {
-        System.out.println("fleche droite");
+        joueur.deplacementDroite();
     }
 
     //requestFocus() permette d'ecouter le clavier, sans les requestFocus() le clavier n'est plus ecouter 
     private void hautListener(ActionEvent e) {
-        System.out.println("boutton haut");
+        joueur.deplacementHaut();
         requestFocus(); 
     }
 
     private void droiteListener(ActionEvent e) {
-        System.out.println("boutton droite");
+        joueur.deplacementDroite();
         requestFocus();
     }
 
     private void gaucheListener(ActionEvent e) {
-        System.out.println("boutton gauche");
+        joueur.deplacementGauche();
         requestFocus();
     }
 
     private void basListener(ActionEvent e) {
-        System.out.println("boutton bas");
+        joueur.deplacementBas();
         requestFocus();
     }
 
@@ -91,22 +112,21 @@ public class FirstApp extends JFrame implements KeyListener{
         int keyCode = e.getKeyCode();
 
         if (keyCode == KeyEvent.VK_UP) {
-            this.hautKeyListener();
+            hautKeyListener();
             return;
         }
         if (keyCode == KeyEvent.VK_DOWN) {
-            this.basKeyListener();
+            basKeyListener();
             return;
         }
         if (keyCode == KeyEvent.VK_LEFT) {
-            this.gaucheKeyListener();
+            gaucheKeyListener();
             return;
         }
         if (keyCode == KeyEvent.VK_RIGHT) {
-            this.droiteKeyListener();
+            droiteKeyListener();
             return;
         }
-        System.out.println("Les seuls touchent a utiliser sont les moves directionelles");
     } 
 
     private JPanel createConteneurMove(JButton haut, JButton bas, JButton gauche, JButton droite){
@@ -146,16 +166,47 @@ public class FirstApp extends JFrame implements KeyListener{
         return move;
     }
 
-    public Img creerNiveau(){
-        Img niveau=new Img(); //on cree une image
+    //on ajoute les image dans le JPanel "niveau"
+    public void creerNiveau() {
+        niveau.add(joueur);
+        niveau.add(mur);
+        niveau.add(vide);
+        niveau.add(cible);
+        niveau.add(monde);
+    }
 
-        niveau.ajout("cible.png", 0, 0); // met l'image cible.png en pos_x=0 pos_y=0
-        niveau.ajout("monde.png", 20,0); // met l'image cible.png en pos_x=20 pos_y=0
-        niveau.ajout("vide.png", 40, 0); // met l'image cible.png en pos_x=40 pos_y=0
-        niveau.ajout("joueur.png", 60, 0); // met l'image cible.png en pos_x=60 pos_y=0
+    //on creer un JPanel qui contiendra des information utile pour le joueur
+    public JPanel information() {
+        JPanel info = new JPanel(new GridLayout(5,2, -35, 5)); //on separe le panel en 5 lignes qui on chacune 2 colonnes
+        
+        //on cree un texte qui dit quelle image correspond a quoi
+        JTextField text_monde =new JTextField("Voici un monde:");
+        text_monde.setEditable(false); //le texte ne peut pas etre lodifier
+        info.add(text_monde, BorderLayout.WEST); //on met le texte a gauche du panel
+        info.add(new Img("Image/monde.png"), BorderLayout.WEST); //on met l'image a gauche du panel
 
-        return niveau;
-    } 
+        JTextField text_joueur =new JTextField("Voici votre joueur:");
+        text_joueur.setEditable(false); //le texte ne peut pas etre lodifier
+        info.add(text_joueur, BorderLayout.WEST); //on met le texte a gauche du panel
+        info.add(new Img("Image/joueur.png"), BorderLayout.WEST); //on met l'image a gauche du panel
+
+        JTextField text_vide =new JTextField("Voici du vide:");
+        text_vide.setEditable(false); //le texte ne peut pas etre lodifier
+        info.add(text_vide, BorderLayout.WEST); //on met le texte a gauche du panel
+        info.add(new Img("Image/vide.png"), BorderLayout.WEST);//on met l'image a gauche du panel
+
+        JTextField text_cible =new JTextField("Voici une cible:");
+        text_cible.setEditable(false); //le texte ne peut pas etre lodifier
+        info.add(text_cible, BorderLayout.WEST); //on met le texte a gauche du panel
+        info.add(new Img("Image/cible.png"), BorderLayout.WEST);//on met l'image a gauche du panel
+
+        JTextField text_mur =new JTextField("Voici un mur:");
+        text_monde.setEditable(false); //le texte ne peut pas etre lodifier
+        info.add(text_mur, BorderLayout.WEST); //on met le texte a gauche du panel
+        info.add(new Img("Image/mur.png"), BorderLayout.WEST);//on met l'image a gauche du panel
+
+        return info;
+    }
 
     public static void main(String[] args) throws Exception{
         //la fenetre aura le look Nimbus
@@ -163,8 +214,5 @@ public class FirstApp extends JFrame implements KeyListener{
 
         //creation de la fenetre
         new FirstApp(); 
-    
-    }
-
-    
+    }    
 }
