@@ -1,29 +1,43 @@
-package package_sokoban; 
-
-import java.awt.Color;
+package package_sokoban 
 
 import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 
-//classe Img (image) qui herite de JPanel
-public class Img extends JPanel{
+//classe Img (image) qui herite de JLabel
+public class Img extends JLabel{
 
-    public Img() {
-        super(); //on creer une JPanel qui contiendra le niveau que l'on veut afficher
-        setBorder(new EmptyBorder(5, 5, 5, 5)); 
-        setLayout(null); 
-        setBackground(new Color(0)); //on met la couleur du JPanel en noir
+    public Img(String chemin, int x, int y) {
+        super(new ImageIcon(chemin)); //on creer une JLabel qui contiendra le niveau que l'on veut afficher
+
+        setSize(20, 20); //Le label fera 20 pixels de longueur et de larguer
+        setLocation(x, y); //on positionne le label en (x,y)
     }
 
-    public JLabel ajout(String nom, int x, int y){
-        ImageIcon icone = new ImageIcon(nom); //on cree une ImageIcon qui representra l'image "nom"
+    public Img(String chemin) {
+        super(new ImageIcon(chemin)); //on creer une JLabel qui contiendra le niveau que l'on veut afficher
 
-        JLabel image = new JLabel(icone); //on cree le JLabel qui contiendra l'image "icone"
-        image.setBounds(x, y, 20, 20);
-        add(image); //on ajoute l'image dans le JPanel
+        setSize(20, 20); //Le label fera 20 pixels de longueur et de larguer
+    }
 
-        return image;
+    //methode de deplacement du joueur
+    public void deplacementBas(){
+        setLocation(getX(), getY()+20);
+    }
+
+    public void deplacementHaut(){
+        setLocation(getX(), getY()-20);
+    }
+
+    public void deplacementGauche(){
+        setLocation(getX()-20, getY());
+    }
+
+    public void deplacementDroite(){
+        setLocation(getX()+20, getY());
+    }
+
+    //pour placer les mur, cible, etc..
+    public void setPosition(int x, int y) {
+        setLocation(x, y);
     }
 }
