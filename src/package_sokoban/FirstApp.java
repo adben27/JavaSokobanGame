@@ -1,7 +1,6 @@
 package package_sokoban 
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import java.awt.*;
@@ -9,30 +8,15 @@ import java.awt.event.*;
 
 //classe FirstApp qui est une JFrame et qui implement l'interface KeyListener
 public class FirstApp extends JFrame implements KeyListener{
-    private static final int WIDTH=600, HEIGHT=400; //hauteur et largeur de la fenetre
+    private static final int WIDTH=610, HEIGHT=398; //hauteur et largeur de la fenetre
 
     private JButton haut, bas, gauche, droite;//boutton qui permettront de ce deplacer si on a la flemme d'utiliser les fleches directionelles
-    private Img joueur, monde, vide, cible, mur;
-    private JPanel niveau;
+    private Img joueur;//les differentes images qu'on va utiliser
+    private DrawLevel niveau;//le conteneur ou il y aura le niveau largeur=420 (21x20) longueur=320 (16x20)
+    private Image icone;//icone de la fenetre
 
     public FirstApp(){
-        super("FirstApp");//on creer une fenetre nommée "FirstApp"
-
-        //on cree le JPanel qui contiendra le niveau et on l'ajoute dans la JFrame
-        niveau= new JPanel(new FlowLayout());
-        niveau.setBorder(new EmptyBorder(5, 5, 5, 5)); 
-        niveau.setLayout(null);
-        add(niveau);
-
-        //on met le JPanel en vert
-        niveau.setBackground(new Color(0, 155, 100));
-
-        //on cree les differente images qui vont etre utiliser
-        joueur = new Img("Image/joueur.png", 0, 0);
-        cible = new Img("Image/cible.png", 100, 100);
-        vide = new Img("Image/vide.png", 40, 40);
-        monde = new Img("Image/monde.png", 140, 140);
-        mur = new Img("Image/mur.png", 200, 200);
+        super("Sokoban");//on creer une fenetre nommée "Sokoban"
 
         //pour qu'on puisse utiliser les bouttons de déplacement et les fleches directionelles
         setFocusable(true);
@@ -40,11 +24,29 @@ public class FirstApp extends JFrame implements KeyListener{
         //on dit a la fenetre d'écouter le clavier
         addKeyListener(this);
 
+        setResizable(false);
+
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); //on ferme le processus de la fenetre quand on clique sur la croix rouge
         
         setSize(WIDTH, HEIGHT); //la fenetre fera WIDHT pixels de hauteur et HEIGHT de largeur
         
         setLocationRelativeTo(null); //On centre la fenetre par rapport à l'écran ici le "bureau de travail"
+
+        //creation de l'icone de la fenetre
+        icone = getToolkit().getImage("Image/joueur.png");
+        setIconImage(icone);
+
+        //on cree le JPanel qui contiendra le niveau et on l'ajoute dans la JFrame
+        niveau= new DrawLevel();
+        niveau.setLayout(null);
+        
+        //on met le JPanel en vert
+        niveau.setBackground(new Color(0, 155, 100));
+
+        add(niveau, BorderLayout.CENTER);
+
+        //on cree les differente images qui vont etre utiliser
+        joueur = new Img("Image/joueur.png", 7*20,20);
 
         //on creeé les bouton "haut" "bas" "gauche" "droite" et grace à "conteneurMove" on ajoute ces 4 button dans le conteneur qui va se trouver en bas de la fenetre
         droite = new JButton("droite");
@@ -127,6 +129,7 @@ public class FirstApp extends JFrame implements KeyListener{
             droiteKeyListener();
             return;
         }
+        JOptionPane.showMessageDialog(this,"Seuls les flèches directionnelles peuvent être utilisé\n(Si vous ne voulez pas utiliser les flèches directionnelles\nutilisez les bouttons haut, bas, gauche, droite)","Information", JOptionPane.INFORMATION_MESSAGE);
     } 
 
     private JPanel createConteneurMove(JButton haut, JButton bas, JButton gauche, JButton droite){
@@ -169,41 +172,37 @@ public class FirstApp extends JFrame implements KeyListener{
     //on ajoute les image dans le JPanel "niveau"
     public void creerNiveau() {
         niveau.add(joueur);
-        niveau.add(mur);
-        niveau.add(vide);
-        niveau.add(cible);
-        niveau.add(monde);
     }
 
     //on creer un JPanel qui contiendra des information utile pour le joueur
     public JPanel information() {
-        JPanel info = new JPanel(new GridLayout(5,2, -35, 5)); //on separe le panel en 5 lignes qui on chacune 2 colonnes
+        JPanel info = new JPanel(new GridLayout(5,2, -40, 0)); //on separe le panel en 5 lignes qui on chacune 2 colonnes, l'ecart horizontal est de "-40" pour que l'image soit coller au text
         
         //on cree un texte qui dit quelle image correspond a quoi
         JTextField text_monde =new JTextField("Voici un monde:");
         text_monde.setEditable(false); //le texte ne peut pas etre lodifier
         info.add(text_monde, BorderLayout.WEST); //on met le texte a gauche du panel
-        info.add(new Img("Image/monde.png"), BorderLayout.WEST); //on met l'image a gauche du panel
+        info.add(new Img("Image/monde.png")); //on met l'image a gauche du panel
 
         JTextField text_joueur =new JTextField("Voici votre joueur:");
         text_joueur.setEditable(false); //le texte ne peut pas etre lodifier
         info.add(text_joueur, BorderLayout.WEST); //on met le texte a gauche du panel
-        info.add(new Img("Image/joueur.png"), BorderLayout.WEST); //on met l'image a gauche du panel
+        info.add(new Img("Image/joueur.png")); //on met l'image a gauche du panel
 
         JTextField text_vide =new JTextField("Voici du vide:");
         text_vide.setEditable(false); //le texte ne peut pas etre lodifier
         info.add(text_vide, BorderLayout.WEST); //on met le texte a gauche du panel
-        info.add(new Img("Image/vide.png"), BorderLayout.WEST);//on met l'image a gauche du panel
+        info.add(new Img("Image/vide.png"));//on met l'image a gauche du panel
 
         JTextField text_cible =new JTextField("Voici une cible:");
         text_cible.setEditable(false); //le texte ne peut pas etre lodifier
         info.add(text_cible, BorderLayout.WEST); //on met le texte a gauche du panel
-        info.add(new Img("Image/cible.png"), BorderLayout.WEST);//on met l'image a gauche du panel
+        info.add(new Img("Image/cible.png"));//on met l'image a gauche du panel
 
         JTextField text_mur =new JTextField("Voici un mur:");
-        text_monde.setEditable(false); //le texte ne peut pas etre lodifier
+        text_mur.setEditable(false); //le texte ne peut pas etre modifier
         info.add(text_mur, BorderLayout.WEST); //on met le texte a gauche du panel
-        info.add(new Img("Image/mur.png"), BorderLayout.WEST);//on met l'image a gauche du panel
+        info.add(new Img("Image/mur.png"));//on met l'image a gauche du panel
 
         return info;
     }
