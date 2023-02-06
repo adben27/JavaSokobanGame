@@ -1,19 +1,21 @@
-package package_sokoban;
+package package_sokoban 
 
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Random;
 
 //classe FirstApp qui est une JFrame et qui implement l'interface KeyListener
 public class FirstApp extends JFrame implements KeyListener{
-    private static final int WIDTH=610, HEIGHT=398; //hauteur et largeur de la fenetre
+    private static final int WIDTH=600, HEIGHT=400; //hauteur et largeur de la fenetre
 
     private JButton haut, bas, gauche, droite;//boutton qui permettront de ce deplacer si on a la flemme d'utiliser les fleches directionelles
-    private Img joueur;//les differentes images qu'on va utiliser
+    //private Img joueur;//les differentes images qu'on va utiliser
     private DrawLevel niveau;//le conteneur ou il y aura le niveau largeur=420 (21x20) longueur=320 (16x20)
     private Image icone;//icone de la fenetre
+    private int r,g,b; //couleur du niveau
 
     public FirstApp(){
         super("Sokoban");//on creer une fenetre nommée "Sokoban"
@@ -40,14 +42,19 @@ public class FirstApp extends JFrame implements KeyListener{
         niveau= new DrawLevel();
         niveau.setLayout(null);
         
-        //on met le JPanel en vert
-        niveau.setBackground(new Color(0, 155, 100));
+        //on genere 3 nombres aleatoires qui feront la couleur du niveau
+        Random random = new Random();
+        r=random.nextInt(256);
+        g=random.nextInt(256);
+        b=random.nextInt(256);
+        niveau.setBackground(new Color(r, g, b));
 
         add(niveau, BorderLayout.CENTER);
 
-        //on cree les differente images qui vont etre utiliser
-        joueur = new Img("Image/joueur.png", 7*20,20);
-
+        //on cree l'images du joueur qui va etre utiliser (255,91)
+        /*joueur = new Img("Image/joueur.png");
+        joueur.setLocation(((niveau.getWidth() - joueur.getWidth())/2) , ((niveau.getHeight() - joueur.getHeight())/2) );
+        */
         //on creeé les bouton "haut" "bas" "gauche" "droite" et grace à "conteneurMove" on ajoute ces 4 button dans le conteneur qui va se trouver en bas de la fenetre
         droite = new JButton("droite");
         gauche = new JButton("gauche");
@@ -58,8 +65,7 @@ public class FirstApp extends JFrame implements KeyListener{
 
         add(information(), BorderLayout.WEST); //on rajoute des informations a gauche de la fenetre
 
-        //on affiche les images qui corespondront au elements du niveau (sauf le joueur) qui occupera le reste de la fenetre
-        creerNiveau();
+        //niveau.add(joueur);
 
         setVisible(true); //On affiche la fenetre 
     }
@@ -67,39 +73,39 @@ public class FirstApp extends JFrame implements KeyListener{
     //les Listener sont les methodes qui appeleront la methode move et appliqueront les modifications qui suivent (KetListener pour le clavier et Listener pour les bouttons)
     //les println seront remplacer par les mouvements que le joueur fera
     private void hautKeyListener() {
-        joueur.deplacementHaut();
+        niveau.getJoueur().deplacementHaut();
     }
 
     private void basKeyListener() {
-        joueur.deplacementBas();
+        niveau.getJoueur().deplacementBas();
     }
 
     private void gaucheKeyListener() {
-        joueur.deplacementGauche();
+        niveau.getJoueur().deplacementGauche();
     }
 
     private void droiteKeyListener() {
-        joueur.deplacementDroite();
+        niveau.getJoueur().deplacementDroite();
     }
 
     //requestFocus() permette d'ecouter le clavier, sans les requestFocus() le clavier n'est plus ecouter 
     private void hautListener(ActionEvent e) {
-        joueur.deplacementHaut();
+        niveau.getJoueur().deplacementHaut();
         requestFocus(); 
     }
 
     private void droiteListener(ActionEvent e) {
-        joueur.deplacementDroite();
+        niveau.getJoueur().deplacementDroite();
         requestFocus();
     }
 
     private void gaucheListener(ActionEvent e) {
-        joueur.deplacementGauche();
+        niveau.getJoueur().deplacementGauche();
         requestFocus();
     }
 
     private void basListener(ActionEvent e) {
-        joueur.deplacementBas();
+        niveau.getJoueur().deplacementBas();
         requestFocus();
     }
 
@@ -169,17 +175,12 @@ public class FirstApp extends JFrame implements KeyListener{
         return move;
     }
 
-    //on ajoute les image dans le JPanel "niveau"
-    public void creerNiveau() {
-        niveau.add(joueur);
-    }
-
     //on creer un JPanel qui contiendra des information utile pour le joueur
     public JPanel information() {
         JPanel info = new JPanel(new GridLayout(5,2, -40, 0)); //on separe le panel en 5 lignes qui on chacune 2 colonnes, l'ecart horizontal est de "-40" pour que l'image soit coller au text
         
         //on cree un texte qui dit quelle image correspond a quoi
-        JTextField text_monde =new JTextField("Voici un monde:");
+        JTextField text_monde =new JTextField("Voici une boite:");
         text_monde.setEditable(false); //le texte ne peut pas etre lodifier
         info.add(text_monde, BorderLayout.WEST); //on met le texte a gauche du panel
         info.add(new Img("Image/monde.png")); //on met l'image a gauche du panel

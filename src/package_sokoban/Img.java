@@ -1,16 +1,19 @@
-package package_sokoban;
+package package_sokoban
+
+import java.awt.Dimension;
 
 import javax.swing.*;
 
-//classe Img (image) qui herite de JLabel sert pour le Jpanel information et pour bouger le joueur
+//classe Img (image) qui herite de JLabel sert pour le Jpanel information et pour bouger le joueur et les boites mondes
 public class Img extends JLabel{
 
     private String chemin;
 
     //constructeur pour le conteneur d'information
     public Img(String chemin, int x, int y) {
-        super(new ImageIcon(chemin)); //on creer une JLabel qui contiendra le niveau que l'on veut afficher
+        super(new ImageIcon(chemin)); //on creer un JLabel qui representera les image du JPanel "information"
 
+        setPreferredSize(new Dimension(20,20));
         setSize(20, 20); //Le label fera 20 pixels de longueur et de larguer
 
         setLocation(x, y); //on positionne le label en (x,y)
@@ -18,12 +21,12 @@ public class Img extends JLabel{
 
     //constructeur pour le conteneur d'information 
     public Img(String chemin) {
-        super(new ImageIcon(chemin)); //on creer une JLabel qui contiendra le niveau que l'on veut afficher
+        super(new ImageIcon(chemin)); //on creer une JLabel qui contiendra une image que l'on veut afficher
 
         setSize(20, 20); //Le label fera 20 pixels de longueur et de larguer
     }
 
-    //methode de deplacement du joueur
+    //methode de deplacement du joueur et pour plus tard des boites mondes
     public void deplacementBas(){
         setLocation(getX(), getY()+20);
     }
