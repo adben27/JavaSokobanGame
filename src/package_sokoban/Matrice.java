@@ -33,7 +33,6 @@ public class Matrice{
         this.pos_y=y;
     }
 
-
     /**
      * permet d'échanger les elements de deux cellules
      * si l'un des elements est le player actualise les parametres pos_x et pos_y de la matrice
@@ -63,7 +62,85 @@ public class Matrice{
         setElem(a, b, temp);
         return;
     }
+    /*fonction qui prend comme argument un char qui représente la direction du mouvement z : haut, q : gauche, s : bas, d : droite, autre que ceux la il
+     *return false d'ailleurs j'en profite pour modifier les autres fonctions move_direction pour qu'elles utilisent celle-ci pour check le mouvement
+     */
+	public boolean can_move(char c) {
+		if (Character.compare(c, 'z') == 0) {
+			return can_move_up();
+		}
+		if (Character.compare(c, 's') == 0) {
+			return can_move_down();
+		}
+		if (Character.compare(c, 'q') == 0) {
+			return can_move_left();
+		}
+		if (Character.compare(c, 'd') == 0) {
+			return can_move_right();
+		}
+		return false;
+	}
 
+	public boolean can_move_up() {
+		if (this.getElem(getPos_x() - 1, getPos_y()) instanceof Wall) {
+			return false;
+		} else {
+			if (this.getElem(getPos_x() - 1, getPos_y()) instanceof Box) {
+				if (this.getElem(getPos_x() - 2, getPos_y()) instanceof Vide) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+    
+	public boolean can_move_down() {
+		if (this.getElem(getPos_x() + 1, getPos_y()) instanceof Wall) {
+			return false;
+		} else {
+			if (this.getElem(getPos_x() + 1, getPos_y()) instanceof Box) {
+				if (this.getElem(getPos_x() + 2, getPos_y()) instanceof Vide) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+    
+	public boolean can_move_right() {
+		if (this.getElem(getPos_x(), getPos_y() + 1) instanceof Wall) {
+			return false;
+		} else {
+			if (this.getElem(getPos_x(), getPos_y() + 1) instanceof Box) {
+				if (this.getElem(getPos_x(), getPos_y() + 2) instanceof Vide) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+	
+	public boolean can_move_left() {
+		if(this.getElem(getPos_x(),getPos_y()-1) instanceof Wall){
+			return false;
+        }else{
+            if(this.getElem(getPos_x(),getPos_y()-1) instanceof Box){
+                if(this.getElem(getPos_x(),getPos_y()-2) instanceof Vide){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    
     public void move(){
             Scanner console = new Scanner(System.in);
             char c = console.next().charAt(0);
@@ -86,76 +163,67 @@ public class Matrice{
         }
 
     public void move_up(){
-    	if(this.getElem(getPos_x()-1,getPos_y()) instanceof Wall){
-            System.out.println("Can't move there");
+    	if(!can_move_up()) {
+    		System.out.print("can't move there\n");
+    		return;
+    	}
+        if(this.getElem(getPos_x()-1,getPos_y()) instanceof Vide){
+            swap(getPos_x(),getPos_y(),getPos_x()-1,getPos_y());
         }else{
-            if(this.getElem(getPos_x()-1,getPos_y()) instanceof Vide){
-                swap(getPos_x(),getPos_y(),getPos_x()-1,getPos_y());
-            }else{
-                if(this.getElem(getPos_x()-1,getPos_y()) instanceof Box){
-                    if(this.getElem(getPos_x()-2,getPos_y()) instanceof Vide){
-                        swap(getPos_x()-1,getPos_y(),getPos_x()-2,getPos_y());
-                        swap(getPos_x(),getPos_y(),getPos_x()-1,getPos_y());
-                    }else{
-                        System.out.println("Can't move there");
-                    }
+            if(this.getElem(getPos_x()-1,getPos_y()) instanceof Box){
+                if(this.getElem(getPos_x()-2,getPos_y()) instanceof Vide){
+                    swap(getPos_x()-1,getPos_y(),getPos_x()-2,getPos_y());
+                    swap(getPos_x(),getPos_y(),getPos_x()-1,getPos_y());
                 }
             }
         }
     }
    
     public void move_down(){
-    	if(this.getElem(getPos_x()+1,getPos_y()) instanceof Wall){
-            System.out.println("Can't move there");
+    	if(!can_move_down()) {
+    		System.out.print("can't move there\n");
+    		return;
+    	}
+        if(this.getElem(getPos_x()+1,getPos_y()) instanceof Vide){
+            swap(getPos_x(),getPos_y(),getPos_x()+1,getPos_y());
         }else{
-            if(this.getElem(getPos_x()+1,getPos_y()) instanceof Vide){
-                swap(getPos_x(),getPos_y(),getPos_x()+1,getPos_y());
-            }else{
-                if(this.getElem(getPos_x()+1,getPos_y()) instanceof Box){
-                    if(this.getElem(getPos_x()+2,getPos_y()) instanceof Vide){
-                        swap(getPos_x()+1,getPos_y(),getPos_x()+2,getPos_y());
-                        swap(getPos_x(),getPos_y(),getPos_x()+1,getPos_y());
-                    }else{
-                        System.out.println("Can't move there");
-                    }
+            if(this.getElem(getPos_x()+1,getPos_y()) instanceof Box){
+                if(this.getElem(getPos_x()+2,getPos_y()) instanceof Vide){
+                    swap(getPos_x()+1,getPos_y(),getPos_x()+2,getPos_y());
+                    swap(getPos_x(),getPos_y(),getPos_x()+1,getPos_y());
                 }
             }
         }
     }
 
     public void move_right(){
-    	if(this.getElem(getPos_x(),getPos_y()+1) instanceof Wall){
-            System.out.println("Can't move there");
+    	if(!can_move_right()) {
+    		System.out.print("can't move there\n");
+    		return;
+    	}
+        if(this.getElem(getPos_x(),getPos_y()+1) instanceof Vide){
+            swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()+1);
         }else{
-            if(this.getElem(getPos_x(),getPos_y()+1) instanceof Vide){
-                swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()+1);
-            }else{
-                if(this.getElem(getPos_x(),getPos_y()+1) instanceof Box){
-                    if(this.getElem(getPos_x(),getPos_y()+2) instanceof Vide){
-                        swap(getPos_x(),getPos_y()+1,getPos_x(),getPos_y()+2);
-                        swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()+1);
-                    }else{
-                        System.out.println("Can't move there");
-                    }
-                }
+            if(this.getElem(getPos_x(),getPos_y()+1) instanceof Box){
+                if(this.getElem(getPos_x(),getPos_y()+2) instanceof Vide){
+                    swap(getPos_x(),getPos_y()+1,getPos_x(),getPos_y()+2);
+                    swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()+1);}
             }
         }
     }
 
     public void move_left(){
-    	if(this.getElem(getPos_x(),getPos_y()-1) instanceof Wall){
-            System.out.println("Can't move there");
+    	if(!can_move_left()) {
+    		System.out.print("can't move there\n");
+    		return;
+    	}
+        if(this.getElem(getPos_x(),getPos_y()-1) instanceof Vide){
+            swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()-1);
         }else{
-            if(this.getElem(getPos_x(),getPos_y()-1) instanceof Vide){
-                swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()-1);
-            }else{
-                if(this.getElem(getPos_x(),getPos_y()-1) instanceof Box){
-                    if(this.getElem(getPos_x(),getPos_y()-2) instanceof Vide){
-                        swap(getPos_x(),getPos_y()-1,getPos_x(),getPos_y()-2);
-                        swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()-1);
-                    }else{
-                        System.out.println("Can't move there");
-                    }
+            if(this.getElem(getPos_x(),getPos_y()-1) instanceof Box){
+                if(this.getElem(getPos_x(),getPos_y()-2) instanceof Vide){
+                    swap(getPos_x(),getPos_y()-1,getPos_x(),getPos_y()-2);
+                    swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()-1);
                 }
             }
         }

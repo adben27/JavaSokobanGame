@@ -1,4 +1,4 @@
-package package_sokoban 
+package package_sokoban;
 
 import java.awt.*;
 import javax.swing.*;
