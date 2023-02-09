@@ -1,90 +1,170 @@
 package package_sokoban
 
 import java.awt.*;
-
 import javax.swing.*;
  
-public class DrawLevel extends JPanel{
+public class DrawLevel extends JPanel implements Runnable{
 
-    private int joueur_x, joueur_y;
-    private Image mur, vide, cible, monde;
-    private Img joueur;
-    private int n=7; //taille niveau
+    private Thread game; //creer un thread qui sera ma boucle de jeu
+    private int joueur_x, joueur_y, FPS=60;//nombre de FPS du jeu et indice (x,y) du joueur
+    private Image mur, vide, cible, monde, joueur;//image que l'on va afficher
+    private boolean haut, bas, gauche, droite;//pour faire bouger le joueur
+    private int n=9; //taille niveau
     //niveau a afficher
-    private char[] lvl={'#', '#', '#', '#', '#', '#', '#', 
-                        '#', ' ', '@', '@', 'B', ' ', '#',
-                        '#', ' ', '#', 'B', ' ', ' ', '#',
-                        '#', '@', '#', '#', ' ', 'B', '#',
-                        '#', 'A', 'B', ' ', ' ', ' ', '#',
-                        '#', '#', ' ', ' ', '#', '@', '#',
-                        '#', '#', '#', '#', '#', '#', '#',
-    };
+    private char[][] lvl;
 
     public DrawLevel() {
         super();
 
         setLayout(null);
         setPreferredSize(new Dimension(600, 400));
-        setSize(600, 400);
 
-        joueur = new Img("Image/joueur.png");
+        //creationn du niveau et chargement du niveau
+        lvl=new char[n][n];
+        lvl=loadLvl();
 
+        //on recupère les images qu'on va utiliser
         mur = getToolkit().getImage("Image/mur.png");
         vide = getToolkit().getImage("Image/vide.png");
         cible = getToolkit().getImage("Image/cible.png");
         monde = getToolkit().getImage("Image/monde.png");
+        joueur = getToolkit().getImage("Image/joueur.png");
 
-        int i,j;
-        i=j=0;
+        //on cherche les indice du joueur
+        joueur_x=joueur_y=0;
 
-        while (i<n && !(lvl[j*n+i]=='A')) {
-            while (j<n && !(lvl[j*n+i]=='A')) {
-                if(lvl[i*n+j]=='A'){
-                    joueur_x=((getWidth() - joueur.getWidth())/2)+20*((5*j)-(n/2))-185;
-                    joueur_y=((getHeight() - joueur.getHeight())/2)+20*((2*j)-(n/2))-9;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if(lvl[i][j]=='A'){
+                    joueur_x=j;
+                    joueur_y=i;
                 }
-                j++;
             }
-            i++;
-            j=0;
         }
 
-        joueur.setLocation(joueur_x, joueur_y);
-        add(joueur);
+        //on met tout a false pour pas bouger le joueur
+        haut=bas=gauche=droite=false;
     }
 
+    //methode qui charge un niveau (a modifier pour pouvoir lire les niveaux dans un fichier
+    public char[][] loadLvl() {
+        char [][] lv = {{'#', '#', '#', '#', '#', '#', '#', '#', '#'},
+                        {'#', ' ', ' ', ' ', ' ', ' ', ' ',' ', ' '},
+                        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+                        {'#', ' ', ' ', 'B', '@', 'B', ' ', ' ', ' '},
+                        {'#', ' ', ' ', ' ', 'A', ' ', ' ', '#', ' '},
+                        {'#', ' ', ' ', ' ', ' ', 'B', ' ', ' ', ' '},
+                        {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                        {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                        {'#', '#', '#', '#', '#', '#', '#', ' ', '#'}
+        };
+
+        return lv;
+    }
+
+    //debut du thread qui s'occupe de la boucle de jeu
+    public void startGame() {
+        game = new Thread(this);
+        game.start();
+    }
+
+    //methode qui permet de mettre a jour l'affichage du jeu
+    @Override
+    public void run() {
+        double interval_dessin=1000000000/FPS;
+        double dessin_suivant=System.nanoTime()+interval_dessin;
+        
+        while (game!=null) {
+            update();//met ajour le niveau en memoire
+            repaint();//repeint le niveau dans le panel
+            System.out.println("joueur_x:" + joueur_x + "\njoueur_y" + joueur_y + "\n");//pour verifie si la pos du joueur en memoire correspond a la pos du joueur dans l'interface graphique
+
+            try {
+                double tps_restant = dessin_suivant - System.nanoTime();
+                tps_restant/=1000000;
+
+                if (tps_restant<0)
+                    tps_restant= 0;
+
+                Thread.sleep((long) tps_restant);
+
+                dessin_suivant+=interval_dessin;
+                
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //permet de mettre a jour le niveau
+    public void update() {
+        char tmp = lvl[joueur_y][joueur_x];
+        if (bas) {
+            lvl[joueur_y][joueur_x] = lvl[joueur_y+1][joueur_x];
+            lvl[joueur_y+1][joueur_x] = tmp;
+            joueur_y++;
+            bas=false;
+        }
+        if (haut) {
+            lvl[joueur_y][joueur_x] = lvl[joueur_y-1][joueur_x];
+            lvl[joueur_y-1][joueur_x] = tmp;
+            joueur_y--;
+            haut=false;
+        }
+        if (gauche) {
+            lvl[joueur_y][joueur_x] = lvl[joueur_y][-1+joueur_x];
+            lvl[joueur_y][joueur_x-1] = tmp;
+            joueur_x--;
+            gauche=false;
+        }
+        if (droite) {
+            lvl[joueur_y][joueur_x] = lvl[joueur_y][1+joueur_x];
+            lvl[joueur_y][joueur_x+1] = tmp;
+            joueur_x++;
+            droite=false;
+        }
+    }
+
+    //on peint le niveau dans le panel
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        Graphics2D g2 = (Graphics2D) g;
+        
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 
-                if((lvl[n*j+i]==' ') || (lvl[n*j+i]=='A')){
-                    g.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*i-20*n/2, ((getHeight() - vide.getHeight(null))/2)+j*20-20*n/2, this);
+                if((lvl[i][j]==' ')){
+                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-n/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-n/2), this);
                 }
-                if(lvl[n*j+i]=='B'){
-                    g.drawImage(monde, ((getWidth() - monde.getWidth(null))/2)+20*i-20*n/2, ((getHeight() - monde.getHeight(null))/2)+j*20-20*n/2, this);
+                if(lvl[i][j]=='A'){
+                    g2.drawImage(joueur, ((getWidth() - joueur.getWidth(null))/2)+20*(j-n/2), ((getHeight() - joueur.getHeight(null))/2)+20*(i-n/2), this);
                 }
-                if(lvl[n*j+i]=='@'){
-                    g.drawImage(cible, ((getWidth() - cible.getWidth(null))/2)+20*i-20*n/2, ((getHeight() - cible.getHeight(null))/2)+j*20-20*n/2, this);
+                if(lvl[i][j]=='B'){
+                    g2.drawImage(monde, ((getWidth() - monde.getWidth(null))/2)+20*(j-n/2), ((getHeight() - monde.getHeight(null))/2)+20*(i-n/2), this);
                 }
-                if(lvl[n*j+i]=='#'){
-                    g.drawImage(mur, ((getWidth() - mur.getWidth(null))/2)+20*i-20*n/2, ((getHeight() - mur.getHeight(null))/2)+j*20-20*n/2, this);
+                if(lvl[i][j]=='@'){
+                    g2.drawImage(cible, ((getWidth() - cible.getWidth(null))/2)+20*(j-n/2), ((getHeight() - cible.getHeight(null))/2)+20*(i-n/2), this);
+                }
+                if(lvl[i][j]=='#'){
+                    g2.drawImage(mur, ((getWidth() - mur.getWidth(null))/2)+20*(j-n/2), ((getHeight() - mur.getHeight(null))/2)+20*(i-n/2), this);
                 }
             }
         }
     }
 
-    public int getJoueur_x(){
-        return joueur_x;
+    //permet les mouvement (dit si on a appuiez sur les fleche ou les bouttons)
+    public void setHaut(boolean dir) {
+        haut=dir;
     }
-
-    public int getJoueur_y(){
-        return joueur_y;
+    public void setBas(boolean dir) {
+        bas=dir;
     }
-
-    public Img getJoueur(){
-        return joueur;
+    public void setGauche(boolean dir) {
+        gauche=dir;
+    }
+    public void setDroite(boolean dir) {
+        droite=dir;
     }
 }
