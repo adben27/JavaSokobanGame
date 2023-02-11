@@ -1,17 +1,18 @@
 package package_sokoban
 
 import java.awt.Dimension;
-
+import java.awt.*;
 import javax.swing.*;
 
-//classe Img (image) qui herite de JLabel sert pour le Jpanel information et pour bouger le joueur et les boites mondes
+//classe Img (image) qui herite de JLabel sert pour le Jpanel information
 public class Img extends JLabel{
 
+    private Image img;
     private String chemin;
 
-    //constructeur pour le conteneur d'information
     public Img(String chemin, int x, int y) {
-        super(new ImageIcon(chemin)); //on creer un JLabel qui representera les image du JPanel "information"
+        super(new ImageIcon(chemin)); //on creer un JLabel qui contiendra l'image que l'on veut afficher
+        img = getToolkit().getImage(chemin);
 
         setPreferredSize(new Dimension(20,20));
         setSize(20, 20); //Le label fera 20 pixels de longueur et de larguer
@@ -19,31 +20,19 @@ public class Img extends JLabel{
         setLocation(x, y); //on positionne le label en (x,y)
     }
 
-    //constructeur pour le conteneur d'information 
     public Img(String chemin) {
-        super(new ImageIcon(chemin)); //on creer une JLabel qui contiendra une image que l'on veut afficher
+        super(new ImageIcon(chemin)); //on creer une JLabel qui contiendra l'image que l'on veut afficher
+        img = getToolkit().getImage(chemin);
 
         setSize(20, 20); //Le label fera 20 pixels de longueur et de larguer
-    }
-
-    //methode de deplacement du joueur et pour plus tard des boites mondes
-    public void deplacementBas(){
-        setLocation(getX(), getY()+20);
-    }
-
-    public void deplacementHaut(){
-        setLocation(getX(), getY()-20); 
-    }
-
-    public void deplacementGauche(){
-        setLocation(getX()-20, getY());
-    }
-
-    public void deplacementDroite(){
-        setLocation(getX()+20, getY());
+        setPreferredSize(new Dimension(20,20));
     }
 
     public String getChemin() {
         return chemin;
+    }
+
+    public Image getImage(){
+        return img;
     }
 }
