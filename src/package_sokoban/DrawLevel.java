@@ -7,11 +7,10 @@ public class DrawLevel extends JPanel implements Runnable{
 
     private Thread game; //creer un thread qui sera ma boucle de jeu
     private int joueur_x, joueur_y, FPS=60;//nombre de FPS du jeu et indice (x,y) du joueur
-    private Image mur, vide, cible, monde, joueur;//image que l'on va afficher
+    private Image mur, vide, cible, mondeB, mondeC, joueur;//image que l'on va afficher
     private boolean haut, bas, gauche, droite;//pour faire bouger le joueur
-    private int n=9; //taille niveau
-    //niveau a afficher
-    private char[][] lvl;
+    private int n=9;//taille niveau
+    private char[][] lvl;//niveau a afficher
 
     public DrawLevel() {
         super();
@@ -27,7 +26,8 @@ public class DrawLevel extends JPanel implements Runnable{
         mur = getToolkit().getImage("Image/mur.png");
         vide = getToolkit().getImage("Image/vide.png");
         cible = getToolkit().getImage("Image/cible.png");
-        monde = getToolkit().getImage("Image/monde.png");
+        mondeB = getToolkit().getImage("Image/mondeB.png");
+        mondeC = getToolkit().getImage("Image/mondeC.png");
         joueur = getToolkit().getImage("Image/joueur.png");
 
         //on cherche les indice du joueur
@@ -46,17 +46,17 @@ public class DrawLevel extends JPanel implements Runnable{
         haut=bas=gauche=droite=false;
     }
 
-    //methode qui charge un niveau (a modifier pour pouvoir lire les niveaux dans un fichier
+    //methode qui charge un niveau (a modifier pour pouvoir lire les niveaux dans un fichier)
     public char[][] loadLvl() {
         char [][] lv = {{'#', '#', '#', '#', '#', '#', '#', '#', '#'},
-                        {'#', ' ', ' ', ' ', ' ', ' ', ' ',' ', ' '},
-                        {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-                        {'#', ' ', ' ', 'B', '@', 'B', ' ', ' ', ' '},
-                        {'#', ' ', ' ', ' ', 'A', ' ', ' ', '#', ' '},
-                        {'#', ' ', ' ', ' ', ' ', 'B', ' ', ' ', ' '},
-                        {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                        {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                        {'#', '#', '#', '#', '#', '#', '#', ' ', '#'}
+                        {'#', 'C', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+                        {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+                        {'#', ' ', ' ', 'B', '@', 'B', ' ', ' ', '#'},
+                        {'#', ' ', ' ', ' ', 'A', ' ', ' ', '@', '#'},
+                        {'#', ' ', ' ', ' ', ' ', 'C', ' ', ' ', '#'},
+                        {'#', '@', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+                        {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
+                        {'#', '#', '#', '#', '#', '#', '#', '#', '#'}
         };
 
         return lv;
@@ -71,16 +71,20 @@ public class DrawLevel extends JPanel implements Runnable{
     //methode qui permet de mettre a jour l'affichage du jeu
     @Override
     public void run() {
+        //System.nanoTime() donne l'heure en nano secondes
         double interval_dessin=1000000000/FPS;
         double dessin_suivant=System.nanoTime()+interval_dessin;
         
         while (game!=null) {
-            update();//met ajour le niveau en memoire
+            update();//met à jour le niveau en memoire
             repaint();//repeint le niveau dans le panel
-            System.out.println("joueur_x:" + joueur_x + "\njoueur_y" + joueur_y + "\n");//pour verifie si la pos du joueur en memoire correspond a la pos du joueur dans l'interface graphique
+            
+            //pour verifie si la pos du joueur en memoire correspond a la pos du joueur dans l'interface graphique
+            //System.out.println("joueur_x:" + joueur_x + "\njoueur_y" + joueur_y + "\n");
 
             try {
                 double tps_restant = dessin_suivant - System.nanoTime();
+                //Thread.sleep() prend en argument des millis secondes donc on divise par un million le temps restant pour l'avoir en millis secondes
                 tps_restant/=1000000;
 
                 if (tps_restant<0)
@@ -139,12 +143,19 @@ public class DrawLevel extends JPanel implements Runnable{
                     g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-n/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-n/2), this);
                 }
                 if(lvl[i][j]=='A'){
+                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-n/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-n/2), this);
                     g2.drawImage(joueur, ((getWidth() - joueur.getWidth(null))/2)+20*(j-n/2), ((getHeight() - joueur.getHeight(null))/2)+20*(i-n/2), this);
                 }
                 if(lvl[i][j]=='B'){
-                    g2.drawImage(monde, ((getWidth() - monde.getWidth(null))/2)+20*(j-n/2), ((getHeight() - monde.getHeight(null))/2)+20*(i-n/2), this);
+                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-n/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-n/2), this);
+                    g2.drawImage(mondeB, ((getWidth() - mondeB.getWidth(null))/2)+20*(j-n/2), ((getHeight() - mondeB.getHeight(null))/2)+20*(i-n/2), this);
+                }
+                if(lvl[i][j]=='C'){
+                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-n/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-n/2), this);
+                    g2.drawImage(mondeC, ((getWidth() - mondeC.getWidth(null))/2)+20*(j-n/2), ((getHeight() - mondeC.getHeight(null))/2)+20*(i-n/2), this);
                 }
                 if(lvl[i][j]=='@'){
+                    g2.drawImage(vide, ((getWidth() - mondeC.getWidth(null))/2)+20*(j-n/2), ((getHeight() - mondeC.getHeight(null))/2)+20*(i-n/2), this);
                     g2.drawImage(cible, ((getWidth() - cible.getWidth(null))/2)+20*(j-n/2), ((getHeight() - cible.getHeight(null))/2)+20*(i-n/2), this);
                 }
                 if(lvl[i][j]=='#'){
@@ -154,7 +165,7 @@ public class DrawLevel extends JPanel implements Runnable{
         }
     }
 
-    //permet les mouvement (dit si on a appuiez sur les fleche ou les bouttons)
+    //permet les mouvements (dit si on a appuiez sur les fleches ou les bouttons)
     public void setHaut(boolean dir) {
         haut=dir;
     }
