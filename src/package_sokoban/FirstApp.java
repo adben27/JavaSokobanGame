@@ -25,8 +25,6 @@ public class FirstApp extends JFrame implements KeyListener{
         //on dit a la fenetre d'écouter le clavier
         addKeyListener(this);
 
-        //setResizable(false);
-
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //on ferme le processus de la fenetre quand on clique sur la croix rouge
         
         setSize(WIDTH, HEIGHT); //la fenetre fera WIDHT pixels de hauteur et HEIGHT de largeur
@@ -48,8 +46,6 @@ public class FirstApp extends JFrame implements KeyListener{
         g=random.nextInt(256);
         b=random.nextInt(256);
         niveau.setBackground(new Color(r, g, b));
-
-        //on cree l'images du joueur qui va etre utiliser (255,91)
        
         //on creeé les bouton "haut" "bas" "gauche" "droite" et grace à "conteneurMove" on ajoute ces 4 button dans le conteneur qui va se trouver en bas de la fenetre
         droite = new JButton("droite");
@@ -63,7 +59,7 @@ public class FirstApp extends JFrame implements KeyListener{
 
         setVisible(true); //On affiche la fenetre 
 
-        niveau.startGame();
+        niveau.startGame(); //On demarre le thread qui va lancer la boucle de jeu 
     }
 
     //les Listener sont les methodes qui appeleront la methode move et appliqueront les modifications qui suivent
@@ -92,22 +88,7 @@ public class FirstApp extends JFrame implements KeyListener{
     public void keyTyped(KeyEvent e) { }
 
     @Override
-    public void keyReleased(KeyEvent e) {
-        int keyCode = e.getKeyCode();
-
-        if (keyCode == KeyEvent.VK_UP) {
-            niveau.setHaut(false);
-        }
-        if (keyCode == KeyEvent.VK_DOWN) {
-            niveau.setBas(false);
-        }
-        if (keyCode == KeyEvent.VK_LEFT) {
-            niveau.setGauche(false);
-        }
-        if (keyCode == KeyEvent.VK_RIGHT) {
-            niveau.setDroite(false);
-        }
-    }
+    public void keyReleased(KeyEvent e) { }
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -169,30 +150,31 @@ public class FirstApp extends JFrame implements KeyListener{
 
     //on creer un JPanel qui contiendra des information utile pour le joueur
     public JPanel information() {
-        JPanel info = new JPanel(new GridLayout(5,2, -40, 0)); //on separe le panel en 5 lignes qui on chacune 2 colonnes, l'ecart horizontal est de "-40" pour que l'image soit coller au text
-        
-        //on cree un texte qui dit quelle image correspond a quoi
-        JTextField text_monde =new JTextField("Voici une boite:");
-        text_monde.setEditable(false); //le texte ne peut pas etre lodifier
-        info.add(text_monde, BorderLayout.WEST); //on met le texte a gauche du panel
-        info.add(new Img("Image/monde.png")); //on met l'image a gauche du panel
+        //on separe le panel en 5 lignes qui on chacune 2 colonnes, l'ecart horizontal est de "-40" pour que l'image soit coller au texte
+        JPanel info = new JPanel(new GridLayout(5,2, -60, 0)); 
 
-        JTextField text_joueur =new JTextField("Voici votre joueur:");
-        text_joueur.setEditable(false); //le texte ne peut pas etre lodifier
+        //on cree un texte qui dit quelle image correspond a quoi
+        JTextArea text_monde =new JTextArea("Voici un monde, vous\ndevez déplacer les\ndifferents mondes\ndans les cibles");
+        text_monde.setEditable(false); //le texte ne peut pas etre modifier
+        info.add(text_monde, BorderLayout.WEST); //on met le texte a gauche du panel
+        info.add(new Img("Image/mondeB.png")); //on met l'image a gauche du panel
+
+        JTextArea text_joueur =new JTextArea("Voici Atlas,\nvotre personnage");
+        text_joueur.setEditable(false); //le texte ne peut pas etre modifier
         info.add(text_joueur, BorderLayout.WEST); //on met le texte a gauche du panel
         info.add(new Img("Image/joueur.png")); //on met l'image a gauche du panel
 
-        JTextField text_vide =new JTextField("Voici du vide:");
-        text_vide.setEditable(false); //le texte ne peut pas etre lodifier
+        JTextArea text_vide =new JTextArea("Voici du vide");
+        text_vide.setEditable(false); //le texte ne peut pas etre modifier
         info.add(text_vide, BorderLayout.WEST); //on met le texte a gauche du panel
         info.add(new Img("Image/vide.png"));//on met l'image a gauche du panel
 
-        JTextField text_cible =new JTextField("Voici une cible:");
-        text_cible.setEditable(false); //le texte ne peut pas etre lodifier
+        JTextArea text_cible =new JTextArea("Voici une cible");
+        text_cible.setEditable(false); //le texte ne peut pas etre modifier
         info.add(text_cible, BorderLayout.WEST); //on met le texte a gauche du panel
         info.add(new Img("Image/cible.png"));//on met l'image a gauche du panel
 
-        JTextField text_mur =new JTextField("Voici un mur:");
+        JTextArea text_mur =new JTextArea("Voici un mur, vous\nne pouvez pas deplacer\nles murs");
         text_mur.setEditable(false); //le texte ne peut pas etre modifier
         info.add(text_mur, BorderLayout.WEST); //on met le texte a gauche du panel
         info.add(new Img("Image/mur.png"));//on met l'image a gauche du panel
