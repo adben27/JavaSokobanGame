@@ -1,4 +1,4 @@
-package package_sokoban
+package package_sokoban;
 
 import java.awt.*;
 import javax.swing.*;
@@ -6,21 +6,38 @@ import javax.swing.*;
 public class DrawLevel extends JPanel implements Runnable{
 
     private Thread game; //creer un thread qui sera ma boucle de jeu
-    private int joueur_x, joueur_y, FPS=60;//nombre de FPS du jeu et indice (x,y) du joueur
+    private int FPS=60;//nombre de FPS du jeu et indice (x,y) du joueur
     private Image mur, vide, cible, mondeB, mondeC, joueur;//image que l'on va afficher
     private boolean haut, bas, gauche, droite;//pour faire bouger le joueur
-    private int n=9;//taille niveau
-    private char[][] lvl;//niveau a afficher
+    private Matrice lvl;
 
     public DrawLevel() {
         super();
 
         setLayout(null);
         setPreferredSize(new Dimension(600, 400));
+        Wall a= new Wall();
+        Wall b= new Wall();
+        Wall c= new Wall();
+        Wall d= new Wall();
+        Wall e= new Wall();
+        Wall h= new Wall();
+        Wall i= new Wall();
+        Wall l= new Wall();
+        Wall m= new Wall();
+        Wall n= new Wall();
+        Wall o= new Wall();
+        Wall p= new Wall();
 
-        //creationn du niveau et chargement du niveau
-        lvl=new char[n][n];
-        lvl=loadLvl();
+        Player f = new Player(false);
+
+        Vide j = new Vide(false);
+        Vide g = new Vide(false);
+        Vide k = new Vide(true);
+        Element[][] tab={{a,b,c,d},{e,f,g,h},{i,j,k,l},{m,n,o,p}};
+        Matrice mat = new Matrice("test", 4, tab, 1, 1);
+
+        lvl=new Matrice("test",4,tab,1,1);
 
         //on recupère les images qu'on va utiliser
         mur = getToolkit().getImage("Image/mur.png");
@@ -30,36 +47,13 @@ public class DrawLevel extends JPanel implements Runnable{
         mondeC = getToolkit().getImage("Image/mondeC.png");
         joueur = getToolkit().getImage("Image/joueur.png");
 
-        //on cherche les indice du joueur
-        joueur_x=joueur_y=0;
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if(lvl[i][j]=='A'){
-                    joueur_x=j;
-                    joueur_y=i;
-                }
-            }
-        }
-
         //on met tout a false pour pas bouger le joueur
         haut=bas=gauche=droite=false;
     }
 
     //methode qui charge un niveau (a modifier pour pouvoir lire les niveaux dans un fichier)
     public char[][] loadLvl() {
-        char [][] lv = {{'#', '#', '#', '#', '#', '#', '#', '#', '#'},
-                        {'#', 'C', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-                        {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-                        {'#', ' ', ' ', 'B', '@', 'B', ' ', ' ', '#'},
-                        {'#', ' ', ' ', ' ', 'A', ' ', ' ', '@', '#'},
-                        {'#', ' ', ' ', ' ', ' ', 'C', ' ', ' ', '#'},
-                        {'#', '@', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-                        {'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-                        {'#', '#', '#', '#', '#', '#', '#', '#', '#'}
-        };
-
-        return lv;
+        return null;
     }
 
     //debut du thread qui s'occupe de la boucle de jeu
@@ -102,29 +96,20 @@ public class DrawLevel extends JPanel implements Runnable{
 
     //permet de mettre a jour le niveau
     public void update() {
-        char tmp = lvl[joueur_y][joueur_x];
         if (bas) {
-            lvl[joueur_y][joueur_x] = lvl[joueur_y+1][joueur_x];
-            lvl[joueur_y+1][joueur_x] = tmp;
-            joueur_y++;
+            lvl.move_down();
             bas=false;
         }
         if (haut) {
-            lvl[joueur_y][joueur_x] = lvl[joueur_y-1][joueur_x];
-            lvl[joueur_y-1][joueur_x] = tmp;
-            joueur_y--;
+            lvl.move_up();
             haut=false;
         }
         if (gauche) {
-            lvl[joueur_y][joueur_x] = lvl[joueur_y][-1+joueur_x];
-            lvl[joueur_y][joueur_x-1] = tmp;
-            joueur_x--;
+            lvl.move_left();
             gauche=false;
         }
         if (droite) {
-            lvl[joueur_y][joueur_x] = lvl[joueur_y][1+joueur_x];
-            lvl[joueur_y][joueur_x+1] = tmp;
-            joueur_x++;
+            lvl.move_right();
             droite=false;
         }
     }
@@ -136,30 +121,30 @@ public class DrawLevel extends JPanel implements Runnable{
 
         Graphics2D g2 = (Graphics2D) g;
         
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
+        for (int i = 0; i < lvl.getSize(); i++) {
+        		for (int j = 0; j < lvl.getSize(); j++) {
                 
-                if((lvl[i][j]==' ')){
-                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-n/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-n/2), this);
+                if(lvl.getElem(i,j).getSign()==' '){
+                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
                 }
-                if(lvl[i][j]=='A'){
-                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-n/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-n/2), this);
-                    g2.drawImage(joueur, ((getWidth() - joueur.getWidth(null))/2)+20*(j-n/2), ((getHeight() - joueur.getHeight(null))/2)+20*(i-n/2), this);
+                if(lvl.getElem(i,j).getSign()=='A'||lvl.getElem(i,j).getSign()=='a'){
+                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                    g2.drawImage(joueur, ((getWidth() - joueur.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - joueur.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
                 }
-                if(lvl[i][j]=='B'){
-                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-n/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-n/2), this);
-                    g2.drawImage(mondeB, ((getWidth() - mondeB.getWidth(null))/2)+20*(j-n/2), ((getHeight() - mondeB.getHeight(null))/2)+20*(i-n/2), this);
+                if(lvl.getElem(i,j).getSign()=='B'){
+                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                    g2.drawImage(mondeB, ((getWidth() - mondeB.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - mondeB.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
                 }
-                if(lvl[i][j]=='C'){
-                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-n/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-n/2), this);
-                    g2.drawImage(mondeC, ((getWidth() - mondeC.getWidth(null))/2)+20*(j-n/2), ((getHeight() - mondeC.getHeight(null))/2)+20*(i-n/2), this);
+                if(lvl.getElem(i,j).getSign()=='C'){
+                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                    g2.drawImage(mondeC, ((getWidth() - mondeC.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - mondeC.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
                 }
-                if(lvl[i][j]=='@'){
-                    g2.drawImage(vide, ((getWidth() - mondeC.getWidth(null))/2)+20*(j-n/2), ((getHeight() - mondeC.getHeight(null))/2)+20*(i-n/2), this);
-                    g2.drawImage(cible, ((getWidth() - cible.getWidth(null))/2)+20*(j-n/2), ((getHeight() - cible.getHeight(null))/2)+20*(i-n/2), this);
+                if(lvl.getElem(i,j).getSign()=='X'){
+                    g2.drawImage(vide, ((getWidth() - mondeC.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - mondeC.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                    g2.drawImage(cible, ((getWidth() - cible.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - cible.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
                 }
-                if(lvl[i][j]=='#'){
-                    g2.drawImage(mur, ((getWidth() - mur.getWidth(null))/2)+20*(j-n/2), ((getHeight() - mur.getHeight(null))/2)+20*(i-n/2), this);
+                if(lvl.getElem(i,j).getSign()=='#'){
+                    g2.drawImage(mur, ((getWidth() - mur.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - mur.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
                 }
             }
         }
