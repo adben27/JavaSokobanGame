@@ -2,12 +2,13 @@ package package_sokoban;
 
 import java.awt.*;
 import javax.swing.*;
- 
+
 public class DrawLevel extends JPanel implements Runnable{
 
-    private Thread game; //creer un thread qui sera ma boucle de jeu
-    private int FPS=60;//nombre de FPS du jeu et indice (x,y) du joueur
-    private Image mur, vide, cible, mondeB, mondeC, joueur;//image que l'on va afficher
+    private Thread game; //creer un thread qui sera la boucle de jeu
+    private int FPS=60;//nombre de FPS du jeu
+    private Image mur, vide, cible, mondeB, mondeC, mondeD, mondeE,
+                  mondeF, mondeG, mondeH, mondeI, mondeJ, joueur;//image que l'on va afficher
     private boolean haut, bas, gauche, droite;//pour faire bouger le joueur
     private Matrice lvl;
 
@@ -15,16 +16,16 @@ public class DrawLevel extends JPanel implements Runnable{
         super();
 
         setLayout(null);
-        setPreferredSize(new Dimension(600, 400));
-        Wall a= new Wall();
-        Wall b= new Wall();
-        Wall c= new Wall();
-        Wall d= new Wall();
-        Wall e= new Wall();
-        Wall h= new Wall();
-        Wall i= new Wall();
-        Wall l= new Wall();
-        Wall m= new Wall();
+        //setPreferredSize(new Dimension(600, 400));
+        Box a= new Box(false, 'B');
+        Box b= new Box(false, 'C');        
+        Box c= new Box(false, 'D');        
+        Box d= new Box(false, 'E');        
+        Box e= new Box(false, 'F');        
+        Box m= new Box(false, 'G');        
+        Box l= new Box(false, 'H');        
+        Box h= new Box(false, 'I');
+        Box i= new Box(false, 'J');
         Wall n= new Wall();
         Wall o= new Wall();
         Wall p= new Wall();
@@ -34,10 +35,9 @@ public class DrawLevel extends JPanel implements Runnable{
         Vide j = new Vide(false);
         Vide g = new Vide(false);
         Vide k = new Vide(true);
-        Element[][] tab={{a,b,c,d},{e,f,g,h},{i,j,k,l},{m,n,o,p}};
-        Matrice mat = new Matrice("test", 4, tab, 1, 1);
+        Element[][] tab={{a,b,c,d},{e,f,j,h},{i,k,l,g},{m,n,o,p}};
 
-        lvl=new Matrice("test",4,tab,1,1);
+        lvl=new Matrice("lvl",4,tab,1,1);
 
         //on recupère les images qu'on va utiliser
         mur = getToolkit().getImage("Image/mur.png");
@@ -45,6 +45,13 @@ public class DrawLevel extends JPanel implements Runnable{
         cible = getToolkit().getImage("Image/cible.png");
         mondeB = getToolkit().getImage("Image/mondeB.png");
         mondeC = getToolkit().getImage("Image/mondeC.png");
+        mondeD = getToolkit().getImage("Image/mondeD.png");
+        mondeE = getToolkit().getImage("Image/mondeE.png");
+        mondeF = getToolkit().getImage("Image/mondeF.png");
+        mondeG = getToolkit().getImage("Image/mondeG.png");
+        mondeH = getToolkit().getImage("Image/mondeH.png");
+        mondeI = getToolkit().getImage("Image/mondeI.png");
+        mondeJ = getToolkit().getImage("Image/mondeJ.png");
         joueur = getToolkit().getImage("Image/joueur.png");
 
         //on met tout a false pour pas bouger le joueur
@@ -73,9 +80,6 @@ public class DrawLevel extends JPanel implements Runnable{
             update();//met à jour le niveau en memoire
             repaint();//repeint le niveau dans le panel
             
-            //pour verifie si la pos du joueur en memoire correspond a la pos du joueur dans l'interface graphique
-            //System.out.println("joueur_x:" + joueur_x + "\njoueur_y" + joueur_y + "\n");
-
             try {
                 double tps_restant = dessin_suivant - System.nanoTime();
                 //Thread.sleep() prend en argument des millis secondes donc on divise par un million le temps restant pour l'avoir en millis secondes
@@ -139,7 +143,35 @@ public class DrawLevel extends JPanel implements Runnable{
                     g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
                     g2.drawImage(mondeC, ((getWidth() - mondeC.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - mondeC.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
                 }
-                if(lvl.getElem(i,j).getSign()=='X'){
+                if(lvl.getElem(i,j).getSign()=='D'){
+                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                    g2.drawImage(mondeD, ((getWidth() - mondeD.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - mondeD.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                }
+                if(lvl.getElem(i,j).getSign()=='E'){
+                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                    g2.drawImage(mondeE, ((getWidth() - mondeE.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - mondeE.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                }
+                if(lvl.getElem(i,j).getSign()=='F'){
+                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                    g2.drawImage(mondeF, ((getWidth() - mondeF.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - mondeF.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                }
+                if(lvl.getElem(i,j).getSign()=='G'){
+                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                    g2.drawImage(mondeG, ((getWidth() - mondeG.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - mondeG.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                }
+                if(lvl.getElem(i,j).getSign()=='H'){
+                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                    g2.drawImage(mondeH, ((getWidth() - mondeH.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - mondeH.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                }
+                if(lvl.getElem(i,j).getSign()=='I'){
+                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                    g2.drawImage(mondeI, ((getWidth() - mondeI.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - mondeI.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                }
+                if(lvl.getElem(i,j).getSign()=='J'){
+                    g2.drawImage(vide, ((getWidth() - vide.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - vide.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                    g2.drawImage(mondeJ, ((getWidth() - mondeJ.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - mondeJ.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
+                }
+                if(lvl.getElem(i,j).getSign()=='@'){
                     g2.drawImage(vide, ((getWidth() - mondeC.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - mondeC.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
                     g2.drawImage(cible, ((getWidth() - cible.getWidth(null))/2)+20*(j-lvl.getSize()/2), ((getHeight() - cible.getHeight(null))/2)+20*(i-lvl.getSize()/2), this);
                 }
