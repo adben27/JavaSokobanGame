@@ -1,12 +1,10 @@
 package package_sokoban;
 
-public class Box extends Element{
-	
-    public Box(boolean on_target) {
-        super('B',true,on_target,'b');
+public class Vide extends Element{
+    
+    public Vide(boolean on_target) {
+        super(' ',true,on_target,'@');
         this.on_target=on_target;
         super.setOn_target(on_target);
     }
-    
-    
 }
