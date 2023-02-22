@@ -40,19 +40,19 @@ public class DrawLevel extends JPanel implements Runnable{
         lvl=new Matrice("lvl",4,tab,1,1);
 
         //on recupère les images qu'on va utiliser
-        mur = getToolkit().getImage("Image/mur.png");
-        vide = getToolkit().getImage("Image/vide.png");
-        cible = getToolkit().getImage("Image/cible.png");
-        mondeB = getToolkit().getImage("Image/mondeB.png");
-        mondeC = getToolkit().getImage("Image/mondeC.png");
-        mondeD = getToolkit().getImage("Image/mondeD.png");
-        mondeE = getToolkit().getImage("Image/mondeE.png");
-        mondeF = getToolkit().getImage("Image/mondeF.png");
-        mondeG = getToolkit().getImage("Image/mondeG.png");
-        mondeH = getToolkit().getImage("Image/mondeH.png");
-        mondeI = getToolkit().getImage("Image/mondeI.png");
-        mondeJ = getToolkit().getImage("Image/mondeJ.png");
-        joueur = getToolkit().getImage("Image/joueur.png");
+        mur = getToolkit().getImage("package_sokoban/Image/mur.png");
+        vide = getToolkit().getImage("package_sokoban/Image/vide.png");
+        cible = getToolkit().getImage("package_sokoban/Image/cible.png");
+        mondeB = getToolkit().getImage("package_sokoban/Image/mondeB.png");
+        mondeC = getToolkit().getImage("package_sokoban/Image/mondeC.png");
+        mondeD = getToolkit().getImage("package_sokoban/Image/mondeD.png");
+        mondeE = getToolkit().getImage("package_sokoban/Image/mondeE.png");
+        mondeF = getToolkit().getImage("package_sokoban/Image/mondeF.png");
+        mondeG = getToolkit().getImage("package_sokoban/Image/mondeG.png");
+        mondeH = getToolkit().getImage("package_sokoban/Image/mondeH.png");
+        mondeI = getToolkit().getImage("package_sokoban/Image/mondeI.png");
+        mondeJ = getToolkit().getImage("package_sokoban/Image/mondeJ.png");
+        joueur = getToolkit().getImage("package_sokoban/Image/joueur.png");
 
         //on met tout a false pour pas bouger le joueur
         haut=bas=gauche=droite=false;

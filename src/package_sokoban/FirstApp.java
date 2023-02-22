@@ -1,4 +1,4 @@
-package package_sokoban 
+package package_sokoban;
 
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
@@ -19,7 +19,7 @@ public class FirstApp extends JFrame implements KeyListener{
     public FirstApp(){
         super("Sokoban");//on creer une fenetre nommée "Sokoban"
 
-        //pour qu'on puisse utiliser les bouttons de déplacement et les fleches directionelles
+	//pour qu'on puisse utiliser les bouttons de déplacement et les fleches directionelles
         setFocusable(true);
 
         //on dit a la fenetre d'écouter le clavier
@@ -157,27 +157,27 @@ public class FirstApp extends JFrame implements KeyListener{
         JTextArea text_monde =new JTextArea("Voici un monde, vous\ndevez déplacer les\ndifferents mondes\ndans les cibles");
         text_monde.setEditable(false); //le texte ne peut pas etre modifier
         info.add(text_monde, BorderLayout.WEST); //on met le texte a gauche du panel
-        info.add(new Img("Image/mondeB.png")); //on met l'image a gauche du panel
+        info.add(new Img("package_sokoban/Image/mondeB.png")); //on met l'image a gauche du panel
 
         JTextArea text_joueur =new JTextArea("Voici Atlas,\nvotre personnage");
         text_joueur.setEditable(false); //le texte ne peut pas etre modifier
         info.add(text_joueur, BorderLayout.WEST); //on met le texte a gauche du panel
-        info.add(new Img("Image/joueur.png")); //on met l'image a gauche du panel
+        info.add(new Img("package_sokoban/Image/joueur.png")); //on met l'image a gauche du panel
 
         JTextArea text_vide =new JTextArea("Voici du vide");
         text_vide.setEditable(false); //le texte ne peut pas etre modifier
         info.add(text_vide, BorderLayout.WEST); //on met le texte a gauche du panel
-        info.add(new Img("Image/vide.png"));//on met l'image a gauche du panel
+        info.add(new Img("package_sokoban/Image/vide.png"));//on met l'image a gauche du panel
 
         JTextArea text_cible =new JTextArea("Voici une cible");
         text_cible.setEditable(false); //le texte ne peut pas etre modifier
         info.add(text_cible, BorderLayout.WEST); //on met le texte a gauche du panel
-        info.add(new Img("Image/cible.png"));//on met l'image a gauche du panel
+        info.add(new Img("package_sokoban/Image/cible.png"));//on met l'image a gauche du panel
 
         JTextArea text_mur =new JTextArea("Voici un mur, vous\nne pouvez pas deplacer\nles murs");
         text_mur.setEditable(false); //le texte ne peut pas etre modifier
         info.add(text_mur, BorderLayout.WEST); //on met le texte a gauche du panel
-        info.add(new Img("Image/mur.png"));//on met l'image a gauche du panel
+        info.add(new Img("package_sokoban/Image/mur.png"));//on met l'image a gauche du panel
 
         return info;
     }    
