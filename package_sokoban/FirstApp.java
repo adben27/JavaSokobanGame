@@ -1,4 +1,4 @@
-//package package_sokoban;
+package package_sokoban;
 
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
