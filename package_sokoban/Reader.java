@@ -1,3 +1,4 @@
+package package_sokoban;
 import java.io.*;
 import java.util.Scanner;
 import java.util.ArrayList;

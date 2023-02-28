@@ -48,16 +48,16 @@ public class DrawLevel extends JPanel implements Runnable{
         Element[][] tab_i={{i}};
         Element[][] tab_j={{m,v,m,m},{v,j,v,m},{m,v,v,m},{m,v,m,m}};
 
-        lvl=new Matrice("lvl",tab.length, tab,2,2);
-        matriceB=new Matrice("B", tab_b.length, tab_b, 0, 0);
-        matriceC=new Matrice("C", tab_c.length, tab_c, 0, 0);
-        matriceD=new Matrice("D", tab_d.length, tab_d, 0, 0);
-        matriceE=new Matrice("E", tab_e.length, tab_e, 0, 0);
-        matriceF=new Matrice("F", tab_f.length, tab_f, 0, 0);
-        matriceG=new Matrice("G", tab_g.length, tab_g, 0, 0);
-        matriceH=new Matrice("H", tab_h.length, tab_h, 0, 0);
-        matriceI=new Matrice("I", tab_i.length, tab_i, 0, 0);
-        matriceJ=new Matrice("J", tab_j.length, tab_j, 0, 0);
+        lvl=new Matrice("lvl",'A',false,tab.length, tab,2,2);
+        matriceB=new Matrice("B",'B',false, tab_b.length, tab_b, 0, 0);
+        matriceC=new Matrice("C",'C',false, tab_c.length, tab_c, 0, 0);
+        matriceD=new Matrice("D",'D',false, tab_d.length, tab_d, 0, 0);
+        matriceE=new Matrice("E",'E',false, tab_e.length, tab_e, 0, 0);
+        matriceF=new Matrice("F",'F',false, tab_f.length, tab_f, 0, 0);
+        matriceG=new Matrice("G",'G',false, tab_g.length, tab_g, 0, 0);
+        matriceH=new Matrice("H",'H',false, tab_h.length, tab_h, 0, 0);
+        matriceI=new Matrice("I",'I',false, tab_i.length, tab_i, 0, 0);
+        matriceJ=new Matrice("J",'J',false, tab_j.length, tab_j, 0, 0);
 
         //on recupère les images qu'on va utiliser
         mur = getToolkit().getImage("package_sokoban/Image/mur.png");

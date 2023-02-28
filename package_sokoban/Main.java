@@ -26,7 +26,7 @@ public class Main extends KeyAdapter{
         Vide g = new Vide(false);
         Vide k = new Vide(true);
         Element[][] tab={{a,b,c,d},{e,f,g,h},{i,j,k,l},{m,n,o,p}};
-        Matrice mat = new Matrice("test", 4, tab, 1, 1);
+        Matrice mat = new Matrice("test",'T',false, 4, tab, 1, 1);
         System.out.println(mat.getPos_x()+","+mat.getPos_y());
         print_mat(mat);
         mat.move();
