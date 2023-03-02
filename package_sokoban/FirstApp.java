@@ -12,7 +12,7 @@ public class FirstApp extends JFrame implements KeyListener{
 
     //boutton qui permettront de ce deplacer si on a la flemme d'utiliser les fleches directionelles
     //ou d'afficher une fentre qui donne certaines informations
-    private JButton haut, bas, gauche, droite, information, commande;
+    private JButton haut, bas, gauche, droite, information, commande, reset;
     private DrawLevel niveau;//le conteneur ou il y aura le niveau 
     private Image icone;//icone de la fenetre
     private int r,g,b;//couleur du niveau
@@ -29,7 +29,7 @@ public class FirstApp extends JFrame implements KeyListener{
         info_image = createFrame(info_image, 400, 450);
         info_image.add(information_image());
 
-        info_commande = createFrame(info_commande, 400, 125);
+        info_commande = createFrame(info_commande, 425, 155);
         info_commande.add(information_commande());
 
         //pour qu'on puisse utiliser les bouttons de déplacement et les fleches directionelles
@@ -46,7 +46,7 @@ public class FirstApp extends JFrame implements KeyListener{
         setLocationRelativeTo(null); //On centre la fenetre par rapport à l'écran ici le "bureau de travail"
 
         //creation de l'icone des fenetre
-        icone = getToolkit().getImage("package_sokoban/Image/joueur.png");
+        icone = getToolkit().getImage("Image/joueur.png");
         setIconImage(icone);
         info_commande.setIconImage(icone);
         info_image.setIconImage(icone);
@@ -70,8 +70,9 @@ public class FirstApp extends JFrame implements KeyListener{
         haut = new JButton("haut");
         information = new JButton("information");
         commande =  new JButton("commande");
-        
-        add(createConteneurMove(haut, bas, gauche, droite ,information, commande), BorderLayout.SOUTH);
+        reset =  new JButton("reset");
+
+        add(createConteneurMove(), BorderLayout.SOUTH);
 
         setVisible(true); //On affiche la fenetre 
 
@@ -110,6 +111,11 @@ public class FirstApp extends JFrame implements KeyListener{
         requestFocus();
     }
 
+    private void resetListener(ActionEvent e) {
+        niveau.getLvl().reset();
+        requestFocus();
+    }
+
     @Override
     public void keyTyped(KeyEvent e) { }
 
@@ -144,12 +150,18 @@ public class FirstApp extends JFrame implements KeyListener{
             commande.doClick();
             info_commande.toFront();
         }
-        if (keyCode != KeyEvent.VK_C && keyCode != KeyEvent.VK_RIGHT && keyCode != KeyEvent.VK_I && keyCode != KeyEvent.VK_LEFT && keyCode != KeyEvent.VK_DOWN && keyCode != KeyEvent.VK_UP && keyCode != KeyEvent.VK_ESCAPE && keyCode != KeyEvent.VK_ENTER) {
+        if (keyCode == KeyEvent.VK_R) {
+            reset.doClick();
+        }
+        if (e.isControlDown() && keyCode == KeyEvent.VK_Z) {
+            niveau.setCtrlZ(true);
+        }
+        if (keyCode != KeyEvent.VK_R && keyCode != KeyEvent.VK_CONTROL && keyCode != KeyEvent.VK_Z && keyCode != KeyEvent.VK_C && keyCode != KeyEvent.VK_RIGHT && keyCode != KeyEvent.VK_I && keyCode != KeyEvent.VK_LEFT && keyCode != KeyEvent.VK_DOWN && keyCode != KeyEvent.VK_UP && keyCode != KeyEvent.VK_ESCAPE && keyCode != KeyEvent.VK_ENTER) {
             JOptionPane.showMessageDialog(this,"Seuls les flèches directionnelles peuvent être utilisé\n(Si vous ne voulez pas utiliser les flèches directionnelles\nutilisez les bouttons haut, bas, gauche, droite)","Information", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
-    private JPanel createConteneurMove(JButton haut, JButton bas, JButton gauche, JButton droite, JButton information, JButton commande){
+    private JPanel createConteneurMove(){
         //creation des panel ou il y aura les mouvements
         JPanel move= new JPanel(new FlowLayout());
         
@@ -197,6 +209,13 @@ public class FirstApp extends JFrame implements KeyListener{
         //ajout du bouton "commande" au panel "move"
         move.add(commande);
 
+        //initialise la hauteur et la largeur du bonton "commande"
+        reset.setPreferredSize(new Dimension(70, 30));
+        //si le bouton "information" est cliqué cela execute ce que "commandeListener" doit faire
+        reset.addActionListener((e) -> resetListener(e));
+        //ajout du bouton "commande" au panel "move"
+        move.add(reset);
+
         return move;
     }
     
@@ -208,7 +227,7 @@ public class FirstApp extends JFrame implements KeyListener{
         quittez.setEditable(false);
         info.add(quittez, BorderLayout.NORTH);
 
-        JTextArea commande = new JTextArea("Pour vous déplacez utiliser les flèches directionelles\nSi vous appuiez sur 'i' le boutton 'information' sera appuié\nSi vous appuiez sur 'c' le boutton 'commande' sera appuié");
+        JTextArea commande = new JTextArea("Pour vous déplacez utiliser les flèches directionelles ou les boutons\nSi vous appuiez sur 'i' le boutton 'information' sera appuié\nSi vous appuiez sur 'c' le boutton 'commande' sera appuié\nSi vous vous appuiez sur 'ctrl+z' vous allez retourner d'une action en arrière\nSi vous appuiez sur 'r' vous recommencerez le niveau");
         commande.setEditable(false);
         info.add(commande);
 
@@ -225,27 +244,27 @@ public class FirstApp extends JFrame implements KeyListener{
         text_monde.setEditable(false); //le texte ne peut pas etre modifier
         text_monde.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
         info_image.add(text_monde); //on met le texte a gauche du panel
-        info_image.add(new Img("package_sokoban/Image/mondeB.png")); //on ajoute l'image au panel
+        info_image.add(new Img("Image/mondeB.png")); //on ajoute l'image au panel
 
         JTextArea text_joueur =new JTextArea("Voici Atlas, votre personnage");
         text_joueur.setEditable(false); //le texte ne peut pas etre modifier
         info_image.add(text_joueur); //on met le texte a gauche du panel
-        info_image.add(new Img("package_sokoban/Image/joueur.png")); //on ajoute l'image au panel
+        info_image.add(new Img("Image/joueur.png")); //on ajoute l'image au panel
 
         JTextArea text_vide =new JTextArea("Voici du vide");
         text_vide.setEditable(false); //le texte ne peut pas etre modifier
         info_image.add(text_vide); //on met le texte a gauche du panel
-        info_image.add(new Img("package_sokoban/Image/vide.png"));//on ajoute l'image au panel
+        info_image.add(new Img("Image/vide.png"));//on ajoute l'image au panel
 
         JTextArea text_cible =new JTextArea("Voici une cible");
         text_cible.setEditable(false); //le texte ne peut pas etre modifier
         info_image.add(text_cible); //on met le texte a gauche du panel
-        info_image.add(new Img("package_sokoban/Image/cible.png"));//on ajoute l'image au panel
+        info_image.add(new Img("Image/cible.png"));//on ajoute l'image au panel
 
         JTextArea text_mur =new JTextArea("Voici un mur, vous ne pouvez pas\ndéplacer les murs");
         text_mur.setEditable(false); //le texte ne peut pas etre modifier
         info_image.add(text_mur); //on met le texte a gauche du panel
-        info_image.add(new Img("package_sokoban/Image/mur.png"));//on ajoute l'image au panel
+        info_image.add(new Img("Image/mur.png"));//on ajoute l'image au panel
 
         JTextField quittez = new JTextField("Pour quittez la fenetre vous pouvez appuiez sur 'echap' ou sur 'entrer'");
         quittez.setEditable(false);
