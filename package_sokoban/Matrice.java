@@ -333,10 +333,10 @@ public class Matrice extends Element{
     						return ' ';
     				}
     		case 'z':
-    			move_down();
+    			move_up();
     			return 'z';
     		case 's':
-    			move_up();
+    			move_down();
     			return 's';
     		case 'q':
     			move_left();
