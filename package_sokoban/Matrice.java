@@ -1,4 +1,4 @@
-package package_sokoban;
+//package package_sokoban;
 
 import java.util.Arrays;
 import java.util.Stack;
@@ -333,16 +333,16 @@ public class Matrice extends Element{
     						return ' ';
     				}
     		case 'z':
-    			move_up();
+    			move_down();
     			return 'z';
     		case 's':
-    			move_down();
+    			move_up();
     			return 's';
     		case 'q':
-    			move_left();
+    			move_right();
     			return 'q';
     		case 'd':
-    			move_right();
+    			move_left();
     			return 'd';
     		default:
 				System.err.println("ERREUR FUNC CTRL_Z");
