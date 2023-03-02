@@ -1,4 +1,4 @@
-package package_sokoban;
+//package package_sokoban;
 
 import java.awt.*;
 import javax.swing.*;
@@ -40,7 +40,7 @@ public class DrawLevel extends JPanel implements Runnable{
         Element[][] tab={{m,m,m,m,m,m,m},
                          {m,v,v,v,c,v,m},
                          {m,v,p,j,v,f,m},
-                         {m,b,v,v,v,i,m},
+                         {m,v,v,v,v,i,m},
                          {m,v,e,v,v,h,m},
                          {m,v,g,d,v,v,m},
                          {m,m,m,m,m,m,m}};
@@ -182,7 +182,13 @@ public class DrawLevel extends JPanel implements Runnable{
     //permet de mettre a jour le niveau
     public void update() {
         if (bas) {
-            lvl.move_down();
+            if(lvl.can_move_down())
+                lvl.move_down();
+            else{
+                if(lvl.can_enter_down()){
+                    
+                }
+            }
             bas=false;
         }
         if (haut) {
@@ -254,6 +260,8 @@ public class DrawLevel extends JPanel implements Runnable{
                 }
             }
         }
+
+        g2.translate(((getWidth() - sizeImg)/2)+sizeImg*(4-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(4-lvl.getSize()/2));
     }
 
     /* "m" est la matrice a afficher
@@ -262,6 +270,11 @@ public class DrawLevel extends JPanel implements Runnable{
     public void paintMonde(Graphics2D g2, Matrice m, int i, int j) {
         for (int y = 0; y < m.getSize(); y++){
             for (int x = 0; x < m.getSize(); x++){
+
+                if(m.getElem(y, x).getSign()=='A'||m.getElem(y, x).getSign()=='a'){
+                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(joueur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                }
                 if (m.getElem(y, x).getSign()=='#'){
                     g2.drawImage(mur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }   
