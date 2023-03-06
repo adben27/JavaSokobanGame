@@ -1,6 +1,8 @@
-//package package_sokoban;
+package package_sokoban;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+
 import javax.swing.*;
 
 public class DrawLevel extends JPanel implements Runnable{
@@ -8,6 +10,8 @@ public class DrawLevel extends JPanel implements Runnable{
     private Thread game; //creer un thread qui sera la boucle de jeu
     private static final int FPS=60;//nombre de FPS du jeu
     private int sizeImg;//taille des images
+    private JFrame felicitation;
+    private JButton next;
 
     //image que l'on va afficher les "monde(x)" seront utiliser pour la version classique
     private Image mur, vide, cible, mondeB, mondeC, mondeD, mondeE,
@@ -18,8 +22,13 @@ public class DrawLevel extends JPanel implements Runnable{
     private Matrice lvl, matriceB, matriceC, matriceD, matriceE,
                     matriceF, matriceG, matriceH, matriceI, matriceJ;
 
+    private Player p = new Player(false);
+
     public DrawLevel() {
         super();
+
+        felicitation = new JFrame("Sokoban");
+        next = new JButton("next");
 
         setLayout(null);
         Box b= new Box(false, 'B');
@@ -33,7 +42,7 @@ public class DrawLevel extends JPanel implements Runnable{
         Box j= new Box(false, 'J');
         Wall m= new Wall();
 
-        Player p = new Player(false);
+        p = new Player(false);
         
         Vide v = new Vide();
 
@@ -42,7 +51,7 @@ public class DrawLevel extends JPanel implements Runnable{
                          {m,v,p,j,v,f,m},
                          {m,v,v,v,v,i,m},
                          {m,v,e,v,v,h,m},
-                         {m,v,g,d,v,v,m},
+                         {m,v,g,d,v,b,m},
                          {m,m,m,m,m,m,m}};
 
         Element[][] tab_b={{m,m,m,m,v,m},
@@ -82,7 +91,7 @@ public class DrawLevel extends JPanel implements Runnable{
                            {m,v,v,v,g,v,v,v,m},
                            {m,v,v,v,v,v,v,v,m},
                            {m,v,v,v,v,v,v,v,m},
-                           {m,v,v,v,v,v,v,v,m}};
+                           {m,m,m,m,m,m,m,m,m}};
 
         Element[][] tab_h={{m,v,m},
                            {m,h,m},
@@ -107,7 +116,7 @@ public class DrawLevel extends JPanel implements Runnable{
         matriceI=new Matrice("I", 'i', false,tab_i.length, tab_i, 0, 0);
         matriceJ=new Matrice("J", 'j', true,tab_j.length, tab_j, 0, 0);
 
-        sizeImg=tailleImg();
+        sizeImg=(int)getToolkit().getScreenSize().getHeight()/lvl.getSize()-20;
 
         //on recupère les images qu'on va utiliser
         mur = getToolkit().getImage("Image/mur.png");
@@ -124,24 +133,17 @@ public class DrawLevel extends JPanel implements Runnable{
         mondeJ = getToolkit().getImage("Image/mondeJ.png");
         joueur = getToolkit().getImage("Image/joueur.png");
 
+        felicitation.setIconImage(joueur);
+        felicitation.setSize(350, 100);
+        felicitation.add(panel_bravo());
+
         //on met tout a false pour pas bouger le joueur
         haut=bas=gauche=droite=ctrlZ=false;
     }
 
-    public int tailleImg() {
-        int size=32;
-        for (int i = 33 ; i < 60; i++)
-            if((i%matriceB.getSize()<=1) && (i%matriceC.getSize()<=1) && (i%matriceD.getSize()<=1) && (i%matriceI.getSize()<=1) && (i%matriceJ.getSize()<=1) && (i%matriceE.getSize()<=1) && (i%matriceF.getSize()<=1) && (i%matriceG.getSize()<=1) && (i%matriceH.getSize()<=1)){
-                size=i;
-                break;
-            }
-
-        return size;
-    }
-
-    //methode qui charge un niveau (a modifier pour pouvoir lire les niveaux dans un fichier)
-    public Element[][] loadLvl() {
-        return null;
+    /*METHODE A MODIFIER POUR LIRE UN FICHIER QUI CONTIENT UN NIVEAU (PRIORITE AU SOKOBAN CLASSIQUE) */
+    public void loadLvl() {
+        System.out.println("lvl charger");
     }
 
     //debut du thread qui s'occupe de la boucle de jeu
@@ -182,13 +184,7 @@ public class DrawLevel extends JPanel implements Runnable{
     //permet de mettre a jour le niveau
     public void update() {
         if (bas) {
-            if(lvl.can_move_down())
-                lvl.move_down();
-            else{
-                if(lvl.can_enter_down()){
-                    
-                }
-            }
+            lvl.move_down();
             bas=false;
         }
         if (haut) {
@@ -207,6 +203,17 @@ public class DrawLevel extends JPanel implements Runnable{
             lvl.ctrl_z();
             ctrlZ=false;
         }
+        if (estFini()/*CONDITION A REMPLACER PAR LA METHODE QUI PERMET DE SAVOIR SI LE NIVEAU EST TERMINER */) {
+            felicitation.setVisible(true);
+        }
+    }
+
+    /*METHODE A METTRE DANS LA CLASSE MATRICE POUR VERIFIER SI LE NIVEAU EST TERMINER */
+    public boolean estFini() {
+        if (lvl.getPos_x()==4 && lvl.getPos_y()==3) {
+            return true;
+        }
+        return false;
     }
 
     //on peint le niveau dans le panel
@@ -260,8 +267,6 @@ public class DrawLevel extends JPanel implements Runnable{
                 }
             }
         }
-
-        g2.translate(((getWidth() - sizeImg)/2)+sizeImg*(4-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(4-lvl.getSize()/2));
     }
 
     /* "m" est la matrice a afficher
@@ -323,6 +328,26 @@ public class DrawLevel extends JPanel implements Runnable{
                 }
             }
         }
+    }
+
+    public JPanel panel_bravo() {
+        JPanel bravo = new JPanel(new BorderLayout());
+
+        JTextArea gg = new JTextArea("Vous avez terminez le niveau.\nAppuiez sur le bouton 'next' pour passez au niveau suivant");
+        gg.setEditable(false);
+
+        felicitation.setPreferredSize(new Dimension(70, 30));
+        next.addActionListener((e) -> nextListener(e));
+        felicitation.add(next, BorderLayout.SOUTH);
+        felicitation.add(gg, BorderLayout.NORTH);
+        felicitation.setLocationRelativeTo(null);
+
+        return bravo;
+    }
+
+    private void nextListener(ActionEvent e) {
+        loadLvl();
+        felicitation.dispose();
     }
 
     //permet les mouvements (dit si on a appuiez sur les fleches ou les bouttons)
