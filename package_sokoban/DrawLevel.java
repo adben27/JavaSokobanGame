@@ -76,7 +76,7 @@ public class DrawLevel extends JPanel implements Runnable{
                            {m,m,m,m,m}};
 
         Element[][] tab_e={{e,v},
-                           {v,e}};
+                           {v,j}};
 
         Element[][] tab_f={{m,m,m,v,m},
                            {m,f,v,v,m},
@@ -227,32 +227,68 @@ public class DrawLevel extends JPanel implements Runnable{
                     g2.drawImage(joueur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
                     g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
                 }
-                if(lvl.getElem(i,j).getSign()=='B'||lvl.getElem(i,j).getSign()=='b'){
+                if(lvl.getElem(i,j).getSign()=='B'){
                     paintMonde(g2, matriceB, i, j);
                 }
-                if(lvl.getElem(i,j).getSign()=='C'||lvl.getElem(i,j).getSign()=='c'){
+                if (lvl.getElem(i,j).getSign()=='b') {
+                    paintMonde(g2, matriceB, i, j);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                }
+                if(lvl.getElem(i,j).getSign()=='C'){
                     paintMonde(g2, matriceC, i, j);
                 }
-                if(lvl.getElem(i,j).getSign()=='D'||lvl.getElem(i,j).getSign()=='d'){
+                if (lvl.getElem(i,j).getSign()=='c') {
+                    paintMonde(g2, matriceC, i, j);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                }
+                if(lvl.getElem(i,j).getSign()=='D'){
                     paintMonde(g2, matriceD, i, j);
                 }
-                if(lvl.getElem(i,j).getSign()=='E'||lvl.getElem(i,j).getSign()=='e'){
+                if (lvl.getElem(i,j).getSign()=='d') {
+                    paintMonde(g2, matriceD, i, j);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                }
+                if(lvl.getElem(i,j).getSign()=='E'){
                     paintMonde(g2, matriceE, i, j);
                 }
-                if(lvl.getElem(i,j).getSign()=='F'||lvl.getElem(i,j).getSign()=='f'){
+                if (lvl.getElem(i,j).getSign()=='e') {
+                    paintMonde(g2, matriceE, i, j);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                }
+                if(lvl.getElem(i,j).getSign()=='F'){
                     paintMonde(g2, matriceF, i, j);
                 }
-                if(lvl.getElem(i,j).getSign()=='G'||lvl.getElem(i,j).getSign()=='g'){
+                if (lvl.getElem(i,j).getSign()=='f') {
+                    paintMonde(g2, matriceF, i, j);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                }
+                if(lvl.getElem(i,j).getSign()=='G'){
                     paintMonde(g2, matriceG, i, j);
                 }
-                if(lvl.getElem(i,j).getSign()=='H'||lvl.getElem(i,j).getSign()=='h'){
+                if (lvl.getElem(i,j).getSign()=='g') {
+                    paintMonde(g2, matriceG, i, j);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                }
+                if(lvl.getElem(i,j).getSign()=='H'){
                     paintMonde(g2, matriceH, i, j);
                 }
-                if(lvl.getElem(i,j).getSign()=='I'||lvl.getElem(i,j).getSign()=='i'){
+                if (lvl.getElem(i,j).getSign()=='h') {
+                    paintMonde(g2, matriceH, i, j);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                }
+                if(lvl.getElem(i,j).getSign()=='I'){
                     paintMonde(g2, matriceI, i, j);
                 }
-                if(lvl.getElem(i,j).getSign()=='J'||lvl.getElem(i,j).getSign()=='j'){
+                if (lvl.getElem(i,j).getSign()=='i') {
+                    paintMonde(g2, matriceI, i, j);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                }
+                if(lvl.getElem(i,j).getSign()=='J'){
                     paintMonde(g2, matriceJ, i, j);
+                }
+                if (lvl.getElem(i,j).getSign()=='j') {
+                    paintMonde(g2, matriceJ, i, j);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
                 }
                 if(lvl.getElem(i,j).getSign()=='@'){
                     g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
@@ -282,9 +318,9 @@ public class DrawLevel extends JPanel implements Runnable{
                 if (m.getElem(y, x).getSign()=='#'){
                     g2.drawImage(mur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }   
-                if (m.getElem(y, x).getSign()==' '){
+                /*if (m.getElem(y, x).getSign()==' '){
                     g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                }
+                }*/
                 if(m.getElem(y, x).getSign()=='@'){
                     g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                     g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
