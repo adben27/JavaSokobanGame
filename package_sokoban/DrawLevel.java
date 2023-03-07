@@ -44,13 +44,14 @@ public class DrawLevel extends JPanel implements Runnable{
 
         p = new Player(false);
         
-        Vide v = new Vide();
+        Vide v = new Vide(false);
+        Vide y = new Vide(true);
 
         Element[][] tab={{m,m,m,m,m,m,m},
                          {m,v,v,v,c,v,m},
                          {m,v,p,j,v,f,m},
                          {m,v,v,v,v,i,m},
-                         {m,v,e,v,v,h,m},
+                         {m,v,e,y,v,h,m},
                          {m,v,g,d,v,b,m},
                          {m,m,m,m,m,m,m}};
 
@@ -119,19 +120,19 @@ public class DrawLevel extends JPanel implements Runnable{
         sizeImg=(int)getToolkit().getScreenSize().getHeight()/lvl.getSize()-20;
 
         //on recupère les images qu'on va utiliser
-        mur = getToolkit().getImage("Image/mur.png");
-        vide = getToolkit().getImage("Image/vide.png");
-        cible = getToolkit().getImage("Image/cible.png");
-        mondeB = getToolkit().getImage("Image/mondeB.png");
-        mondeC = getToolkit().getImage("Image/mondeC.png");
-        mondeD = getToolkit().getImage("Image/mondeD.png");
-        mondeE = getToolkit().getImage("Image/mondeE.png");
-        mondeF = getToolkit().getImage("Image/mondeF.png");
-        mondeG = getToolkit().getImage("Image/mondeG.png");
-        mondeH = getToolkit().getImage("Image/mondeH.png");
-        mondeI = getToolkit().getImage("Image/mondeI.png");
-        mondeJ = getToolkit().getImage("Image/mondeJ.png");
-        joueur = getToolkit().getImage("Image/joueur.png");
+        mur = getToolkit().getImage("package_sokoban/Image/mur.png");
+        vide = getToolkit().getImage("package_sokoban/Image/vide.png");
+        cible = getToolkit().getImage("package_sokoban/Image/cible.png");
+        mondeB = getToolkit().getImage("package_sokoban/Image/mondeB.png");
+        mondeC = getToolkit().getImage("package_sokoban/Image/mondeC.png");
+        mondeD = getToolkit().getImage("package_sokoban/Image/mondeD.png");
+        mondeE = getToolkit().getImage("package_sokoban/Image/mondeE.png");
+        mondeF = getToolkit().getImage("package_sokoban/Image/mondeF.png");
+        mondeG = getToolkit().getImage("package_sokoban/Image/mondeG.png");
+        mondeH = getToolkit().getImage("package_sokoban/Image/mondeH.png");
+        mondeI = getToolkit().getImage("package_sokoban/Image/mondeI.png");
+        mondeJ = getToolkit().getImage("package_sokoban/Image/mondeJ.png");
+        joueur = getToolkit().getImage("package_sokoban/Image/joueur.png");
 
         felicitation.setIconImage(joueur);
         felicitation.setSize(350, 100);
@@ -203,18 +204,12 @@ public class DrawLevel extends JPanel implements Runnable{
             lvl.ctrl_z();
             ctrlZ=false;
         }
-        if (estFini()/*CONDITION A REMPLACER PAR LA METHODE QUI PERMET DE SAVOIR SI LE NIVEAU EST TERMINER */) {
+        if (lvl.estFini()/*CONDITION A REMPLACER PAR LA METHODE QUI PERMET DE SAVOIR SI LE NIVEAU EST TERMINER */) {
             felicitation.setVisible(true);
         }
     }
 
     /*METHODE A METTRE DANS LA CLASSE MATRICE POUR VERIFIER SI LE NIVEAU EST TERMINER */
-    public boolean estFini() {
-        if (lvl.getPos_x()==4 && lvl.getPos_y()==3) {
-            return true;
-        }
-        return false;
-    }
 
     //on peint le niveau dans le panel
     @Override
