@@ -209,8 +209,6 @@ public class DrawLevel extends JPanel implements Runnable{
         }
     }
 
-    /*METHODE A METTRE DANS LA CLASSE MATRICE POUR VERIFIER SI LE NIVEAU EST TERMINER */
-
     //on peint le niveau dans le panel
     @Override
     public void paintComponent(Graphics g) {
@@ -222,9 +220,12 @@ public class DrawLevel extends JPanel implements Runnable{
             for (int j = 0; j < lvl.getSize(); j++) {
                 g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
                 
-                if(lvl.getElem(i,j).getSign()=='A'||lvl.getElem(i,j).getSign()=='a'){
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                if(lvl.getElem(i,j).getSign()=='A'){
                     g2.drawImage(joueur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                }
+                if(lvl.getElem(i, j).getSign()=='a'){
+                    g2.drawImage(joueur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
                 }
                 if(lvl.getElem(i,j).getSign()=='B'||lvl.getElem(i,j).getSign()=='b'){
                     paintMonde(g2, matriceB, i, j);
@@ -271,9 +272,12 @@ public class DrawLevel extends JPanel implements Runnable{
         for (int y = 0; y < m.getSize(); y++){
             for (int x = 0; x < m.getSize(); x++){
 
-                if(m.getElem(y, x).getSign()=='A'||m.getElem(y, x).getSign()=='a'){
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(joueur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                if(lvl.getElem(i,j).getSign()=='A'){
+                    g2.drawImage(joueur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                }
+                if(lvl.getElem(i, j).getSign()=='a'){
+                    g2.drawImage(joueur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
                 }
                 if (m.getElem(y, x).getSign()=='#'){
                     g2.drawImage(mur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
@@ -285,41 +289,86 @@ public class DrawLevel extends JPanel implements Runnable{
                     g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                     g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
-                if(m.getElem(y, x).getSign()=='B'||m.getElem(y, x).getSign()=='b'){
+                if(m.getElem(y, x).getSign()=='B'){
                     g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                     g2.drawImage(mondeB, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
-                if(m.getElem(y, x).getSign()=='C'||m.getElem(y, x).getSign()=='c'){
+                if (m.getElem(y, x).getSign()=='b') {
+                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeB, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                }
+                if(m.getElem(y, x).getSign()=='C'){
                     g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                     g2.drawImage(mondeC, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
-                if(m.getElem(y, x).getSign()=='D'||m.getElem(y, x).getSign()=='d'){
+                if (m.getElem(y, x).getSign()=='c') {
+                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeC, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                }
+                if(m.getElem(y, x).getSign()=='D'){
                     g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                     g2.drawImage(mondeD, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
-                if(m.getElem(y, x).getSign()=='E'||m.getElem(y, x).getSign()=='e'){
+                if (m.getElem(y, x).getSign()=='d') {
+                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeD, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                }
+                if(m.getElem(y, x).getSign()=='E'){
                     g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                     g2.drawImage(mondeE, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
-                if(m.getElem(y, x).getSign()=='F'||m.getElem(y, x).getSign()=='f'){
+                if (m.getElem(y, x).getSign()=='e') {
+                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeE, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                }
+                if(m.getElem(y, x).getSign()=='F'){
                     g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                     g2.drawImage(mondeF, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
-                if(m.getElem(y, x).getSign()=='G'||m.getElem(y, x).getSign()=='g'){
+                if (m.getElem(y, x).getSign()=='f') {
+                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeF, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                }
+                if(m.getElem(y, x).getSign()=='G'){
                     g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                     g2.drawImage(mondeG, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
-                if(m.getElem(y, x).getSign()=='H'||m.getElem(y, x).getSign()=='h'){
+                if (m.getElem(y, x).getSign()=='g') {
+                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeG, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                }
+                if(m.getElem(y, x).getSign()=='H'){
                     g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                     g2.drawImage(mondeH, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
-                if(m.getElem(y, x).getSign()=='I'||m.getElem(y, x).getSign()=='i'){
+                if (m.getElem(y, x).getSign()=='h') {
+                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeH, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                }
+                if(m.getElem(y, x).getSign()=='I'){
                     g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                     g2.drawImage(mondeI, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
-                if(m.getElem(y, x).getSign()=='J'||m.getElem(y, x).getSign()=='j'){
+                if (m.getElem(y, x).getSign()=='i') {
+                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeI, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                }
+                if(m.getElem(y, x).getSign()=='J'){
                     g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                     g2.drawImage(mondeJ, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                }
+                if (m.getElem(y, x).getSign()=='j') {
+                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeJ, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
             }
         }
