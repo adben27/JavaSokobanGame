@@ -196,7 +196,7 @@ public class DrawLevel extends JPanel implements Runnable{
             ctrlZ=false;
         }
         if (lvl.estFini()) {
-            next=JOptionPane.showConfirmDialog(this, "next lvl?");
+            next=JOptionPane.showConfirmDialog(this, "Félicitation vous avez terminer le niveau.\nVoulez-vous passez au niveau suivant ?");
             if(next==0)
                 loadLvl();
         }
