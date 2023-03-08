@@ -1,7 +1,6 @@
 package package_sokoban;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
 import javax.swing.*;
 
@@ -9,26 +8,22 @@ public class DrawLevel extends JPanel implements Runnable{
 
     private Thread game; //creer un thread qui sera la boucle de jeu
     private static final int FPS=60;//nombre de FPS du jeu
-    private int sizeImg;//taille des images
-    private JFrame felicitation;
-    private JButton next;
+    private int sizeImg, next;//taille des images et pour savoir si on lance le prochain niveau 
 
     //image que l'on va afficher les "monde(x)" seront utiliser pour la version classique
     private Image mur, vide, cible, mondeB, mondeC, mondeD, mondeE,
                   mondeF, mondeG, mondeH, mondeI, mondeJ, joueur;
+
     private boolean haut, bas, gauche, droite, ctrlZ;//pour faire bouger le joueur
 
-    //matrice que l'on va utiliser pour la version recursive (il ne doit y avoir que du vide, des murs et des cibles dans ces matrice JE PENSE)
+    //matrice que l'on va utiliser pour la version recursive
     private Matrice lvl, matriceB, matriceC, matriceD, matriceE,
                     matriceF, matriceG, matriceH, matriceI, matriceJ;
 
-    private Player p = new Player(false);
+    private Player p;//Le joueur
 
     public DrawLevel() {
         super();
-
-        felicitation = new JFrame("Sokoban");
-        next = new JButton("next");
 
         setLayout(null);
         Box b= new Box(false, 'B');
@@ -106,17 +101,18 @@ public class DrawLevel extends JPanel implements Runnable{
                            {m,v,m,m,m},
                            {m,m,m,m,m}};
 
-        lvl=new Matrice("lvl", 'l', false,tab.length, tab,2,2);
+        lvl=new Matrice("lvl", 'l', false, tab.length, tab,2,2);
         matriceB=new Matrice("B", 'b', false, tab_b.length, tab_b, 0, 0);
         matriceC=new Matrice("C", 'c', false, tab_c.length, tab_c, 0, 0);
-        matriceD=new Matrice("D", 'd', false,tab_d.length, tab_d, 0, 0);
-        matriceE=new Matrice("E", 'e', false,tab_e.length, tab_e, 0, 0);
-        matriceF=new Matrice("F", 'f', false,tab_f.length, tab_f, 0, 0);
-        matriceG=new Matrice("G", 'g', false,tab_g.length, tab_g, 0, 0);
-        matriceH=new Matrice("H", 'h', false,tab_h.length, tab_h, 0, 0);
-        matriceI=new Matrice("I", 'i', false,tab_i.length, tab_i, 0, 0);
-        matriceJ=new Matrice("J", 'j', true,tab_j.length, tab_j, 0, 0);
+        matriceD=new Matrice("D", 'd', false, tab_d.length, tab_d, 0, 0);
+        matriceE=new Matrice("E", 'e', false, tab_e.length, tab_e, 0, 0);
+        matriceF=new Matrice("F", 'f', false, tab_f.length, tab_f, 0, 0);
+        matriceG=new Matrice("G", 'g', false, tab_g.length, tab_g, 0, 0);
+        matriceH=new Matrice("H", 'h', false, tab_h.length, tab_h, 0, 0);
+        matriceI=new Matrice("I", 'i', false, tab_i.length, tab_i, 0, 0);
+        matriceJ=new Matrice("J", 'j', true, tab_j.length, tab_j, 0, 0);
 
+        //taille des images
         sizeImg=(int)getToolkit().getScreenSize().getHeight()/lvl.getSize()-20;
 
         //on recupère les images qu'on va utiliser
@@ -133,10 +129,6 @@ public class DrawLevel extends JPanel implements Runnable{
         mondeI = getToolkit().getImage("package_sokoban/Image/mondeI.png");
         mondeJ = getToolkit().getImage("package_sokoban/Image/mondeJ.png");
         joueur = getToolkit().getImage("package_sokoban/Image/joueur.png");
-
-        felicitation.setIconImage(joueur);
-        felicitation.setSize(350, 100);
-        felicitation.add(panel_bravo());
 
         //on met tout a false pour pas bouger le joueur
         haut=bas=gauche=droite=ctrlZ=false;
@@ -161,9 +153,8 @@ public class DrawLevel extends JPanel implements Runnable{
         double dessin_suivant=System.nanoTime()+interval_dessin;
         
         while (game!=null) {
-            update();//met à jour le niveau en memoire
             repaint();//repeint le niveau dans le panel
-            
+            update();//met à jour le niveau en memoire
             try {
                 double tps_restant = dessin_suivant - System.nanoTime();
                 //Thread.sleep() prend en argument des millis secondes donc on divise par un million le temps restant pour l'avoir en millis secondes
@@ -204,8 +195,10 @@ public class DrawLevel extends JPanel implements Runnable{
             lvl.ctrl_z();
             ctrlZ=false;
         }
-        if (lvl.estFini()/*CONDITION A REMPLACER PAR LA METHODE QUI PERMET DE SAVOIR SI LE NIVEAU EST TERMINER */) {
-            felicitation.setVisible(true);
+        if (lvl.estFini()) {
+            next=JOptionPane.showConfirmDialog(this, "next lvl?");
+            if(next==0)
+                loadLvl();
         }
     }
 
@@ -408,26 +401,6 @@ public class DrawLevel extends JPanel implements Runnable{
                 }
             }
         }
-    }
-
-    public JPanel panel_bravo() {
-        JPanel bravo = new JPanel(new BorderLayout());
-
-        JTextArea gg = new JTextArea("Vous avez terminez le niveau.\nAppuiez sur le bouton 'next' pour passez au niveau suivant");
-        gg.setEditable(false);
-
-        felicitation.setPreferredSize(new Dimension(70, 30));
-        next.addActionListener((e) -> nextListener(e));
-        felicitation.add(next, BorderLayout.SOUTH);
-        felicitation.add(gg, BorderLayout.NORTH);
-        felicitation.setLocationRelativeTo(null);
-
-        return bravo;
-    }
-
-    private void nextListener(ActionEvent e) {
-        loadLvl();
-        felicitation.dispose();
     }
 
     //permet les mouvements (dit si on a appuiez sur les fleches ou les bouttons)
