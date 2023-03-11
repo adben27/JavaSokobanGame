@@ -104,14 +104,15 @@ public class DrawLevel extends JPanel implements Runnable{
         matriceJ=new Matrice("J", 'j', false, tab_j.length, tab_j, 0, 0, false, false,-1,-1);
         
         Element[][] tab={{m,m,m,m,m,m,m},
-                {m,v,v,v,matriceC,v,m},
-                {m,v,v,matriceJ,v,matriceF,m},
-                {m,v,v,v,v,matriceI,m},
-                {m,v,matriceE,y,v,matriceH,m},
-                {m,v,matriceG,matriceD,v,matriceB,m},
-                {m,m,m,m,m,m,m}};
+                         {m,v,v,v,matriceC,v,m},
+                         {m,v,v,matriceJ,v,matriceF,m},
+                         {m,v,v,v,v,matriceI,m},
+                         {m,v,matriceE,y,v,matriceH,m},
+                         {m,v,matriceG,matriceD,v,matriceB,m},
+                         {m,m,m,m,m,m,m}};
         
         lvl=new Matrice("lvl", 'l', false, tab.length, tab,0,0, false, true,5,2);
+        
         //taille des images
         sizeImg=(int)getToolkit().getScreenSize().getHeight()/lvl.getSize()-20;
 
@@ -301,19 +302,16 @@ public class DrawLevel extends JPanel implements Runnable{
         for (int y = 0; y < m.getSize(); y++){
             for (int x = 0; x < m.getSize(); x++){
 
-                if(lvl.getElem(i,j).getSign()=='A'){
-                    g2.drawImage(joueur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                if(m.getElem(y,x).getSign()=='A'){
+                    g2.drawImage(joueur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
-                if(lvl.getElem(i, j).getSign()=='a'){
-                    g2.drawImage(joueur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                if(m.getElem(y, x).getSign()=='a'){
+                    g2.drawImage(joueur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if (m.getElem(y, x).getSign()=='#'){
                     g2.drawImage(mur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                }   
-                /*if (m.getElem(y, x).getSign()==' '){
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                }*/
+                }
                 if(m.getElem(y, x).getSign()=='@'){
                     g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                     g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
