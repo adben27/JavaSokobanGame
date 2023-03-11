@@ -17,7 +17,7 @@ public class DrawLevel extends JPanel implements Runnable{
     private boolean haut, bas, gauche, droite, ctrlZ;//pour faire bouger le joueur
 
     //matrice que l'on va utiliser pour la version recursive
-    private Matrice lvl, matriceB, matriceC, matriceD, matriceE,
+    public Matrice lvl, matriceB, matriceC, matriceD, matriceE,
                     matriceF, matriceG, matriceH, matriceI, matriceJ;
 
     private Player p;//Le joueur
@@ -40,15 +40,7 @@ public class DrawLevel extends JPanel implements Runnable{
         p = new Player(false);
         
         Vide v = new Vide(false);
-        Vide y = new Vide(true);
-
-        Element[][] tab={{m,m,m,m,m,m,m},
-                         {m,v,v,v,c,v,m},
-                         {m,v,p,j,v,f,m},
-                         {m,v,v,v,v,i,m},
-                         {m,v,e,y,v,h,m},
-                         {m,v,g,d,v,b,m},
-                         {m,m,m,m,m,m,m}};
+        Vide y = new Vide(false);
 
         Element[][] tab_b={{m,m,m,m,v,m},
                            {m,v,v,v,v,m},
@@ -82,7 +74,7 @@ public class DrawLevel extends JPanel implements Runnable{
         Element[][] tab_g={{m,v,m,m,m,m,v,m,m},
                            {m,v,v,v,v,v,v,v,m},
                            {m,v,v,v,v,v,v,v,m},
-                           {m,v,v,v,h,v,v,v,m},
+                           {m,v,v,p,h,v,v,v,m},
                            {m,v,v,v,v,v,v,v,m},
                            {m,v,v,v,g,v,v,v,m},
                            {m,v,v,v,v,v,v,v,m},
@@ -101,17 +93,25 @@ public class DrawLevel extends JPanel implements Runnable{
                            {m,v,m,m,m},
                            {m,m,m,m,m}};
 
-        lvl=new Matrice("lvl", 'l', false, tab.length, tab,2,2);
-        matriceB=new Matrice("B", 'b', false, tab_b.length, tab_b, 0, 0);
-        matriceC=new Matrice("C", 'c', false, tab_c.length, tab_c, 0, 0);
-        matriceD=new Matrice("D", 'd', false, tab_d.length, tab_d, 0, 0);
-        matriceE=new Matrice("E", 'e', false, tab_e.length, tab_e, 0, 0);
-        matriceF=new Matrice("F", 'f', false, tab_f.length, tab_f, 0, 0);
-        matriceG=new Matrice("G", 'g', false, tab_g.length, tab_g, 0, 0);
-        matriceH=new Matrice("H", 'h', false, tab_h.length, tab_h, 0, 0);
-        matriceI=new Matrice("I", 'i', false, tab_i.length, tab_i, 0, 0);
-        matriceJ=new Matrice("J", 'j', true, tab_j.length, tab_j, 0, 0);
-
+        matriceB=new Matrice("B", 'b', false, tab_b.length, tab_b, 0, 0, false, false,-1,-1);
+        matriceC=new Matrice("C", 'c', false, tab_c.length, tab_c, 0, 0, false, false,-1,-1);
+        matriceD=new Matrice("D", 'd', false, tab_d.length, tab_d, 0, 0, false, false,-1,-1);
+        matriceE=new Matrice("E", 'e', false, tab_e.length, tab_e, 0, 0, false, false,-1,-1);
+        matriceF=new Matrice("F", 'f', false, tab_f.length, tab_f, 0, 0, false, false,-1,-1);
+        matriceG=new Matrice("G", 'g', false, tab_g.length, tab_g, 3, 3, true, false,-1,-1);
+        matriceH=new Matrice("H", 'h', false, tab_h.length, tab_h, 0, 0, false, false,-1,-1);
+        matriceI=new Matrice("I", 'i', false, tab_i.length, tab_i, 0, 0, false, false,-1,-1);
+        matriceJ=new Matrice("J", 'j', false, tab_j.length, tab_j, 0, 0, false, false,-1,-1);
+        
+        Element[][] tab={{m,m,m,m,m,m,m},
+                {m,v,v,v,matriceC,v,m},
+                {m,v,v,matriceJ,v,matriceF,m},
+                {m,v,v,v,v,matriceI,m},
+                {m,v,matriceE,y,v,matriceH,m},
+                {m,v,matriceG,matriceD,v,matriceB,m},
+                {m,m,m,m,m,m,m}};
+        
+        lvl=new Matrice("lvl", 'l', false, tab.length, tab,0,0, false, true,5,2);
         //taille des images
         sizeImg=(int)getToolkit().getScreenSize().getHeight()/lvl.getSize()-20;
 

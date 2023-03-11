@@ -49,7 +49,7 @@ public class Matrice extends Element{
     
     //  constructeur qui initialise pos_x et pos_y a 0 utilisé par nandan pour la lecture de niveau
     public Matrice(String name,char sign , boolean on_target, int size, Element[][] level){
-        super((char) (sign + 32),true,on_target,sign);// On donne au constructeur un signe en majuscule mais l'affichage de base sera en minuscule et sur la cible sera en majuscule
+        super(Character.toUpperCase(sign),true,on_target,sign);// On donne au constructeur un signe en majuscule mais l'affichage de base sera en minuscule et sur la cible sera en majuscule
     	this.name=name;
         this.size=size;
         this.level=level;
@@ -61,17 +61,18 @@ public class Matrice extends Element{
         this.wrld_y= -1;
     }
     
-    public Matrice(String name,char sign , boolean on_target, int size, Element[][] level, int x, int y){
-        super((char) (sign + 32),true,on_target,sign);// On donne au constructeur un signe en majuscule mais l'affichage de base sera en minuscule et sur la cible sera en majuscule
+    public Matrice(String name,char sign , boolean on_target, int size, Element[][] level, int x, int y, boolean is_here, boolean is_main, int wrld_x, int wrld_y){
+        super(Character.toUpperCase(sign),true,on_target,sign);// On donne au constructeur un signe en majuscule mais l'affichage de base sera en minuscule et sur la cible sera en majuscule
     	this.name=name;
         this.size=size;
         this.level=level;
         this.pos_x=x;
         this.pos_y=y;
         this.last_move=new Stack<Character>();
-        this.is_here=true;
-        this.wrld_x= -1;
-        this.wrld_y= -1;
+        this.is_main=is_main;
+        this.is_here=is_here;
+        this.wrld_x= wrld_x;
+        this.wrld_y= wrld_y;
     }
     
     // première version des fonctions de fin de niveau pas opti mais bon on verra aprés pour ca
@@ -323,7 +324,7 @@ public class Matrice extends Element{
     			last_move.push('z');
     		}
     	}
-   	
+
     	
         if(this.getElem(getPos_x()-1,getPos_y()) instanceof Vide){
             swap(getPos_x(),getPos_y(),getPos_x()-1,getPos_y());
