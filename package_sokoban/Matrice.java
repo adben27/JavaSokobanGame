@@ -48,11 +48,10 @@ public class Matrice extends Element{
     }
     
     //  constructeur qui initialise pos_x et pos_y a 0 utilisé par nandan pour la lecture de niveau
-    public Matrice(String name,char sign , boolean on_target, int size, Element[][] level){
+    public Matrice(String name, char sign , boolean on_target, int size){
         super(Character.toUpperCase(sign),true,on_target,sign);// On donne au constructeur un signe en majuscule mais l'affichage de base sera en minuscule et sur la cible sera en majuscule
     	this.name=name;
         this.size=size;
-        this.level=level;
         this.pos_x=0;
         this.pos_y=0;
         this.last_move=new Stack<Character>();
@@ -280,8 +279,9 @@ public class Matrice extends Element{
      * fonction qui regroupe les quatre fonctions de mouvement ainsi qu'un scanner pour effectuer le mouvement en fonction de l'input du joueur
      */
     public void move(){
+    		System.out.println("Enter a move (z/q/s/d): ");
             Scanner console = new Scanner(System.in);
-            char c = console.next().charAt(0);
+            char c = console.nextLine().charAt(0);
             if(Character.compare(c,'z')==0){
                 move_up();
                 return;
