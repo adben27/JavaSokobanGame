@@ -209,87 +209,91 @@ public class DrawLevel extends JPanel implements Runnable{
         super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D) g;
+        int pos_x,pos_y;
 
         for (int i = 0; i < lvl.getSize(); i++) {
             for (int j = 0; j < lvl.getSize(); j++) {
-                g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                pos_x=((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2);
+                pos_y=((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2);
+                
+                g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, this);
                 
                 if(lvl.getElem(i,j).getSign()=='A'){
-                    g2.drawImage(joueur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                    g2.drawImage(joueur, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
                 if(lvl.getElem(i, j).getSign()=='a'){
-                    g2.drawImage(joueur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                    g2.drawImage(joueur, pos_x, pos_y, sizeImg, sizeImg, this);
+                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
                 if(lvl.getElem(i,j).getSign()=='B'){
                     paintMonde(g2, matriceB, i, j);
                 }
                 if (lvl.getElem(i,j).getSign()=='b') {
                     paintMonde(g2, matriceB, i, j);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
                 if(lvl.getElem(i,j).getSign()=='C'){
                     paintMonde(g2, matriceC, i, j);
                 }
                 if (lvl.getElem(i,j).getSign()=='c') {
                     paintMonde(g2, matriceC, i, j);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
                 if(lvl.getElem(i,j).getSign()=='D'){
                     paintMonde(g2, matriceD, i, j);
                 }
                 if (lvl.getElem(i,j).getSign()=='d') {
                     paintMonde(g2, matriceD, i, j);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
                 if(lvl.getElem(i,j).getSign()=='E'){
                     paintMonde(g2, matriceE, i, j);
                 }
                 if (lvl.getElem(i,j).getSign()=='e') {
                     paintMonde(g2, matriceE, i, j);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
                 if(lvl.getElem(i,j).getSign()=='F'){
                     paintMonde(g2, matriceF, i, j);
                 }
                 if (lvl.getElem(i,j).getSign()=='f') {
                     paintMonde(g2, matriceF, i, j);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
                 if(lvl.getElem(i,j).getSign()=='G'){
                     paintMonde(g2, matriceG, i, j);
                 }
                 if (lvl.getElem(i,j).getSign()=='g') {
                     paintMonde(g2, matriceG, i, j);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
                 if(lvl.getElem(i,j).getSign()=='H'){
                     paintMonde(g2, matriceH, i, j);
                 }
                 if (lvl.getElem(i,j).getSign()=='h') {
                     paintMonde(g2, matriceH, i, j);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
                 if(lvl.getElem(i,j).getSign()=='I'){
                     paintMonde(g2, matriceI, i, j);
                 }
                 if (lvl.getElem(i,j).getSign()=='i') {
                     paintMonde(g2, matriceI, i, j);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
                 if(lvl.getElem(i,j).getSign()=='J'){
                     paintMonde(g2, matriceJ, i, j);
                 }
                 if (lvl.getElem(i,j).getSign()=='j') {
                     paintMonde(g2, matriceJ, i, j);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
                 if(lvl.getElem(i,j).getSign()=='@'){
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                    g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, this);
+                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
                 if(lvl.getElem(i,j).getSign()=='#'){
-                    g2.drawImage(mur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2), ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2), sizeImg, sizeImg, this);
+                    g2.drawImage(mur, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
             }
         }
@@ -299,103 +303,107 @@ public class DrawLevel extends JPanel implements Runnable{
      * "i" et "j" sont les coordonnées (j,i) de la localisation où il faut dessiner  
      */
     public void paintMonde(Graphics2D g2, Matrice m, int i, int j) {
+        int pos_x, pos_y;
+        
         for (int y = 0; y < m.getSize(); y++){
             for (int x = 0; x < m.getSize(); x++){
+                pos_x = ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x;
+                pos_y = ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y;
 
                 if(m.getElem(y,x).getSign()=='A'){
-                    g2.drawImage(joueur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(joueur, pos_x, pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if(m.getElem(y, x).getSign()=='a'){
-                    g2.drawImage(joueur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(joueur, pos_x, pos_y , sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, pos_x, pos_y , sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if (m.getElem(y, x).getSign()=='#'){
-                    g2.drawImage(mur, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mur, pos_x,  pos_y , sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if(m.getElem(y, x).getSign()=='@'){
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x, pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, pos_x, pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if(m.getElem(y, x).getSign()=='B'){
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeB, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x, pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeB, pos_x, pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if (m.getElem(y, x).getSign()=='b') {
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeB, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x, pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeB, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if(m.getElem(y, x).getSign()=='C'){
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeC, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeC, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if (m.getElem(y, x).getSign()=='c') {
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeC, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeC, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if(m.getElem(y, x).getSign()=='D'){
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeD, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeD, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if (m.getElem(y, x).getSign()=='d') {
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeD, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeD, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if(m.getElem(y, x).getSign()=='E'){
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeE, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeE, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if (m.getElem(y, x).getSign()=='e') {
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeE, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeE, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if(m.getElem(y, x).getSign()=='F'){
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeF, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeF, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if (m.getElem(y, x).getSign()=='f') {
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeF, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeF, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if(m.getElem(y, x).getSign()=='G'){
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeG, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeG, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if (m.getElem(y, x).getSign()=='g') {
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeG, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeG, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if(m.getElem(y, x).getSign()=='H'){
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeH, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeH, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if (m.getElem(y, x).getSign()=='h') {
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeH, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeH, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if(m.getElem(y, x).getSign()=='I'){
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeI, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeI, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if (m.getElem(y, x).getSign()=='i') {
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeI, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeI, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if(m.getElem(y, x).getSign()=='J'){
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeJ, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeJ, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
                 if (m.getElem(y, x).getSign()=='j') {
-                    g2.drawImage(vide, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeJ, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x, ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mondeJ, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
                 }
             }
         }
