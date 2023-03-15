@@ -26,21 +26,21 @@ public class DrawLevel extends JPanel implements Runnable{
         super();
 
         setLayout(null);
-        Box b= new Box(false);
-        Box c= new Box(false);        
-        Box d= new Box(false);        
-        Box e= new Box(false);        
-        Box f= new Box(false);        
-        Box g= new Box(false);        
-        Box h= new Box(false);        
-        Box i= new Box(false);
-        Box j= new Box(false);
+        Box b= new Box(false, 'B');
+        Box c= new Box(false, 'C');        
+        Box d= new Box(false, 'D');        
+        Box e= new Box(false, 'E');        
+        Box f= new Box(false, 'F');        
+        Box g= new Box(false, 'G');        
+        Box h= new Box(false, 'H');        
+        Box i= new Box(false, 'I');
+        Box j= new Box(false, 'J');
         Wall m= new Wall();
 
         p = new Player(false);
         
         Vide v = new Vide(false);
-        Vide y = new Vide(false);
+        Vide y = new Vide(true);
 
         Element[][] tab_b={{m,m,m,m,v,m},
                            {m,v,v,v,v,m},
@@ -51,19 +51,19 @@ public class DrawLevel extends JPanel implements Runnable{
 
 
         Element[][] tab_c={{m,v,m,v,v,m,m},
-                           {m,m,v,c,m,m,v},
+                           {m,m,v,c,v,v,v},
                            {m,v,v,v,v,m,m},
                            {m,m,v,v,v,m,m},
                            {m,m,m,m,m,m,m}};
 
         Element[][] tab_d={{m,v,m,m,m},
                            {m,d,v,m,m},
-                           {m,m,v,m,v},
-                           {m,m,m,v,m},
+                           {m,m,v,v,v},
+                           {m,m,v,v,m},
                            {m,m,m,m,m}};
 
         Element[][] tab_e={{e,v},
-                           {v,j}};
+                           {v,m}};
 
         Element[][] tab_f={{m,m,m,v,m},
                            {m,f,v,v,m},
@@ -74,7 +74,7 @@ public class DrawLevel extends JPanel implements Runnable{
         Element[][] tab_g={{m,v,m,m,m,m,v,m,m},
                            {m,v,v,v,v,v,v,v,m},
                            {m,v,v,v,v,v,v,v,m},
-                           {m,v,v,p,h,v,v,v,m},
+                           {m,v,v,v,v,v,v,v,m},
                            {m,v,v,v,v,v,v,v,m},
                            {m,v,v,v,g,v,v,v,m},
                            {m,v,v,v,v,v,v,v,m},
@@ -89,7 +89,7 @@ public class DrawLevel extends JPanel implements Runnable{
 
         Element[][] tab_j={{m,v,m,m,m},
                            {v,j,v,m,m},
-                           {m,v,h,m,m},
+                           {m,v,v,m,m},
                            {m,v,m,m,m},
                            {m,m,m,m,m}};
 
@@ -98,20 +98,20 @@ public class DrawLevel extends JPanel implements Runnable{
         matriceD=new Matrice("D", 'd', false, tab_d.length, tab_d, 0, 0, false, false,-1,-1);
         matriceE=new Matrice("E", 'e', false, tab_e.length, tab_e, 0, 0, false, false,-1,-1);
         matriceF=new Matrice("F", 'f', false, tab_f.length, tab_f, 0, 0, false, false,-1,-1);
-        matriceG=new Matrice("G", 'g', false, tab_g.length, tab_g, 3, 3, true, false,-1,-1);
+        matriceG=new Matrice("G", 'g', false, tab_g.length, tab_g, 0, 0, false, false,-1,-1);
         matriceH=new Matrice("H", 'h', false, tab_h.length, tab_h, 0, 0, false, false,-1,-1);
         matriceI=new Matrice("I", 'i', false, tab_i.length, tab_i, 0, 0, false, false,-1,-1);
         matriceJ=new Matrice("J", 'j', false, tab_j.length, tab_j, 0, 0, false, false,-1,-1);
         
         Element[][] tab={{m,m,m,m,m,m,m},
-                         {m,v,v,v,matriceC,v,m},
+                         {m,p,v,v,matriceC,v,m},
                          {m,v,v,matriceJ,v,matriceF,m},
                          {m,v,v,v,v,matriceI,m},
                          {m,v,matriceE,y,v,matriceH,m},
                          {m,v,matriceG,matriceD,v,matriceB,m},
                          {m,m,m,m,m,m,m}};
         
-        lvl=new Matrice("lvl", 'l', false, tab.length, tab,0,0, false, true,5,2);
+        lvl=new Matrice("lvl", 'l', false, tab.length, tab,1,1, true, true,-1,-1);
         
         //taille des images
         sizeImg=(int)getToolkit().getScreenSize().getHeight()/lvl.getSize()-20;
@@ -196,10 +196,14 @@ public class DrawLevel extends JPanel implements Runnable{
             lvl.ctrl_z();
             ctrlZ=false;
         }
-        if (lvl.estFini()) {
+        if (lvl.all_ontarget()) {
             next=JOptionPane.showConfirmDialog(this, "Félicitation vous avez terminer le niveau.\nVoulez-vous passez au niveau suivant ?");
             if(next==0)
                 loadLvl();
+            else if(next==1)
+                lvl.ctrl_z();
+            else
+                resetAll();
         }
     }
 
@@ -303,110 +307,124 @@ public class DrawLevel extends JPanel implements Runnable{
      * "i" et "j" sont les coordonnées (j,i) de la localisation où il faut dessiner  
      */
     public void paintMonde(Graphics2D g2, Matrice m, int i, int j) {
-        int pos_x, pos_y;
+        int pos_x, pos_y, size;
         
         for (int y = 0; y < m.getSize(); y++){
             for (int x = 0; x < m.getSize(); x++){
-                pos_x = ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + (sizeImg/m.getSize())*x;
-                pos_y = ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + (sizeImg/m.getSize())*y;
+                size = sizeImg/m.getSize();
+                pos_x = ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + size*x;
+                pos_y = ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + size*y;
 
                 if(m.getElem(y,x).getSign()=='A'){
-                    g2.drawImage(joueur, pos_x, pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(joueur, pos_x, pos_y, size, size, this);
                 }
                 if(m.getElem(y, x).getSign()=='a'){
-                    g2.drawImage(joueur, pos_x, pos_y , sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, pos_x, pos_y , sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(joueur, pos_x, pos_y , size, size, this);
+                    g2.drawImage(cible, pos_x, pos_y , size, size, this);
                 }
                 if (m.getElem(y, x).getSign()=='#'){
-                    g2.drawImage(mur, pos_x,  pos_y , sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(mur, pos_x,  pos_y , size, size, this);
                 }
                 if(m.getElem(y, x).getSign()=='@'){
-                    g2.drawImage(vide, pos_x, pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, pos_x, pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x, pos_y, size, size, this);
+                    g2.drawImage(cible, pos_x, pos_y, size, size, this);
                 }
                 if(m.getElem(y, x).getSign()=='B'){
-                    g2.drawImage(vide, pos_x, pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeB, pos_x, pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x, pos_y, size, size, this);
+                    g2.drawImage(mondeB, pos_x, pos_y, size, size, this);
                 }
                 if (m.getElem(y, x).getSign()=='b') {
-                    g2.drawImage(vide, pos_x, pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeB, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x, pos_y, size, size, this);
+                    g2.drawImage(mondeB, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(cible, pos_x  , pos_y, size, size, this);
                 }
                 if(m.getElem(y, x).getSign()=='C'){
-                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeC, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(mondeC, pos_x  , pos_y, size, size, this);
                 }
                 if (m.getElem(y, x).getSign()=='c') {
-                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeC, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(mondeC, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(cible, pos_x  , pos_y, size, size, this);
                 }
                 if(m.getElem(y, x).getSign()=='D'){
-                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeD, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(mondeD, pos_x  , pos_y, size, size, this);
                 }
                 if (m.getElem(y, x).getSign()=='d') {
-                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeD, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(mondeD, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(cible, pos_x  , pos_y, size, size, this);
                 }
                 if(m.getElem(y, x).getSign()=='E'){
-                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeE, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(mondeE, pos_x  , pos_y, size, size, this);
                 }
                 if (m.getElem(y, x).getSign()=='e') {
-                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeE, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(mondeE, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(cible, pos_x  , pos_y, size, size, this);
                 }
                 if(m.getElem(y, x).getSign()=='F'){
-                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeF, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(mondeF, pos_x  , pos_y, size, size, this);
                 }
                 if (m.getElem(y, x).getSign()=='f') {
-                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeF, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(mondeF, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(cible, pos_x  , pos_y, size, size, this);
                 }
                 if(m.getElem(y, x).getSign()=='G'){
-                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeG, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(mondeG, pos_x  , pos_y, size, size, this);
                 }
                 if (m.getElem(y, x).getSign()=='g') {
-                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeG, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(mondeG, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(cible, pos_x  , pos_y, size, size, this);
                 }
                 if(m.getElem(y, x).getSign()=='H'){
-                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeH, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(mondeH, pos_x  , pos_y, size, size, this);
                 }
                 if (m.getElem(y, x).getSign()=='h') {
-                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeH, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(mondeH, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(cible, pos_x  , pos_y, size, size, this);
                 }
                 if(m.getElem(y, x).getSign()=='I'){
-                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeI, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(mondeI, pos_x  , pos_y, size, size, this);
                 }
                 if (m.getElem(y, x).getSign()=='i') {
-                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeI, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(mondeI, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(cible, pos_x  , pos_y, size, size, this);
                 }
                 if(m.getElem(y, x).getSign()=='J'){
-                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeJ, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(mondeJ, pos_x  , pos_y, size, size, this);
                 }
                 if (m.getElem(y, x).getSign()=='j') {
-                    g2.drawImage(vide, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(mondeJ, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
-                    g2.drawImage(cible, pos_x  , pos_y, sizeImg/m.getSize(), sizeImg/m.getSize(), this);
+                    g2.drawImage(vide, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(mondeJ, pos_x  , pos_y, size, size, this);
+                    g2.drawImage(cible, pos_x  , pos_y, size, size, this);
                 }
             }
         }
+    }
+
+    public void resetAll() {
+        lvl.reset();
+        matriceB.reset();
+        matriceC.reset();
+        matriceD.reset();
+        matriceE.reset();
+        matriceF.reset();
+        matriceG.reset();
+        matriceH.reset();
+        matriceI.reset();
+        matriceJ.reset();
     }
 
     //permet les mouvements (dit si on a appuiez sur les fleches ou les bouttons)
