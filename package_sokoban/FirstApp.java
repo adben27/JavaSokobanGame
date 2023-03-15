@@ -112,7 +112,7 @@ public class FirstApp extends JFrame implements KeyListener{
     }
 
     private void resetListener(ActionEvent e) {
-        niveau.getLvl().reset();
+        niveau.resetAll();
         requestFocus();
     }
 
@@ -244,27 +244,27 @@ public class FirstApp extends JFrame implements KeyListener{
         text_monde.setEditable(false); //le texte ne peut pas etre modifier
         text_monde.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
         info_image.add(text_monde); //on met le texte a gauche du panel
-        info_image.add(new Img("Image/mondeB.png")); //on ajoute l'image au panel
+        info_image.add(new Img("package_sokoban/Image/mondeB.png")); //on ajoute l'image au panel
 
         JTextArea text_joueur =new JTextArea("Voici Atlas, votre personnage");
         text_joueur.setEditable(false); //le texte ne peut pas etre modifier
         info_image.add(text_joueur); //on met le texte a gauche du panel
-        info_image.add(new Img("Image/joueur.png")); //on ajoute l'image au panel
+        info_image.add(new Img("package_sokoban/Image/joueur.png")); //on ajoute l'image au panel
 
         JTextArea text_vide =new JTextArea("Voici du vide");
         text_vide.setEditable(false); //le texte ne peut pas etre modifier
         info_image.add(text_vide); //on met le texte a gauche du panel
-        info_image.add(new Img("Image/vide.png"));//on ajoute l'image au panel
+        info_image.add(new Img("package_sokoban/Image/vide.png"));//on ajoute l'image au panel
 
         JTextArea text_cible =new JTextArea("Voici une cible");
         text_cible.setEditable(false); //le texte ne peut pas etre modifier
         info_image.add(text_cible); //on met le texte a gauche du panel
-        info_image.add(new Img("Image/cible.png"));//on ajoute l'image au panel
+        info_image.add(new Img("package_sokoban/Image/cible.png"));//on ajoute l'image au panel
 
         JTextArea text_mur =new JTextArea("Voici un mur, vous ne pouvez pas\ndéplacer les murs");
         text_mur.setEditable(false); //le texte ne peut pas etre modifier
         info_image.add(text_mur); //on met le texte a gauche du panel
-        info_image.add(new Img("Image/mur.png"));//on ajoute l'image au panel
+        info_image.add(new Img("package_sokoban/Image/mur.png"));//on ajoute l'image au panel
 
         JTextField quittez = new JTextField("Pour quittez la fenetre vous pouvez appuiez sur 'echap' ou sur 'entrer'");
         quittez.setEditable(false);
