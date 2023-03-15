@@ -18,7 +18,8 @@ public class Matrice extends Element{
     private int pos_x;
     private int pos_y;
 	private Element[][] level;
-	
+    private Element[][] copie;
+
 	//pour savoir si c'est le premier monde (matrice principale) (matrice qui contient les autres)
 	private boolean is_main;
 	
@@ -39,6 +40,7 @@ public class Matrice extends Element{
         this.name="";
         this.size=0;
         this.level=new Element[0][0];
+        copie=new Element[0][0];
         this.pos_x=0;
         this.pos_y=0;
         this.last_move=new Stack<Character>();
@@ -65,6 +67,12 @@ public class Matrice extends Element{
     	this.name=name;
         this.size=size;
         this.level=level;
+        copie = new Element[size][size];
+		for (int i = 0; i < level.length; i++) {
+			for (int j = 0; j < level.length; j++) {
+				copie[i][j]=level[i][j];
+			}
+		}
         this.pos_x=x;
         this.pos_y=y;
         this.last_move=new Stack<Character>();
@@ -75,14 +83,6 @@ public class Matrice extends Element{
     }
     
     // première version des fonctions de fin de niveau pas opti mais bon on verra aprés pour ca
-    
-    public boolean estFini() {
-    	if(all_ontarget()) {
-    		return true;
-    	}
-    	return false;
-    }
-    
     public boolean all_ontarget() {
     	Element e;
     	
@@ -525,15 +525,11 @@ public class Matrice extends Element{
      * mais avec les monde récursive j'ai du ajouter un appel récursif pour reset les positions dans tout les niveau
      */
     public void reset() {
-    	for (int i=0;i<getSize();i++) {
-    		for (int j=0;j<getSize();j++) {
-        		if (getElem(i,j)instanceof Matrice) {
-        			((Matrice) getElem(i,j)).reset();
-        		}
-        	}
-    	}
-    	while(ctrl_z()!='e');
-
+    	for (int i = 0; i < copie.length; i++) {
+			for (int j = 0; j < copie.length; j++) {
+				level[i][j]=copie[i][j];
+			}
+		}
     }
     
     /*
