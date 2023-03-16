@@ -1,15 +1,19 @@
 package package_sokoban;
 
 import java.util.Objects;
+import java.util.HashMap;
 
-public class Element {
+
+public class Element{
     
 
     private char sign, altsign1, altsign2;
     private boolean moveable;
     protected boolean on_target;
 
-    
+    public Element(){
+        
+    }
     
     public Element(char sign, boolean moveable, boolean on_target, char altsign) {
     	if(on_target)
@@ -83,6 +87,53 @@ public class Element {
 		return "Element [sign=" + sign + "]";
 	}
 
-	
-    
+	public static Element[][] remplirTableauGrille(String sousMap, int size, HashMap<String,Matrice> mondes,String nom){
+        Element[][] grille=new Element[size][size];
+        Element[] elements=caracelement(sousMap,mondes);        
+        int z=0;
+        for(int i=0;i<size;i++){
+            for(int j=0;j<size;j++){
+                grille[i][j]=elements[z++];
+                if(grille[i][j].getSign() == 'A'){
+                    mondes.get(nom).setPos_x(i);
+                    mondes.get(nom).setPos_y(j);
+                }
+            }
+        }
+        return grille;
+    }
+
+    public static Element[] caracelement(String sousMap,HashMap<String,Matrice> mondes){
+        char[] caracteres= sousMap.toCharArray();
+        Element[] elements= new Element[sousMap.length()];
+        for(int i=0;i<elements.length;i++){
+            switch(caracteres[i]){
+                case '#':   elements[i]=new Wall();
+                            break;
+                case '@':   elements[i]=new Vide(true);    
+                            break;                       
+                case 'A':   elements[i]=new Player(false);
+                            break;                          
+                case 'a':   elements[i]=new Player(true);
+                            break;                           
+                case ' ':   elements[i]=new Vide(false);
+                            break;
+                case 'B':   elements[i]=new Box(false);
+                            break;
+                case 'b':   elements[i]=new Box(true);
+                            break;
+                default :   elements[i]=mondes.get(String.valueOf(caracteres[i]));  
+            }
+        }
+        return elements;
+    }
+
+    public static void afficherElements(Element[][] elements){
+        for(int i=0;i<elements.length;i++){
+            for(int j=0;j<elements.length;j++){
+                System.out.print(elements[i][j].getSign() + " ");
+            }
+            System.out.println();
+        }
+    }
 }
