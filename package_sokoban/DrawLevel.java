@@ -26,47 +26,55 @@ public class DrawLevel extends JPanel implements Runnable{
         super();
 
         setLayout(null);
-        Box b= new Box(false);
-        Box c= new Box(false);        
-        Box d= new Box(false);        
-        Box e= new Box(false);        
-        Box f= new Box(false);        
-        Box g= new Box(false);        
-        Box h= new Box(false);        
-        Box i= new Box(false);
-        Box j= new Box(false);
+        Box b= new Box(false, 'B');
+        Box c= new Box(false, 'C');        
+        Box d= new Box(false, 'D');        
+        Box e= new Box(false, 'E');        
+        Box f= new Box(false, 'F');        
+        Box g= new Box(false, 'G');        
+        Box h= new Box(false, 'H');        
+        Box i= new Box(false, 'I');
+        Box j= new Box(false, 'J');
         Wall m= new Wall();
 
         p = new Player(false);
         
         Vide v = new Vide(false);
         Vide y = new Vide(true);
+        Vide w = new Vide(true);
+        Vide x = new Vide(true);
+        Vide z = new Vide(true);
+        Vide k = new Vide(true);
+        Vide l = new Vide(true);
+        Vide s = new Vide(true);
 
         Element[][] tab_b={{m,m,m,m,v,m},
-                           {m,v,v,v,v,m},
+                           {m,v,w,v,v,m},
                            {m,v,v,v,v,m},
                            {m,v,v,b,v,m},
                            {v,v,v,v,v,m},
                            {m,m,m,m,m,m}};
 
-        Element[][] tab_c={{m,v,m,v,v,m,m},
-                           {m,m,v,c,v,v,v},
+        Element[][] tab_c={{z,v,m,m,m,m,m},
+                           {m,v,v,c,v,v,v},
                            {m,v,v,v,v,m,m},
                            {m,m,v,v,v,m,m},
+                           {m,v,v,v,v,v,m},
+                           {m,v,v,v,v,v,m},
                            {m,m,m,m,m,m,m}};
 
         Element[][] tab_d={{m,v,m,m,m},
-                           {m,v,v,m,m},
+                           {m,x,v,m,m},
                            {m,d,v,v,v},
-                           {m,m,v,v,m},
+                           {m,v,v,v,m},
                            {m,m,m,m,m}};
 
         Element[][] tab_e={{e,v},
-                           {v,m}};
+                           {m,m}};
 
         Element[][] tab_f={{m,m,m,v,m},
                            {m,f,v,v,m},
-                           {m,v,v,v,m},
+                           {m,v,v,l,m},
                            {m,v,v,v,m},
                            {m,m,m,m,m}};
 
@@ -76,7 +84,7 @@ public class DrawLevel extends JPanel implements Runnable{
                            {m,v,v,v,v,v,v,v,m},
                            {m,v,v,v,g,v,v,v,m},
                            {m,v,v,v,v,v,v,v,m},
-                           {m,v,v,v,v,v,v,v,m},
+                           {m,v,s,v,v,v,v,v,m},
                            {m,v,v,v,v,v,v,v,m},
                            {m,m,m,m,m,m,m,m,m}};
 
@@ -215,12 +223,12 @@ public class DrawLevel extends JPanel implements Runnable{
         Graphics2D g2 = (Graphics2D) g;
         int pos_x,pos_y;
 
+        g2.drawImage(vide, ((getWidth() - sizeImg)/2)-sizeImg*(lvl.getSize()/2), ((getHeight() - sizeImg)/2)-sizeImg*(lvl.getSize()/2), sizeImg*lvl.getSize(), sizeImg*lvl.getSize(), lvl.getColor(), this);
+
         for (int i = 0; i < lvl.getSize(); i++) {
             for (int j = 0; j < lvl.getSize(); j++) {
                 pos_x=((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2);
                 pos_y=((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2);
-                
-                g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, this);
                 
                 if(lvl.getElem(i,j).getSign()=='A'){
                     g2.drawImage(joueur, pos_x, pos_y, sizeImg, sizeImg, this);
@@ -293,7 +301,6 @@ public class DrawLevel extends JPanel implements Runnable{
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
                 if(lvl.getElem(i,j).getSign()=='@'){
-                    g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, this);
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
                 if(lvl.getElem(i,j).getSign()=='#'){
@@ -307,7 +314,14 @@ public class DrawLevel extends JPanel implements Runnable{
      * "i" et "j" sont les coordonnées (j,i) de la localisation où il faut dessiner  
      */
     public void paintMonde(Graphics2D g2, Matrice m, int i, int j) {
-        int pos_y, pos_x, size;
+        int pos_y=  ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2),
+            pos_x= ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2),
+            size;
+
+        if (m.getSize()==1)
+            g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, lvl.getColor(), this);
+        else
+            g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, m.getColor(), this);
         
         for (int y = 0; y < m.getSize(); y++){
             for (int x = 0; x < m.getSize(); x++){
