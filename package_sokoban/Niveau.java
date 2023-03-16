@@ -9,7 +9,6 @@ public class Niveau{
     private HashMap<String,File> niv_memoire; // HashMap des fichiers de niveaux en mémoire
    
     public Niveau(){
-        niveau_actuel=0; 
         extension=".txt";
         chargerNiveauxMemoire();
         listeniv=new String[niv_memoire.size()];
