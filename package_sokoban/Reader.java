@@ -137,15 +137,17 @@ public class Reader {
 			System.out.println("\n\t*************************************************************************	");  
 			System.out.println("****	    Vous avez validé ce niveau. Passage au niveau prochain Sensei !!!        ****");
 			System.out.println("\t*************************************************************************	\n");
-			niv_actuel++;
-			String[] map = sousMap(envoyerLaMapEntiere());
-			String[] entete = enteteSousMap(envoyerLaMapEntiere(), map);
-			int[] size = sizeSousMap(entete);
-			String[] nom = nomSousMap(entete);
-			Map niv_prochain=new Map(size,nom,map);
-			setMap_actuel(niv_prochain);
-			setMatrice_actuel(niv_prochain.getMap().get(nom[0]));
-			setTab_actuel(niv_prochain.getMap().get(nom[0]).getLevel());
+			if(niv_actuel + 1 < lesniv.getNiv_memoire().size()){
+				niv_actuel++;
+				String[] map = sousMap(envoyerLaMapEntiere());
+				String[] entete = enteteSousMap(envoyerLaMapEntiere(), map);
+				int[] size = sizeSousMap(entete);
+				String[] nom = nomSousMap(entete);
+				Map niv_prochain=new Map(size,nom,map);
+				setMap_actuel(niv_prochain);
+				setMatrice_actuel(niv_prochain.getMap().get(nom[0]));
+				setTab_actuel(niv_prochain.getMap().get(nom[0]).getLevel());
+			}
 		}
 	}
 }
