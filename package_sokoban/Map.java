@@ -21,10 +21,6 @@ public class Map {
         return this.mondes;
     }
 
-    public void initialiserMap(String[] sousMap, String[] enteteSousMap) {
-
-    }
-
     public boolean mapFini(){
         boolean val=true;
         for(Matrice m :mondes.values()){
