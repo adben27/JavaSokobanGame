@@ -143,7 +143,7 @@ public class Matrice extends Element{
             setPos_x(i);
             setPos_y(j);
         }
-        if(getElem(i,j).isOn_target()||getElem(a,b).isOn_target()) {
+        if(getElem(i,j).isOn_target()!=getElem(a,b).isOn_target()) {
         	getElem(i,j).setOn_target(!getElem(i,j).isOn_target());
         	getElem(a,b).setOn_target(!getElem(a,b).isOn_target());
         }
@@ -216,7 +216,7 @@ public class Matrice extends Element{
 				}
 			}
 			if (this.getElem(i + 1, j) instanceof Matrice) {
-				if(((Matrice) getElem(i + 1,j)).can_enter_up()) {
+				if(((Matrice) getElem(i + 1,j)).can_enter_down()) {
 					return true;
 				}
 			}
@@ -242,7 +242,7 @@ public class Matrice extends Element{
 				}
 			}
 			if (this.getElem(i , j + 1) instanceof Matrice) {
-				if(((Matrice) getElem(i , j + 1)).can_enter_up()) {
+				if(((Matrice) getElem(i , j + 1)).can_enter_right()) {
 					return true;
 				}
 			}
@@ -268,7 +268,7 @@ public class Matrice extends Element{
                 }
             }
             if (this.getElem(i , j - 1) instanceof Matrice) {
-				if(((Matrice) getElem(i , j - 1)).can_enter_up()) {
+				if(((Matrice) getElem(i , j - 1)).can_enter_left()) {
 					return true;
 				}
 			}
@@ -478,6 +478,7 @@ public class Matrice extends Element{
     	if(last_move.empty()) {
     		return 'e';
     	}
+    	
     	switch(last_move.pop()) {
     		case '+':
     				switch(ctrl_z()) {
@@ -547,11 +548,7 @@ public class Matrice extends Element{
     
     public boolean can_enter_up() {
     	
-    	if(!this.is_here) {
-			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			return m.can_enter_up();
-		}
-    	
+
     	for(int z = 0; z < getSize();z++) {
     		if (!(getElem(getSize()-1,z) instanceof Wall)) {
     			return false;
@@ -562,11 +559,7 @@ public class Matrice extends Element{
 
     public boolean can_enter_down() {
     	
-    	if(!this.is_here) {
-			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			return m.can_enter_down();
-		}
-    	
+
     	for(int z = 0; z < getSize();z++) {
     		if (!(getElem(0,z) instanceof Wall)) {
     			return false;
@@ -577,11 +570,7 @@ public class Matrice extends Element{
     
     public boolean can_enter_left() {
     	
-    	if(!this.is_here) {
-			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			return m.can_enter_left();
-		}
-    	
+
     	for(int z = 0; z < getSize();z++) {
     		if (!(getElem(z,getSize()-1) instanceof Wall)) {
     			return false;
@@ -592,11 +581,7 @@ public class Matrice extends Element{
     
     public boolean can_enter_right() {
     	
-    	if(!this.is_here) {
-			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			return m.can_enter_right();
-		}
-    	
+
     	for(int z = 0; z < getSize();z++) {
     		if (!(getElem(z,0) instanceof Wall)) {
     			return false;
@@ -824,6 +809,9 @@ public class Matrice extends Element{
         this.level[i][j] = elem;
     }
     
+    public void setIs_main(){
+    	is_main=true;
+    }
     
     public int getPos_x(){
         return pos_x;
