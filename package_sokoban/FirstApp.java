@@ -5,7 +5,6 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Random;
 
 //classe FirstApp qui est une JFrame et qui implement l'interface KeyListener
 public class FirstApp extends JFrame implements KeyListener{
@@ -15,7 +14,6 @@ public class FirstApp extends JFrame implements KeyListener{
     private JButton haut, bas, gauche, droite, information, commande, reset;
     private DrawLevel niveau;//le conteneur ou il y aura le niveau 
     private Image icone;//icone de la fenetre
-    private int r,g,b;//couleur du niveau
     private JFrame info_image;//fenetre qui donne certaines info_imagermations
     private JFrame info_commande;//fenetre qui donne les touche à utiliser
 
@@ -55,13 +53,6 @@ public class FirstApp extends JFrame implements KeyListener{
         niveau= new DrawLevel();
         niveau.setLayout(null);
         add(niveau);
-        
-        //on genere 3 nombres aleatoires qui feront la couleur du niveau
-        Random random = new Random();
-        r=random.nextInt(256);
-        g=random.nextInt(256);
-        b=random.nextInt(256);
-        niveau.setBackground(new Color(r, g, b));
        
         //on creeé les bouton "haut" "bas" "gauche" "droite" et grace à "conteneurMove" on ajoute ces 4 button dans le conteneur qui va se trouver en bas de la fenetre
         droite = new JButton("droite");
@@ -251,7 +242,7 @@ public class FirstApp extends JFrame implements KeyListener{
         info_image.add(text_joueur); //on met le texte a gauche du panel
         info_image.add(new Img("package_sokoban/Image/joueur.png")); //on ajoute l'image au panel
 
-        JTextArea text_vide =new JTextArea("Voici du vide");
+        JTextArea text_vide =new JTextArea("Le vide est de differente couleur\npour chaque niveau");
         text_vide.setEditable(false); //le texte ne peut pas etre modifier
         info_image.add(text_vide); //on met le texte a gauche du panel
         info_image.add(new Img("package_sokoban/Image/vide.png"));//on ajoute l'image au panel
