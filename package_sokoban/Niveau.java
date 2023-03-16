@@ -33,7 +33,7 @@ public class Niveau{
 
     public void chargerNiveauxMemoire(){
         this.niv_memoire= new HashMap<String,File>();
-        storeLevelsFiles(new File("outlevels"+File.separator).getAbsoluteFile(), niv_memoire, this.extension);        
+        storeLevelsFiles(new File("package_sokoban"+File.separator+"outlevels"+File.separator).getAbsoluteFile(), niv_memoire, this.extension);        
     }
 
     public String[] getListeniv(){
