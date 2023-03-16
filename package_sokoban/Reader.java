@@ -7,7 +7,7 @@ import java.util.regex.*;
 import java.util.*;
 import package_sokoban.*;
 
-public class Roter {
+public class Reader {
 	private Niveau lesniv;
 	private int niv_actuel;
 	private Element[][] tab_actuel;
@@ -15,7 +15,7 @@ public class Roter {
 	private Map map_actuel;
 
 	public static void main(String[] args) {
-		Roter lecteur = new Roter();
+		Reader lecteur = new Reader();
 
 		String[] map = sousMap(lecteur.envoyerLaMapEntiere());
 		String[] entete = enteteSousMap(lecteur.envoyerLaMapEntiere(), map);
@@ -41,7 +41,7 @@ public class Roter {
 		lecteur.lancerGameInTerminal();
 	}
 
-	public Roter() {
+	public Reader() {
 		lesniv = new Niveau();
 		niv_actuel = 0;
 	}
