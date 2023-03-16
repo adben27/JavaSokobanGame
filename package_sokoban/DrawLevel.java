@@ -26,15 +26,15 @@ public class DrawLevel extends JPanel implements Runnable{
         super();
 
         setLayout(null);
-        Box b= new Box(false, 'B');
-        Box c= new Box(false, 'C');        
-        Box d= new Box(false, 'D');        
-        Box e= new Box(false, 'E');        
-        Box f= new Box(false, 'F');        
-        Box g= new Box(false, 'G');        
-        Box h= new Box(false, 'H');        
-        Box i= new Box(false, 'I');
-        Box j= new Box(false, 'J');
+        Box b= new Box(false);
+        Box c= new Box(false);        
+        Box d= new Box(false);        
+        Box e= new Box(false);        
+        Box f= new Box(false);        
+        Box g= new Box(false);        
+        Box h= new Box(false);        
+        Box i= new Box(false);
+        Box j= new Box(false);
         Wall m= new Wall();
 
         p = new Player(false);
