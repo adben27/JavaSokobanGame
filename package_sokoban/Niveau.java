@@ -5,16 +5,9 @@ import java.util.*;
 
 public class Niveau{
     private String extension; // extension des fichiers de niveaux pour nous cette dernière sera en .txt
-    private int niveau_actuel;
     private String[] listeniv; // tableau des noms de niveaux
     private HashMap<String,File> niv_memoire; // HashMap des fichiers de niveaux en mémoire
-    private boolean niveauValide;
    
-    public static void main(String[] args) {  
-            
-    }
-
-    
     public Niveau(){
         niveau_actuel=0; 
         extension=".txt";
@@ -58,9 +51,4 @@ public class Niveau{
             System.out.println(nom);
         }
     }
-
-    public void getNiveau_actuel(){
-        System.out.println("Vous etes au Niveau :" + niveau_actuel + listeniv[niveau_actuel]); //Pour le joueur plutot 
-    }
-
 }
