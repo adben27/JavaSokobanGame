@@ -15,22 +15,21 @@ import java.lang.Character;
 public class Matrice extends Element{
     private String name;
     private int size;
-    private int pos_x, pos_x_copie;
-    private int pos_y, pos_y_copie;
-	private Element[][] level, copie;
-	private int[]  pos_x_cible, pos_y_cible;
+    private int pos_x;
+    private int pos_y;
+	private Element[][] level;
 	
 	//pour savoir si c'est le premier monde (matrice principale) (matrice qui contient les autres)
-	private boolean is_main, is_main_copie;
+	private boolean is_main;
 	
 	// pour savoir si le joueur est dans cette matrice
-	private boolean is_here, is_here_copie;
+	private boolean is_here;
 	
 	// pour savoir dans quelle monde est le joueur pos_x du monde pos_y du monde
 	// si le joueur est dans ce monde alors wrld_x = -1 et wrld_y = -1
 	// sinon si 
-	private int wrld_x, wrld_x_copie;
-	private int wrld_y, wrld_y_copie;
+	private int wrld_x;
+	private int wrld_y;
 	
 	// les attributs ci-dessous sont utilisé pour stocker les ancien mouvement ainsi que la disposition de base de la matrice afin de permettre de refaire le niveau en cas de bloquage
 	private Stack<Character> last_move;  // char is one of the primitive datatypes in Java, which cannot be used in generics. You can, however, substitute the wrapper java.lang.Character
@@ -40,17 +39,12 @@ public class Matrice extends Element{
         this.name="";
         this.size=0;
         this.level=new Element[0][0];
-		copie=new Element[0][0];
-		 pos_x_cible=new int[0];
-		pos_y_cible=new int[0];
         this.pos_x=0;
-		pos_x_copie=0;
         this.pos_y=0;
-		pos_y_copie=0;
         this.last_move=new Stack<Character>();
-        this.is_here=is_here_copie=true;
-        this.wrld_x=wrld_x_copie= -1;
-        this.wrld_y=wrld_y_copie= -1;
+        this.is_here=true;
+        this.wrld_x= -1;
+        this.wrld_y= -1;
     }
     
     //  constructeur qui initialise pos_x et pos_y a 0 utilisé par nandan pour la lecture de niveau
@@ -59,55 +53,36 @@ public class Matrice extends Element{
     	this.name=name;
         this.size=size;
         this.pos_x=0;
-		pos_x_copie=0;
         this.pos_y=0;
-		pos_y_copie=0;
         this.last_move=new Stack<Character>();
         this.is_here=true;
-		is_here_copie=true;
-        this.wrld_x=-1;
-		wrld_x_copie= -1;
-        this.wrld_y=-1;
-		wrld_y_copie= -1;
+        this.wrld_x= -1;
+        this.wrld_y= -1;
     }
     
     public Matrice(String name,char sign , boolean on_target, int size, Element[][] level, int x, int y, boolean is_here, boolean is_main, int wrld_x, int wrld_y){
         super(Character.toUpperCase(sign),true,on_target,sign);// On donne au constructeur un signe en majuscule mais l'affichage de base sera en minuscule et sur la cible sera en majuscule
-    	
-		this.name=name;
+    	this.name=name;
         this.size=size;
-
-		this.level=level;
-		copie = new Element[size][size];
-		
-		pos_x_cible=new int[11];
-		pos_y_cible=new int[11];
-
-		int a=0;
-		for (int i = 0; i < level.length; i++) {
-			for (int j = 0; j < level.length; j++) {
-				copie[i][j]=level[i][j];
-				if(level[i][j] instanceof Vide && level[i][j].on_target){			
-					 pos_x_cible[a]=j;
-					pos_y_cible[a]=i;
-					a++;
-				}
-			}
-		}
-
-        this.pos_x=pos_x_copie=x;
-        this.pos_y=pos_y_copie=y;
-
+        this.level=level;
+        this.pos_x=x;
+        this.pos_y=y;
         this.last_move=new Stack<Character>();
-
-        this.is_main=is_main_copie=is_main;
-        this.is_here=is_here_copie=is_here;
-
-        this.wrld_x=wrld_x_copie=wrld_x;
-        this.wrld_y=wrld_y_copie=wrld_y;
+        this.is_main=is_main;
+        this.is_here=is_here;
+        this.wrld_x= wrld_x;
+        this.wrld_y= wrld_y;
     }
     
     // première version des fonctions de fin de niveau pas opti mais bon on verra aprés pour ca
+    
+    public boolean estFini() {
+    	if(all_ontarget()) {
+    		return true;
+    	}
+    	return false;
+    }
+    
     public boolean all_ontarget() {
     	Element e;
     	
@@ -544,58 +519,22 @@ public class Matrice extends Element{
 				return ' ';
     	}
     }
-
-    //Comme sont nom l'indique sa reset la matrice
+    /*
+     * implémentation naive de la fonction reset qui appel la fonction ctrl_z jusqu'a ce qu'elle rende le char 'e' qui signifie que la pile last_move est vide
+     * en gros ca annule les mouvement un par un jusqu'a ce que le niveau soit reset
+     * 
+     * mais avec les monde récursive j'ai du ajouter un appel récursif pour reset les positions dans tout les niveau
+     */
     public void reset() {
-		int m=0;
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				level[i][j]=copie[i][j];
+    	for (int i=0;i<getSize();i++) {
+    		for (int j=0;j<getSize();j++) {
+        		if (getElem(i,j)instanceof Matrice) {
+        			((Matrice) getElem(i,j)).reset();
+        		}
+        	}
+    	}
+    	while(ctrl_z()!='e');
 
-				if(level[i][j].getSign()=='b'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='c'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='d'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='e'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='f'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='g'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='h'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='i'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='j'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='a'){
-					level[i][j].setOn_target(false);
-				}
-				if(i==pos_y_cible[m] && j==pos_x_cible[m]){
-					level[i][j].setOn_target(true);
-					m++;
-				}
-			}
-		}
-
-		pos_x=pos_x_copie;
-		pos_y=pos_y_copie;
-		wrld_x=wrld_x_copie;
-		wrld_y=wrld_y_copie;
-		is_here=is_here_copie;
-		is_main=is_main_copie;
-		last_move.clear();
     }
     
     /*
@@ -889,4 +828,5 @@ public class Matrice extends Element{
     public void setPos_y(int pos_y){
         this.pos_y=pos_y;
     }
+
 }
