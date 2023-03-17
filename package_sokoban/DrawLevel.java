@@ -1,6 +1,7 @@
 package package_sokoban;
 
 import java.awt.*;
+import java.util.Stack;
 
 import javax.swing.*;
 
@@ -22,8 +23,12 @@ public class DrawLevel extends JPanel implements Runnable{
 
     private Player p;//Le joueur
 
+    private Stack<Matrice> m;
+
     public DrawLevel() {
         super();
+
+        m=new Stack<Matrice>();
 
         setLayout(null);
         Box b= new Box(false, 'B');
@@ -41,21 +46,15 @@ public class DrawLevel extends JPanel implements Runnable{
         
         Vide v = new Vide(false);
         Vide y = new Vide(true);
-        Vide w = new Vide(true);
-        Vide x = new Vide(true);
-        Vide z = new Vide(true);
-        Vide k = new Vide(true);
-        Vide l = new Vide(true);
-        Vide s = new Vide(true);
 
         Element[][] tab_b={{m,m,m,m,v,m},
-                           {m,v,w,v,v,m},
+                           {m,v,v,v,v,m},
                            {m,v,v,v,v,m},
                            {m,v,v,b,v,m},
                            {v,v,v,v,v,m},
                            {m,m,m,m,m,m}};
 
-        Element[][] tab_c={{z,v,m,m,m,m,m},
+        Element[][] tab_c={{m,v,m,m,m,m,m},
                            {m,v,v,c,v,v,v},
                            {m,v,v,v,v,m,m},
                            {m,m,v,v,v,m,m},
@@ -64,7 +63,7 @@ public class DrawLevel extends JPanel implements Runnable{
                            {m,m,m,m,m,m,m}};
 
         Element[][] tab_d={{m,v,m,m,m},
-                           {m,x,v,m,m},
+                           {m,v,v,m,m},
                            {m,d,v,v,v},
                            {m,v,v,v,m},
                            {m,m,m,m,m}};
@@ -74,7 +73,7 @@ public class DrawLevel extends JPanel implements Runnable{
 
         Element[][] tab_f={{m,m,m,v,m},
                            {m,f,v,v,m},
-                           {m,v,v,l,m},
+                           {m,v,v,v,m},
                            {m,v,v,v,m},
                            {m,m,m,m,m}};
 
@@ -84,7 +83,7 @@ public class DrawLevel extends JPanel implements Runnable{
                            {m,v,v,v,v,v,v,v,m},
                            {m,v,v,v,g,v,v,v,m},
                            {m,v,v,v,v,v,v,v,m},
-                           {m,v,s,v,v,v,v,v,m},
+                           {m,v,v,v,v,v,v,v,m},
                            {m,v,v,v,v,v,v,v,m},
                            {m,m,m,m,m,m,m,m,m}};
 
@@ -111,14 +110,14 @@ public class DrawLevel extends JPanel implements Runnable{
         matriceJ=new Matrice("J", 'j', false, tab_j.length, tab_j, 0, 0, false, false,-1,-1);
         
         Element[][] tab={{m,m,m,m,m,m,m},
-                         {m,p,v,matriceB,matriceC,v,m},
+                         {m,v,v,matriceB,matriceC,v,m},
                          {m,v,v,matriceJ,v,matriceF,m},
-                         {m,v,v,v,v,matriceI,m},
+                         {m,p,v,v,v,matriceI,m},
                          {m,matriceE,v,y,v,matriceH,m},
                          {m,v,matriceG,v,v,matriceD,m},
                          {m,m,m,m,m,m,m}};
         
-        lvl=new Matrice("lvl", 'l', false, tab.length, tab,1,1, true, true,-1,-1);
+        lvl=new Matrice("lvl", 'l', false, tab.length, tab,3,1, true, true,-1,-1);
         
         //taille des images
         sizeImg=(int)getToolkit().getScreenSize().getHeight()/lvl.getSize()-20;
@@ -185,6 +184,27 @@ public class DrawLevel extends JPanel implements Runnable{
     //permet de mettre a jour le niveau
     public void update() {
         if (bas) {
+            /*----------------Permet d'afficher le monde ou le joueur rentre--------------------*
+            *                                                                                   *
+            *if (lvl.can_enter_down()) {                                                        *
+            *    m.push(lvl);                                                                   *
+            *    lvl=(Matrice)lvl.getElem(lvl.getPos_x()+1, lvl.getPos_y());                    *
+            *    lvl.setElem(0, 0, p);                                                          *
+            *    m.peek().setElem(m.peek().getPos_x(), m.peek().getPos_y(), new Vide(false));   *
+            *    lvl.setPos_x(0);                                                               *
+            *    lvl.setPos_y(0);                                                               *
+            *    bas=false;                                                                     *
+            *    return;                                                                        *
+            *}                                                                                  *
+            *-----------------------------------------------------------------------------------*/
+             
+            /*-------Permet d'afficher le monde ou le joueur rentre---------*
+             *                                                              *
+             *(rajouter une methode pour savoir si le joueur sort du monde) *
+             *                                                              *
+             *lvl=m.pop();                                                  *
+             *bas=false;                                                    *
+             *--------------------------------------------------------------*/
             lvl.move_down();
             bas=false;
         }
