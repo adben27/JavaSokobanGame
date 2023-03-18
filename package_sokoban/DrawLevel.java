@@ -46,6 +46,8 @@ public class DrawLevel extends JPanel implements Runnable{
         
         Vide v = new Vide(false);
         Vide y = new Vide(true);
+        Vide x = new Vide(true);
+        Vide z = new Vide(true);
 
         Element[][] tab_b={{m,m,m,m,v,m},
                            {m,v,v,v,v,m},
@@ -113,10 +115,10 @@ public class DrawLevel extends JPanel implements Runnable{
                          {m,v,v,v,v,v,v,v,m},
                          {m,v,v,v,matriceG,v,v,v,m},
                          {m,v,v,v,matriceF,v,v,v,m},
-                         {m,matriceC,matriceB,v,p,matriceD,matriceE,v,m},
+                         {m,v,matriceC,matriceB,p,matriceD,matriceE,v,m},
                          {m,v,v,v,v,v,v,v,m},
-                         {m,v,v,v,matriceH,v,v,v,m},
                          {m,v,v,v,matriceI,v,v,v,m},
+                         {m,v,v,v,matriceH,v,v,v,m},
                          {m,m,m,m,m,m,m,m,m}};
         
         lvl=new Matrice("lvl", 'l', false, tab.length, tab,4,4, true, true,-1,-1);
@@ -186,42 +188,61 @@ public class DrawLevel extends JPanel implements Runnable{
     //permet de mettre a jour le niveau
     public void update() {
         if (bas) {
-            /*----------------Permet d'afficher le monde ou le joueur rentre--------------------*
-            *                                                                                   *
-            *if (lvl.can_enter_down()) {                                                        *
-            *    m.push(lvl);                                                                   *
-            *    lvl=(Matrice)lvl.getElem(lvl.getPos_x()+1, lvl.getPos_y());                    *
-            *    lvl.setElem(0, 0, p);                                                          *
-            *    m.peek().setElem(m.peek().getPos_x(), m.peek().getPos_y(), new Vide(false));   *
-            *    lvl.setPos_x(0);                                                               *
-            *    lvl.setPos_y(0);                                                               *
-            *    bas=false;                                                                     *
-            *    return;                                                                        *
-            *}                                                                                  *
-            *-----------------------------------------------------------------------------------*/
-             
-            /*-------Permet d'afficher le monde ou le joueur rentre---------*
-             *                                                              *
-             *(rajouter une methode pour savoir si le joueur sort du monde) *
-             *                                                              *
-             *lvl=m.pop();                                                  *
-             *bas=false;                                                    *
-             *--------------------------------------------------------------*/
+            if (lvl.getElem(lvl.getPos_y()+1, lvl.getPos_x()).getClass() == Matrice.class &&
+                !lvl.can_move_down(lvl.getPos_x(), lvl.getPos_y()) &&
+                lvl.can_enter_up((Matrice) lvl.getElem(lvl.getPos_y()+1, lvl.getPos_x()))) {
+                m.push(lvl);                                                                   
+                lvl.move_down(lvl.getPos_x(), lvl.getPos_y());
+                lvl = (Matrice)lvl.getElem(lvl.getPos_y()+1, lvl.getPos_x());
+                bas=false;
+            }else{
+                lvl.move_down(lvl.getPos_x(), lvl.getPos_y());
+                bas=false;
+            }
 
-            lvl.move_down(lvl.getPos_x(), lvl.getPos_y());
-            bas=false;
+            /*(rajouter une methode pour savoir si le joueur sort du monde)
+             lvl=m.pop();
+             bas=false;
+            */
         }
         if (haut) {
-            lvl.move_up(lvl.getPos_x(), lvl.getPos_y());
-            haut=false;
+            if (lvl.getElem(lvl.getPos_y()-1, lvl.getPos_x()).getClass() == Matrice.class &&
+                !lvl.can_move_up(lvl.getPos_x(), lvl.getPos_y()) &&
+                lvl.can_enter_down((Matrice) lvl.getElem(lvl.getPos_y()-1, lvl.getPos_x()))){
+                m.push(lvl);                                                                   
+                lvl.move_up(lvl.getPos_x(), lvl.getPos_y());
+                lvl = (Matrice)lvl.getElem(lvl.getPos_y()-1, lvl.getPos_x());
+                haut=false;
+            }else{
+                lvl.move_up(lvl.getPos_x(), lvl.getPos_y());
+                haut=false;
+            }
         }
         if (gauche) {
-            lvl.move_left(lvl.getPos_x(), lvl.getPos_y());
-            gauche=false;
+            if (lvl.getElem(lvl.getPos_y(), lvl.getPos_x()-1).getClass() == Matrice.class &&
+                !lvl.can_move_left(lvl.getPos_x(), lvl.getPos_y()) &&
+                lvl.can_enter_right((Matrice) lvl.getElem(lvl.getPos_y(), lvl.getPos_x()-1))) {
+                m.push(lvl);                                                                   
+                lvl.move_left(lvl.getPos_x(), lvl.getPos_y());
+                lvl = (Matrice)lvl.getElem(lvl.getPos_y(), lvl.getPos_x()-1);
+                gauche=false;
+            }else{
+                lvl.move_left(lvl.getPos_x(), lvl.getPos_y());
+                gauche=false;
+            }
         }
         if (droite) {
-            lvl.move_right(lvl.getPos_x(), lvl.getPos_y());
-            droite=false;
+            if (lvl.getElem(lvl.getPos_y(), lvl.getPos_x()+1).getClass() == Matrice.class &&
+                !lvl.can_move_right(lvl.getPos_x(), lvl.getPos_y()) &&
+                lvl.can_enter_left((Matrice) lvl.getElem(lvl.getPos_y(), lvl.getPos_x()+1))) {
+                m.push(lvl);                                                                   
+                lvl.move_right(lvl.getPos_x(), lvl.getPos_y());
+                lvl = (Matrice)lvl.getElem(lvl.getPos_y(), lvl.getPos_x()+1);
+                droite=false;
+            }else{
+                lvl.move_right(lvl.getPos_x(), lvl.getPos_y());
+                droite=false;
+            }
         }
         if (ctrlZ) {
             lvl.ctrl_z();
@@ -450,7 +471,8 @@ public class DrawLevel extends JPanel implements Runnable{
             }
         }
     }
-    public void resetAll() {
+
+    public void resetAll() {        
         lvl.reset();
         matriceB.reset();
         matriceC.reset();
