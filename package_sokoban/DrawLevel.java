@@ -109,15 +109,17 @@ public class DrawLevel extends JPanel implements Runnable{
         matriceI=new Matrice("I", 'i', false, tab_i.length, tab_i, 0, 0, false, false,-1,-1);
         matriceJ=new Matrice("J", 'j', false, tab_j.length, tab_j, 0, 0, false, false,-1,-1);
         
-        Element[][] tab={{m,m,m,m,m,m,m},
-                         {m,v,v,matriceB,matriceC,v,m},
-                         {m,v,v,matriceJ,v,matriceF,m},
-                         {m,p,v,v,v,matriceI,m},
-                         {m,matriceE,v,y,v,matriceH,m},
-                         {m,v,matriceG,v,v,matriceD,m},
-                         {m,m,m,m,m,m,m}};
+        Element[][] tab={{m,m,m,m,m,m,m,m,m},
+                         {m,v,v,v,v,v,v,v,m},
+                         {m,v,v,v,matriceG,v,v,v,m},
+                         {m,v,v,v,matriceF,v,v,v,m},
+                         {m,matriceC,matriceB,v,p,matriceD,matriceE,v,m},
+                         {m,v,v,v,v,v,v,v,m},
+                         {m,v,v,v,matriceH,v,v,v,m},
+                         {m,v,v,v,matriceI,v,v,v,m},
+                         {m,m,m,m,m,m,m,m,m}};
         
-        lvl=new Matrice("lvl", 'l', false, tab.length, tab,3,1, true, true,-1,-1);
+        lvl=new Matrice("lvl", 'l', false, tab.length, tab,4,4, true, true,-1,-1);
         
         //taille des images
         sizeImg=(int)getToolkit().getScreenSize().getHeight()/lvl.getSize()-20;
@@ -205,19 +207,20 @@ public class DrawLevel extends JPanel implements Runnable{
              *lvl=m.pop();                                                  *
              *bas=false;                                                    *
              *--------------------------------------------------------------*/
-            lvl.move_down();
+
+            lvl.move_down(lvl.getPos_x(), lvl.getPos_y());
             bas=false;
         }
         if (haut) {
-            lvl.move_up();
+            lvl.move_up(lvl.getPos_x(), lvl.getPos_y());
             haut=false;
         }
         if (gauche) {
-            lvl.move_left();
+            lvl.move_left(lvl.getPos_x(), lvl.getPos_y());
             gauche=false;
         }
         if (droite) {
-            lvl.move_right();
+            lvl.move_right(lvl.getPos_x(), lvl.getPos_y());
             droite=false;
         }
         if (ctrlZ) {
