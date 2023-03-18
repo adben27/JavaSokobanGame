@@ -44,7 +44,7 @@ public class FirstApp extends JFrame implements KeyListener{
         setLocationRelativeTo(null); //On centre la fenetre par rapport à l'écran ici le "bureau de travail"
 
         //creation de l'icone des fenetre
-        icone = getToolkit().getImage("Image/joueur.png");
+        icone = getToolkit().getImage("package_sokoban/Image/joueur.png");
         setIconImage(icone);
         info_commande.setIconImage(icone);
         info_image.setIconImage(icone);
