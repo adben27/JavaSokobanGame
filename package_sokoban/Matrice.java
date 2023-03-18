@@ -37,7 +37,7 @@ public class Matrice extends Element{
 	private int wrld_y, wrld_y_copie;
 	
 	// les attributs ci-dessous sont utilisé pour stocker les ancien mouvement ainsi que la disposition de base de la matrice afin de permettre de refaire le niveau en cas de bloquage
-	private Stack<Character> last_move;  // char is one of the primitive datatypes in Java, which cannot be used in generics. You can, however, substitute the wrapper java.lang.Character
+	private Stack<Element[][]> last_move;  // char is one of the primitive datatypes in Java, which cannot be used in generics. You can, however, substitute the wrapper java.lang.Character
     
 	public Matrice(){
     	super('M',true,false,'m');
@@ -49,7 +49,7 @@ public class Matrice extends Element{
 		pos_y_cible=new int[0];
         this.pos_x=pos_x_copie=0;
         this.pos_y=pos_y_copie=0;
-        this.last_move=new Stack<Character>();
+        this.last_move=new Stack<Element[][]>();
         this.is_here=true;
         this.wrld_x= wrld_x_copie=-1;
         this.wrld_y= wrld_y_copie=-1;
@@ -69,7 +69,7 @@ public class Matrice extends Element{
         this.size=size;
         this.pos_x= pos_x_copie=0;
         this.pos_y= pos_y_copie=0;
-        this.last_move=new Stack<Character>();
+        this.last_move=new Stack<Element[][]>();
         this.is_here= is_here_copie=true;
         this.wrld_x=wrld_x_copie= -1;
         this.wrld_y=wrld_y_copie= -1;
@@ -112,7 +112,7 @@ public class Matrice extends Element{
 
         this.pos_x=pos_x_copie=x;
         this.pos_y=pos_y_copie=y;
-        this.last_move=new Stack<Character>();
+        this.last_move=new Stack<Element[][]>();
         this.is_main=is_main_copie= is_main;
         this.is_here=is_here_copie =is_here;
         this.wrld_x=wrld_x_copie= wrld_x;
@@ -123,7 +123,7 @@ public class Matrice extends Element{
         r=random.nextInt(256);
         g=random.nextInt(256);
         b=random.nextInt(256);
-        color = (new Color(r, g, b));
+        color = new Color(r, g, b);
     }
     
     // première version des fonctions de fin de niveau pas opti mais bon on verra aprés pour ca
@@ -177,10 +177,10 @@ public class Matrice extends Element{
     /**
      * permet d'échanger les elements de deux cellules
      * si l'un des elements est le player actualise les parametres pos_x et pos_y de la matrice
-     * @param i pos_x de la cellule 1
-     * @param j pos_y de la cellule 1
-     * @param a pos_x de la cellule 2
-     * @param b pos_y de la cellule 2
+     * @param i pos_y de la cellule 1
+     * @param j pos_x de la cellule 1
+     * @param a pos_y de la cellule 2
+     * @param b pos_x de la cellule 2
      */
     public void swap(int i, int j, int a, int b){
         Element temp = getElem(i, j);
@@ -188,12 +188,12 @@ public class Matrice extends Element{
         	return;/*faut ajouter un catch d'erreur ici*/
         }
         if(getElem(i,j) instanceof Player){/*il ne peut pas y avoir deux joueurs normalement faudrait ajouter un test peut être apres*/
-            setPos_x(a);
-            setPos_y(b);
+            setPos_x(b);
+            setPos_y(a);
         }
         if(getElem(a,b) instanceof Player){
-            setPos_x(i);
-            setPos_y(j);
+            setPos_x(j);
+            setPos_y(i);
         }
         if(getElem(i,j).isOn_target()!=getElem(a,b).isOn_target()) {
         	getElem(i,j).setOn_target(!getElem(i,j).isOn_target());
@@ -208,124 +208,81 @@ public class Matrice extends Element{
      */
 	public boolean can_move(char c) {
 		if (Character.compare(c, 'z') == 0) {
-			return can_move_up();
+			return can_move_up(pos_y, pos_x);
 		}
 		if (Character.compare(c, 's') == 0) {
-			return can_move_down();
+			return can_move_down(pos_y, pos_x);
 		}
 		if (Character.compare(c, 'q') == 0) {
-			return can_move_left();
+			return can_move_left(pos_y, pos_x);
 		}
 		if (Character.compare(c, 'd') == 0) {
-			return can_move_right();
+			return can_move_right(pos_y, pos_x);
 		}
 		return false;
 	}
 	/*
 	 * Série de fonctions qui vérifient si le mouvement est possible dans les 4 directions cardinales 
 	 */
-	public boolean can_move_up() {
+	public boolean can_move_up(int x, int y) {
 		if(!this.is_here) {
 			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			return m.can_move_up();
+			return m.can_move_up(m.getPos_x(), m.getPos_y());
 		}
-		int i = getPos_x();
-		int j = getPos_y();
-		if (this.getElem(i - 1, j) instanceof Wall) {
+		if (this.getElem(y-1, x).getClass() == Wall.class)
 			return false;
-		} else {
-			if (this.getElem(i - 1, j) instanceof Box) {
-				if (this.getElem(i - 2, j) instanceof Vide) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-			if (this.getElem(i - 1, j) instanceof Matrice) {
-				if(((Matrice) getElem(i - 1,j)).can_enter_up()) {
-					return true;
-				}
-			}
+		else if(this.getElem(y-1, x).getClass() == Box.class)
+			return can_move_up(x, y-1);
+		else if(this.getElem(y-1, x).getClass() == Matrice.class)
+			return can_move_up(x, y-1);
+		else
 			return true;
-		}
 	}
     
-	public boolean can_move_down() {
+	public boolean can_move_down(int x, int y) {
 		if(!this.is_here) {
 			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			return m.can_move_down();
+			return m.can_move_down(m.getPos_x(), m.getPos_y());
 		}
-		int i = getPos_x();
-		int j = getPos_y();
-		if (this.getElem(i + 1, j) instanceof Wall) {
+		
+		if(this.getElem(y+1, x).getClass() == Matrice.class)
+			return can_move_down(x, y+1);
+		else if (this.getElem(y+1, x).getClass() == Wall.class)
 			return false;
-		} else {
-			if (this.getElem(i + 1, j) instanceof Box) {
-				if (this.getElem(i + 2, j) instanceof Vide) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-			if (this.getElem(i + 1, j) instanceof Matrice) {
-				if(((Matrice) getElem(i + 1,j)).can_enter_down()) {
-					return true;
-				}
-			}
+		else if(this.getElem(y+1, x).getClass() == Box.class)
+			return can_move_down(x,y+1);
+		else
 			return true;
-		}
 	}
     
-	public boolean can_move_right() {
+	public boolean can_move_right(int x, int y) {
 		if(!this.is_here) {
 			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			return m.can_move_right();
+			return m.can_move_right(m.getPos_x(), m.getPos_y());
 		}
-		int i = getPos_x();
-		int j = getPos_y();
-		if (this.getElem(i, j + 1) instanceof Wall) {
+		if (this.getElem(y, x+1).getClass() == Wall.class)
 			return false;
-		} else {
-			if (this.getElem(i, j + 1) instanceof Box) {
-				if (this.getElem(i, j + 2) instanceof Vide) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-			if (this.getElem(i , j + 1) instanceof Matrice) {
-				if(((Matrice) getElem(i , j + 1)).can_enter_right()) {
-					return true;
-				}
-			}
+		else if(this.getElem(y, x+1).getClass() == Box.class)
+			return can_move_right(x+1, y);
+		else if(this.getElem(y, x+1).getClass() == Matrice.class)
+			return can_move_right(x+1, y);
+		else
 			return true;
-		}
 	}
 	
-	public boolean can_move_left() {
+	public boolean can_move_left(int x, int y) {
 		if(!this.is_here) {
 			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			return m.can_move_left();
+			return m.can_move_left(m.getPos_x(), m.getPos_y());
 		}
-		int i = getPos_x();
-		int j = getPos_y();
-		if(this.getElem(i , j - 1) instanceof Wall){
+		if (this.getElem(y, x-1).getClass() == Wall.class)
 			return false;
-        }else{
-            if(this.getElem(i , j - 1) instanceof Box){
-                if(this.getElem(i , j - 2) instanceof Vide){
-                    return true;
-                }else{
-                    return false;
-                }
-            }
-            if (this.getElem(i , j - 1) instanceof Matrice) {
-				if(((Matrice) getElem(i , j - 1)).can_enter_left()) {
-					return true;
-				}
-			}
-            return true;
-        }
+		else if(this.getElem(y, x-1).getClass() == Box.class)
+			return can_move_left(x-1, y);
+		else if(this.getElem(y, x-1).getClass() == Matrice.class)
+			return can_move_left(x-1, y);
+		else
+			return true;
     }
     /*
      * fonction qui regroupe les quatre fonctions de mouvement ainsi qu'un scanner pour effectuer le mouvement en fonction de l'input du joueur
@@ -335,178 +292,160 @@ public class Matrice extends Element{
             Scanner console = new Scanner(System.in);
             char c = console.nextLine().charAt(0);
             if(Character.compare(c,'z')==0){
-                move_up();
+                move_up(pos_y, pos_x);
                 return;
             }
             if(Character.compare(c,'s')==0){
-                move_down();
+                move_down(pos_y, pos_x);
                 return;
             }
             if(Character.compare(c,'q')==0){
-                move_left();
+                move_left(pos_y, pos_x);
                 return;
             }
             if(Character.compare(c,'d')==0){
-                move_right();
+                move_right(pos_y, pos_x);
                 return;
             }
         }
     /*
 	 * Série de fonctions qui  effectuent le mouvement dans les 4 directions cardinales, sont utilisé dans le fonction move()
 	 */
-    public void move_up(){
-    	if(!can_move_up()) {
+    public void move_up(int x, int y){
+    	if(!can_move_up(x, y)) {
     		System.out.print("can't move there\n");
     		return;
     	}
     	
     	if(!this.is_here) {
 			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			m.move_up();
+			m.move_up(m.getPos_x(), m.getPos_y());
 			return;
 		}
     	
-    	if(last_move.isEmpty()) {
-    		last_move.push('z');
+    	last_move.push(level);
     	
-    	}else {
-    		if(last_move.peek().equals('r')) {
-    			last_move.pop();
-    		}else {
-    			last_move.push('z');
-    		}
-    	}
-
-    	
-        if(this.getElem(getPos_x()-1,getPos_y()) instanceof Vide){
-            swap(getPos_x(),getPos_y(),getPos_x()-1,getPos_y());
+        if(this.getElem(y-1, x) instanceof Vide){
+            swap(y, x, y-1, x);
         }else{
-            if(this.getElem(getPos_x()-1,getPos_y()) instanceof Box){
-                if(this.getElem(getPos_x()-2,getPos_y()) instanceof Vide){
-                	last_move.push('+');
-                    swap(getPos_x()-1,getPos_y(),getPos_x()-2,getPos_y());
-                    swap(getPos_x(),getPos_y(),getPos_x()-1,getPos_y());
-                }
+            if(this.getElem(y-1, x) instanceof Box){
+				move_up(x, y-1);
             }
-            if(this.getElem(getPos_x()-1,getPos_y()) instanceof Matrice) {
-            	this.enter_up((Matrice)getElem(getPos_x()-1,getPos_y()));
+            if(this.getElem(y-1, x) instanceof Matrice) {
+				if (can_move_up(x, y-1)) {
+					move_up(x, y-1);
+				} else {
+					enter_down((Matrice)getElem(y-1, x));
+				}
             }
+			swap(y-1, x, y, x);
         }
     }
    
-    public void move_down(){
-    	
-    	if(!can_move_down()) {
+    public void move_down(int x, int y){
+    	if(!can_move_down(x, y)) {
     		System.out.print("can't move there\n");
     		return;
     	}
     	
     	if(!this.is_here) {
 			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			m.move_down();
+			m.move_down(m.getPos_x(), m.getPos_y());
 			return;
 		}
     	
-    	if(last_move.isEmpty()) {
-    		last_move.push('s');
-    	
-    	}else {
-    		if(last_move.peek().equals('r')) {
-    			last_move.pop();
-    		}else {
-    			last_move.push('s');
-    		}
-    	}
+    	last_move.push(level);
 
-        if(this.getElem(getPos_x()+1,getPos_y()) instanceof Vide){
-            swap(getPos_x(),getPos_y(),getPos_x()+1,getPos_y());
+        if(this.getElem(y+1, x) instanceof Vide){
+            swap(y, x, y+1, x);
         }else{
-            if(this.getElem(getPos_x()+1,getPos_y()) instanceof Box){
-                if(this.getElem(getPos_x()+2,getPos_y()) instanceof Vide){
-                	last_move.push('+');
-                    swap(getPos_x()+1,getPos_y(),getPos_x()+2,getPos_y());
-                    swap(getPos_x(),getPos_y(),getPos_x()+1,getPos_y());
+            if(this.getElem(y+1, x) instanceof Box){
+				move_down(x, y+1);
+                if(this.getElem(y+2, x) instanceof Vide){
+                    swap(y+1, x, y+2, x);
+                    swap(y, x, y+1, x);
                 }
             }
-            if(this.getElem(getPos_x()+1,getPos_y()) instanceof Matrice) {
-            	this.enter_up((Matrice)getElem(getPos_x()+1,getPos_y()));
+            if(this.getElem(y+1, x) instanceof Matrice) {
+				if (can_move_down(x, y+1)) {
+					move_down(x, y+1);
+				} else {
+					enter_up((Matrice)getElem(y+1, x));
+				}
             }
+			swap(y, x, y+1, x);
+		}
+    }
+
+    public void move_right(int x, int y){
+    	if(!can_move_right(x, y)) {
+    		System.out.print("can't move there\n");
+    		return;
+    	}
+    	
+    	if(!this.is_here) {
+			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
+			m.move_right(m.getPos_x(), m.getPos_y());
+			return;
+		}
+    	
+    	last_move.push(level);
+    	
+        if(this.getElem(y, x+1) instanceof Vide){
+            swap(y, x, y, x+1);
+        }else{
+            if(this.getElem(y, x+1) instanceof Box){
+				move_right(x+1, y);
+                if(this.getElem(y, x+2) instanceof Vide){
+                    swap(y, x+1, y, x+2);
+                    swap(y, x+1, y, x);
+                }
+            }
+            if(this.getElem(y, x+1) instanceof Matrice) {
+            	if (can_move_right(x+1, y)) {
+					move_right(x+1, y);
+				} else {
+					enter_left((Matrice)getElem(y, x+1));
+				}
+            }
+			swap(y, x, y, x+1);
         }
     }
 
-    public void move_right(){
-    	if(!can_move_right()) {
+    public void move_left(int x, int y){
+    	if(!can_move_left(x, y)) {
     		System.out.print("can't move there\n");
     		return;
     	}
     	
     	if(!this.is_here) {
 			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			m.move_right();
+			m.move_left(m.getPos_x(), m.getPos_y());
 			return;
 		}
     	
-    	if(last_move.isEmpty()) {
-    		last_move.push('d');
-    	}else {
-    		if(last_move.peek().equals('r')) {
-    			last_move.pop();
-    		}else {
-    			last_move.push('d');
-    		}
-    	}
-    	
-    	
-        if(this.getElem(getPos_x(),getPos_y()+1) instanceof Vide){
-            swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()+1);
-        }else{
-            if(this.getElem(getPos_x(),getPos_y()+1) instanceof Box){
-                if(this.getElem(getPos_x(),getPos_y()+2) instanceof Vide){
-                	last_move.push('+');
-                    swap(getPos_x(),getPos_y()+1,getPos_x(),getPos_y()+2);
-                    swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()+1);}
-            }
-            if(this.getElem(getPos_x(),getPos_y()+1) instanceof Matrice) {
-            	this.enter_up((Matrice)getElem(getPos_x(),getPos_y()+1));
-            }
-        }
-    }
+    	last_move.push(level);
 
-    public void move_left(){
-    	if(!can_move_left()) {
-    		System.out.print("can't move there\n");
-    		return;
-    	}
-    	
-    	if(!this.is_here) {
-			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			m.move_left();
-			return;
-		}
-    	
-    	if(last_move.isEmpty()) {
-    		last_move.push('q');
-    	}else {
-    		if(last_move.peek().equals('r')) {
-    			last_move.pop();
-    		}else {
-    			last_move.push('q');
-    		}
-    	}
-
-        if(this.getElem(getPos_x(),getPos_y()-1) instanceof Vide){
-            swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()-1);
+        if(this.getElem(y, x-1) instanceof Vide){
+            swap(y, x, y, x-1);
         }else{
-            if(this.getElem(getPos_x(),getPos_y()-1) instanceof Box){
-                if(this.getElem(getPos_x(),getPos_y()-2) instanceof Vide){
-                	last_move.push('+');
-                    swap(getPos_x(),getPos_y()-1,getPos_x(),getPos_y()-2);
-                    swap(getPos_x(),getPos_y(),getPos_x(),getPos_y()-1);
+            if(this.getElem(y, x-1) instanceof Box){
+				move_left(x-1, y);
+                if(this.getElem(y,x-2) instanceof Vide){
+                    swap(y, x-1, y, x-2);
+                    swap(y, x-1, y, x);
                 }
             }
-            if(this.getElem(getPos_x(),getPos_y()-1) instanceof Matrice) {
-            	this.enter_up((Matrice)getElem(getPos_x(),getPos_y()-1));
+            if(this.getElem(y, x-1) instanceof Matrice) {
+            	if (can_move_left(x-1, y)) {
+					move_left(x-1, y);
+				} else {
+					if (can_enter_right((Matrice)getElem(y, x-1))) {
+						enter_right((Matrice)getElem(y, x-1));
+					}
+				}
             }
+			swap(y, x, y, x-1);
         }
     }
     /*
@@ -519,57 +458,19 @@ public class Matrice extends Element{
      * 
      * la fonction retourne e si la pile est empty cela est utilisé dans la fonction reset pour revenir a l'etat de base du niveau
      */
-    public Character ctrl_z() {
+    public void ctrl_z() {
     	
     	// ici ctrl_z récrusif pas encore au point
     	if(!this.is_here) {
 			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			return m.ctrl_z();
+			m.ctrl_z();
+			return;
 		}
     	
-    	if(last_move.empty()) {
-    		return 'e';
-    	}
+    	if(last_move.empty())
+    		return;
     	
-    	switch(last_move.pop()) {
-    		case '+':
-    				switch(ctrl_z()) {
-    					case 'z':
-    						swap(getPos_x()-1,getPos_y(),getPos_x()-2,getPos_y());
-    		    			return 'z';
-    					case 's':
-    						swap(getPos_x()+1,getPos_y(),getPos_x()+2,getPos_y());
-    		    			return 's';
-    					case 'q':
-    						swap(getPos_x(),getPos_y()-1,getPos_x(),getPos_y()-2);
-    		    			return 'q';
-    					case 'd':
-    						swap(getPos_x(),getPos_y()+1,getPos_x(),getPos_y()+2);
-    		    			return 'd';
-    					default:
-    						System.err.println("ERREUR FUNC CTRL_Z");
-    						return ' ';
-    				}
-    		case 'z':
-    			last_move.push('r');
-    			move_down();
-    			return 'z';
-    		case 's':
-    			last_move.push('r');
-    			move_up();
-    			return 's';
-    		case 'q':
-    			last_move.push('r');
-    			move_right();
-    			return 'q';
-    		case 'd':
-    			last_move.push('r');
-    			move_left();
-    			return 'd';
-    		default:
-				System.err.println("ERREUR FUNC CTRL_Z");
-				return ' ';
-    	}
+    	level=last_move.pop();
     }
     
 	//Comme sont nom l'indique sa reset la matrice
@@ -634,48 +535,36 @@ public class Matrice extends Element{
      * j'ai pas fait le cas ou on rentre directement dans un autre monde
      */
     
-    public boolean can_enter_up() {
-    	
-
-    	for(int z = 0; z < getSize();z++) {
-    		if (!(getElem(getSize()-1,z) instanceof Wall)) {
-    			return false;
-    		}
-    	}
-    	return true;
+    public boolean can_enter_up(Matrice m) {
+    	for(int z = 0; z < size;z++)
+    		if (m.getElem(size-1,z) instanceof Vide)
+    			return true;
+    		
+    	return false;
     }
 
-    public boolean can_enter_down() {
-    	
-
-    	for(int z = 0; z < getSize();z++) {
-    		if (!(getElem(0,z) instanceof Wall)) {
-    			return false;
-    		}
-    	}
-    	return true;
+    public boolean can_enter_down(Matrice m) {
+		for(int z = 0; z < size;z++)
+    		if (m.getElem(0,z) instanceof Vide)
+    			return true;
+ 		
+		return false;
     }
     
-    public boolean can_enter_left() {
-    	
+    public boolean can_enter_left(Matrice m) {
+    	for(int z = 0; z < size;z++)
+    		if (m.getElem(z,size-1) instanceof Vide)
+    			return true;
 
-    	for(int z = 0; z < getSize();z++) {
-    		if (!(getElem(z,getSize()-1) instanceof Wall)) {
-    			return false;
-    		}
-    	}
-    	return true;
+    	return false;
     }
     
-    public boolean can_enter_right() {
-    	
-
-    	for(int z = 0; z < getSize();z++) {
-    		if (!(getElem(z,0) instanceof Wall)) {
-    			return false;
-    		}
-    	}
-    	return true;
+    public boolean can_enter_right(Matrice m) {
+    	for(int z = 0; z < size;z++)
+    		if (m.getElem(z,0) instanceof Vide)
+    			return true;
+    		
+    	return false;
     }
     
     /*
@@ -684,60 +573,60 @@ public class Matrice extends Element{
      * on connait deja l'autre coordonee car elle depend de la direction (voir fonctions enter_dir)
      * c'est la meme chose que les fonction can_enter_dir mais il retourne le vide par ou le joueur peut rentrer
      */
-    public int get_entry_up() {
+    public int get_entry_up(Matrice m) {
     	
     	if(!this.is_here) {
-			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			return m.get_entry_up();
+			Matrice a =(Matrice) this.getElem(wrld_x, wrld_y);
+			return a.get_entry_up(a);
 		}
     	
-    	for(int z = 0; z < getSize();z++) {
-    		if ((getElem(getSize()-1,z) instanceof Vide)) {
+    	for(int z = 0; z < m.size;z++) {
+    		if ((m.getElem(size-1,z) instanceof Vide)) {
     			return z;
     		}
     	}
     	return 0;
     }
     
-    public int get_entry_down() {
+    public int get_entry_down(Matrice m) {
     	
     	if(!this.is_here) {
-			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			return m.get_entry_down();
+			Matrice a =(Matrice) this.getElem(wrld_x, wrld_y);
+			return a.get_entry_down(a);
 		}
     	
-    	for(int z = 0; z < getSize();z++) {
-    		if ((getElem(0,z) instanceof Vide)) {
+    	for(int z = 0; z < m.size;z++) {
+    		if ((m.getElem(0,z) instanceof Vide)) {
     			return z;
     		}
     	}
     	return 0;
     }
 
-    public int get_entry_left() {
+    public int get_entry_left(Matrice m) {
     	
     	if(!this.is_here) {
-			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			return m.get_entry_left();
+			Matrice a =(Matrice) this.getElem(wrld_x, wrld_y);
+			return a.get_entry_left(a);
 		}
     	
-    	for(int z = 0; z < getSize();z++) {
-    		if ((getElem(z,getSize()-1) instanceof Vide)) {
+    	for(int z = 0; z < m.size;z++) {
+    		if ((m.getElem(z,size-1) instanceof Vide)) {
     			return z;
     		}
     	}
     	return 0;
     }
     
-    public int get_entry_right() {
+    public int get_entry_right(Matrice m) {
     	
     	if(!this.is_here) {
-			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			return m.get_entry_right();
+			Matrice a =(Matrice) this.getElem(wrld_x, wrld_y);
+			return a.get_entry_right(a);
 		}
     	
-    	for(int z = 0; z < getSize();z++) {
-    		if ((getElem(z,0) instanceof Vide)) {
+    	for(int z = 0; z < m.size;z++) {
+    		if ((m.getElem(z,0) instanceof Vide)) {
     			return z;
     		}
     	}
@@ -756,76 +645,76 @@ public class Matrice extends Element{
     	
     	if(!this.is_here) {
 			Matrice n =(Matrice) this.getElem(wrld_x, wrld_y);
-			n.get_entry_up();
+			n.get_entry_up(n);
 			return;
 		}
     	
     	//pour échanger l'attribut on_target si a l'entré du sous-monde il y'a une cible
-    	if(m.getElem(m.getSize()-1,get_entry_up()).isOn_target()||getElem(getPos_x(), getPos_y()).isOn_target()) {
-    		m.getElem(m.getSize()-1,get_entry_up()).setOn_target(!m.getElem(m.getSize()-1,get_entry_up()).isOn_target());
-    		getElem(getPos_x(), getPos_y()).setOn_target(!getElem(getPos_x(), getPos_y()).isOn_target());
+    	if(m.getElem(m.getSize()-1,get_entry_up(m)).isOn_target()||getElem(pos_y, pos_x).isOn_target()) {
+    		m.getElem(m.getSize()-1,get_entry_up(m)).setOn_target(!m.getElem(m.getSize()-1,get_entry_up(m)).isOn_target());
+    		getElem(pos_y, pos_x).setOn_target(!getElem(pos_y, pos_x).isOn_target());
         }
     	
-    	Element temp = m.getElem(m.getSize()-1,get_entry_up());
-    	m.setElem(m.getSize()-1,get_entry_up(),this.getElem(getPos_x(), getPos_y()));
-    	this.setElem(getPos_x(), getPos_y(), temp);
+    	Element temp = m.getElem(m.getSize()-1,get_entry_up(m));
+    	m.setElem(m.getSize()-1,get_entry_up(m),this.getElem(pos_y, pos_x));
+    	this.setElem(pos_y, pos_x, temp);
     }
     
     public void enter_down(Matrice m) {
     	
     	if(!this.is_here) {
 			Matrice n =(Matrice) this.getElem(wrld_x, wrld_y);
-			n.get_entry_down();
+			n.get_entry_down(n);
 			return;
 		}
     	
     	//pour échanger l'attribut on_target si a l'entré du sous-monde il y'a une cible
-    	if(m.getElem(0,get_entry_up()).isOn_target()||getElem(getPos_x(), getPos_y()).isOn_target()) {
-    		m.getElem(0,get_entry_up()).setOn_target(!m.getElem(0,get_entry_up()).isOn_target());
-    		getElem(getPos_x(), getPos_y()).setOn_target(!getElem(getPos_x(), getPos_y()).isOn_target());
+    	if(m.getElem(0,get_entry_down(m)).isOn_target()||getElem(pos_y, pos_x).isOn_target()) {
+    		m.getElem(0,get_entry_down(m)).setOn_target(!m.getElem(0,get_entry_down(m)).isOn_target());
+    		getElem(pos_y, pos_x).setOn_target(!getElem(pos_y, pos_x).isOn_target());
         }
     	
-    	Element temp = m.getElem(0,get_entry_up());
-    	m.setElem(0,get_entry_up(),this.getElem(getPos_x(), getPos_y()));
-    	this.setElem(getPos_x(), getPos_y(), temp);
+    	Element temp = m.getElem(0,get_entry_down(m));
+    	m.setElem(0,get_entry_down(m),this.getElem(pos_y, pos_x));
+    	this.setElem(pos_y, pos_x, temp);
     }
     
     public void enter_left(Matrice m) {
     	
     	if(!this.is_here) {
 			Matrice n =(Matrice) this.getElem(wrld_x, wrld_y);
-			n.get_entry_left();
+			n.get_entry_left(n);
 			return;
 		}
     	
     	//pour échanger l'attribut on_target si a l'entré du sous-monde il y'a une cible
-    	if(m.getElem(get_entry_up(),m.getSize()-1).isOn_target()||getElem(getPos_x(), getPos_y()).isOn_target()) {
-    		m.getElem(get_entry_up(),m.getSize()-1).setOn_target(!m.getElem(get_entry_up(),m.getSize()-1).isOn_target());
-    		getElem(getPos_x(), getPos_y()).setOn_target(!getElem(getPos_x(), getPos_y()).isOn_target());
+    	if(m.getElem(get_entry_left(m),m.getSize()-1).isOn_target()||getElem(pos_y, pos_x).isOn_target()) {
+    		m.getElem(get_entry_left(m),m.getSize()-1).setOn_target(!m.getElem(get_entry_left(m),m.getSize()-1).isOn_target());
+    		getElem(pos_y, pos_x).setOn_target(!getElem(pos_y, pos_x).isOn_target());
         }
     	
-    	Element temp = m.getElem(get_entry_up(),m.getSize()-1);
-    	m.setElem(get_entry_up(),m.getSize()-1,this.getElem(getPos_x(), getPos_y()));
-    	this.setElem(getPos_x(), getPos_y(), temp);
+    	Element temp = m.getElem(get_entry_left(m),m.getSize()-1);
+    	m.setElem(get_entry_left(m),m.getSize()-1,this.getElem(pos_y, pos_x));
+    	this.setElem(pos_y, pos_x, temp);
     }
     
     public void enter_right(Matrice m) {
     	
     	if(!this.is_here) {
 			Matrice n =(Matrice) this.getElem(wrld_x, wrld_y);
-			n.get_entry_right();
+			n.get_entry_right(n);
 			return;
 		}
     	
     	//pour échanger l'attribut on_target si a l'entré du sous-monde il y'a une cible
-    	if(m.getElem(get_entry_up(),0).isOn_target()||getElem(getPos_x(), getPos_y()).isOn_target()) {
-    		m.getElem(get_entry_up(),0).setOn_target(!m.getElem(get_entry_up(),0).isOn_target());
-    		getElem(getPos_x(), getPos_y()).setOn_target(!getElem(getPos_x(), getPos_y()).isOn_target());
+    	if(m.getElem(get_entry_right(m),0).isOn_target()||getElem(pos_y, pos_x).isOn_target()) {
+    		m.getElem(get_entry_right(m),0).setOn_target(!m.getElem(get_entry_right(m),0).isOn_target());
+    		getElem(pos_y, pos_x).setOn_target(!getElem(pos_y, pos_x).isOn_target());
         }
     	
-    	Element temp = m.getElem(get_entry_up(),0);
-    	m.setElem(get_entry_up(),0,this.getElem(getPos_x(), getPos_y()));
-    	this.setElem(getPos_x(), getPos_y(), temp);
+    	Element temp = m.getElem(get_entry_right(m),0);
+    	m.setElem(get_entry_right(m),0,this.getElem(pos_y, pos_x));
+    	this.setElem(pos_y, pos_x, temp);
     }
     
     
@@ -889,12 +778,12 @@ public class Matrice extends Element{
         this.level=level;
     }
 
-    public Element getElem(int i, int j) {
-        return level[i][j];
+    public Element getElem(int y, int x) {
+        return level[y][x];
     }
 
-    public void setElem(int i, int j, Element elem) {
-        this.level[i][j] = elem;
+    public void setElem(int y, int x, Element elem) {
+        this.level[y][x] = elem;
     }
     
     public void setIs_main(){
