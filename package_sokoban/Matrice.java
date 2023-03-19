@@ -145,12 +145,7 @@ public class Matrice extends Element{
     }
     
     public boolean all_ontarget() {
-    	if(!is_here){
-			Matrice m = (Matrice)getElem(wrld_y, wrld_x);
-			m.all_ontarget();
-		}
-
-		if(nb_cible==0)
+    	if(nb_cible==0)
 			return false;
 
 		boolean res=true;
@@ -199,6 +194,7 @@ public class Matrice extends Element{
         if(tmp.isOn_target()!=level[a][b].isOn_target()) {
         	setElem(i, j,level[a][b]);
 			setElem(a, b, tmp);
+			
 
 			level[a][b].setOn_target(!level[a][b].on_target);
 			level[i][j].setOn_target(!level[i][j].on_target);
@@ -238,9 +234,7 @@ public class Matrice extends Element{
 		}
 		if (this.getElem(y-1, x).getClass() == Wall.class)
 			return false;
-		else if(this.getElem(y-1, x).getClass() == Box.class)
-			return can_move_up(x, y-1);
-		else if(this.getElem(y-1, x).getClass() == Matrice.class)
+		else if(this.getElem(y-1, x).getClass() == Box.class || this.getElem(y-1, x).getClass() == Matrice.class)
 			return can_move_up(x, y-1);
 		else
 			return true;
@@ -252,12 +246,10 @@ public class Matrice extends Element{
 			return m.can_move_down(m.getPos_x(), m.getPos_y());
 		}
 		
-		if(this.getElem(y+1, x).getClass() == Matrice.class)
+		if(this.getElem(y+1, x).getClass() == Matrice.class || this.getElem(y+1, x).getClass() == Box.class)
 			return can_move_down(x, y+1);
 		else if (this.getElem(y+1, x).getClass() == Wall.class)
 			return false;
-		else if(this.getElem(y+1, x).getClass() == Box.class)
-			return can_move_down(x,y+1);
 		else
 			return true;
 	}
@@ -269,9 +261,7 @@ public class Matrice extends Element{
 		}
 		if (this.getElem(y, x+1).getClass() == Wall.class)
 			return false;
-		else if(this.getElem(y, x+1).getClass() == Box.class)
-			return can_move_right(x+1, y);
-		else if(this.getElem(y, x+1).getClass() == Matrice.class)
+		else if(this.getElem(y, x+1).getClass() == Box.class || this.getElem(y, x+1).getClass() == Matrice.class)
 			return can_move_right(x+1, y);
 		else
 			return true;
@@ -284,9 +274,7 @@ public class Matrice extends Element{
 		}
 		if (this.getElem(y, x-1).getClass() == Wall.class)
 			return false;
-		else if(this.getElem(y, x-1).getClass() == Box.class)
-			return can_move_left(x-1, y);
-		else if(this.getElem(y, x-1).getClass() == Matrice.class)
+		else if(this.getElem(y, x-1).getClass() == Box.class || this.getElem(y, x-1).getClass() == Matrice.class)
 			return can_move_left(x-1, y);
 		else
 			return true;
@@ -451,13 +439,7 @@ public class Matrice extends Element{
     }
 
     public void move_left(int x, int y){
-		if(!this.is_here) {
-			Matrice m =(Matrice) this.getElem(wrld_x, wrld_y);
-			m.move_left(m.getPos_x(), m.getPos_y());
-			return;
-		}
-
-    	if(!can_move_left(x, y)) {
+		if(!can_move_left(x, y)) {
 			if(getElem(y, x-1).getClass() == Matrice.class){
 				if (!can_enter_right((Matrice) getElem(y, x-1))) {
 					System.out.print("can't move there\n");
@@ -673,6 +655,10 @@ public class Matrice extends Element{
 		}
 
 		int x=get_entry_up(m);
+		m.setPos_y(0);
+		m.setPos_x(x);
+		wrld_x=pos_x;
+		wrld_y=pos_y-1;
 
 		if(!can_enter_up(m) || x==-1)
 			return;
@@ -686,6 +672,9 @@ public class Matrice extends Element{
     	Element temp = m.getElem(0, x);
     	m.setElem(0, x, this.getElem(pos_y, pos_x));
     	this.setElem(pos_y, pos_x, temp);
+
+		m.is_here=true;
+		is_here=false;
     }
     
     public void enter_down(Matrice m) {
@@ -697,6 +686,10 @@ public class Matrice extends Element{
 		}
 
 		int x=get_entry_down(m);
+		m.setPos_y(m.size-1);
+		m.setPos_x(x);
+		wrld_x=pos_x;
+		wrld_y=pos_y+1;
 
 		if(!can_enter_down(m) || x==-1)
 			return;
@@ -710,6 +703,9 @@ public class Matrice extends Element{
     	Element temp = m.getElem(m.size-1, x);
     	m.setElem(m.size-1, x,this.getElem(pos_y, pos_x));
     	this.setElem(pos_y, pos_x, temp);
+
+		m.is_here=true;
+		is_here=false;
     }
     
     public void enter_left(Matrice m) {
@@ -721,6 +717,10 @@ public class Matrice extends Element{
 		}
 
 		int y=get_entry_left(m);
+		m.setPos_y(y);
+		m.setPos_x(0);
+		wrld_x=pos_x+1;
+		wrld_y=pos_y;
 
 		if(!can_enter_left(m) || y==-1)
 			return;
@@ -734,6 +734,9 @@ public class Matrice extends Element{
     	Element temp = m.getElem(y,0);
     	m.setElem(y,0,this.getElem(pos_y, pos_x));
     	this.setElem(pos_y, pos_x, temp);
+
+		m.is_here=true;
+		is_here=false;
     }
     
     public void enter_right(Matrice m) {
@@ -745,6 +748,10 @@ public class Matrice extends Element{
 		}
 
 		int y=get_entry_right(m);
+		m.setPos_y(y);
+		m.setPos_x(m.size-1);
+		wrld_x=pos_x-1;
+		wrld_y=pos_y;
 
 		if(!can_enter_right(m) || y==-1)
 			return;
@@ -756,9 +763,11 @@ public class Matrice extends Element{
         }
     	
     	Element temp = m.getElem(y, m.size-1);
-    	m.setElem(y, m.size-1, this.getElem(pos_y, pos_x));
-    	this.setElem(pos_y, pos_x, temp);
-		m.setPos_x(y);
+    	m.setElem(y, m.size-1, getElem(pos_y, pos_x));
+    	setElem(pos_y, pos_x, temp);
+
+		m.is_here=true;
+		is_here=false;
     }
     
     
@@ -856,5 +865,29 @@ public class Matrice extends Element{
 
 	public Color getColor() {
 		return color;
+	}
+
+	public int getWrldX(){
+		return wrld_x;
+	}
+
+	public int getWrldY(){
+		return wrld_y;
+	}
+
+	public void setWrldX(int x){
+		wrld_x=x;
+	}
+
+	public void setWrldY(int y){
+		wrld_y=y;
+	}
+
+	public boolean isHere(){
+		return is_here;
+	}
+
+	public void setIsHere(boolean a){
+		is_here=a;
 	}
 }
