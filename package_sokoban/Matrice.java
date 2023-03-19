@@ -658,7 +658,7 @@ public class Matrice extends Element{
 		m.setPos_y(0);
 		m.setPos_x(x);
 		wrld_x=pos_x;
-		wrld_y=pos_y-1;
+		wrld_y=pos_y+1;
 
 		if(!can_enter_up(m) || x==-1)
 			return;
@@ -689,7 +689,7 @@ public class Matrice extends Element{
 		m.setPos_y(m.size-1);
 		m.setPos_x(x);
 		wrld_x=pos_x;
-		wrld_y=pos_y+1;
+		wrld_y=pos_y-1;
 
 		if(!can_enter_down(m) || x==-1)
 			return;
