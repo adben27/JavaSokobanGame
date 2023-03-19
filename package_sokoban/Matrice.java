@@ -22,8 +22,9 @@ public class Matrice extends Element{
     private int size;
     private int pos_x, pos_x_copie;
     private int pos_y, pos_y_copie;
-	private Element[][] level, copie;
+	private Element[][] level;
 	private int[] pos_x_cible, pos_y_cible;
+	private int nb_cible;
 	private int r,g,b;
 	private Color color; //la couleur du niveau
 	
@@ -50,9 +51,11 @@ public class Matrice extends Element{
         this.name="";
         this.size=0;
         this.level=new Element[0][0];
-		copie=new Element[0][0];
 		pos_x_cible=new int[0];
 		pos_y_cible=new int[0];
+
+		nb_cible=0;
+
         this.pos_x=pos_x_copie=0;
         this.pos_y=pos_y_copie=0;
         this.last_move=new Stack<Element[][]>();
@@ -85,7 +88,7 @@ public class Matrice extends Element{
         this.wrld_y=wrld_y_copie= -1;
 		pos_x_cible=new int[11];
 		pos_y_cible=new int[11];
-		copie=new Element[size][size];
+		nb_cible=0;
 
 		//on genere 3 nombres aleatoires qui feront la couleur du niveau
         Random random = new Random();
@@ -102,20 +105,14 @@ public class Matrice extends Element{
         this.level=level;
 		pos_x_cible=new int[11];
 		pos_y_cible=new int[11];
-		copie=new Element[size][size];
 
-		int a=0;
+		nb_cible=0;
 		for (int i = 0; i < level.length; i++) {
 			for (int j = 0; j < level.length; j++) {
-				copie[i][j]=level[i][j];
-
 				if(level[i][j] instanceof Vide && level[i][j].on_target){			
-					pos_x_cible[a]=j;
-					pos_y_cible[a]=i;
-					a++;
-			    }else{
-					pos_x_cible[a]=-1;
-					pos_y_cible[a]=-1;
+					pos_x_cible[nb_cible]=j;
+					pos_y_cible[nb_cible]=i;
+					nb_cible++;
 				}
 			}
 		}
@@ -148,39 +145,22 @@ public class Matrice extends Element{
     }
     
     public boolean all_ontarget() {
-    	Element e;
-    	
-    	if(is_main) {
-    		if(is_here) {
-    			if(!getElem(pos_x,pos_y).isOn_target()) {
-        			return false;
-        		}
-    		}
-    		if(!is_here) {
-    			Matrice n = (Matrice) getElem(wrld_x,wrld_y);
-    			if(!n.getElem(pos_x,pos_y).isOn_target()) {
-    				return false;
-    			}
-    		}
-    	}
-    	
-    	for(int i = 0; i < this.getSize(); i++) {
-    		for(int j = 0; j < this.getSize(); j++) {
-    			e = getElem(i,j);
-    			if(e instanceof Matrice) {
-    				Matrice m = (Matrice) e;
-    				if(!m.all_ontarget()) {
-    					return false;
-    				}
-    			}
-    			if(e.isOn_target()) {
-    				if(e instanceof Vide)
-    					return false;
-    			}
-    		}
-    	}
-    	
-    	return true;
+    	if(!is_here){
+			Matrice m = (Matrice)getElem(wrld_y, wrld_x);
+			m.all_ontarget();
+		}
+
+		if(nb_cible==0)
+			return false;
+
+		boolean res=true;
+
+		for (int i = 0; i < nb_cible; i++) {
+			if(level[pos_y_cible[i]][pos_x_cible[i]].on_target && (level[pos_y_cible[i]][pos_x_cible[i]] instanceof Vide))
+				res=false;
+		}
+		
+    	return res;
     }
     
     public Element[][] lvlCopie(){
@@ -204,24 +184,30 @@ public class Matrice extends Element{
      * @param b pos_x de la cellule 2
      */
     public void swap(int i, int j, int a, int b){
-        Element temp = getElem(i, j);
-        if(!getElem(i,j).isMoveable()||!getElem(a,b).isMoveable()) {
-        	return;/*faut ajouter un catch d'erreur ici*/
+        Element tmp = level[i][j];
+        if(!tmp.isMoveable()||!level[a][b].isMoveable()) {
+        	return;
         }
-        if(getElem(i,j) instanceof Player){/*il ne peut pas y avoir deux joueurs normalement faudrait ajouter un test peut être apres*/
-            setPos_x(b);
-            setPos_y(a);
+        if(tmp instanceof Player){/*il ne peut pas y avoir deux joueurs normalement faudrait ajouter un test peut être apres*/
+            pos_x=b;
+            pos_y=a;
         }
-        if(getElem(a,b) instanceof Player){
-            setPos_x(j);
-            setPos_y(i);
+        if(level[a][b] instanceof Player){
+            pos_x=j;
+            pos_y=i;
         }
-        if(getElem(i,j).isOn_target()!=getElem(a,b).isOn_target()) {
-        	getElem(i,j).setOn_target(!getElem(i,j).isOn_target());
-        	getElem(a,b).setOn_target(!getElem(a,b).isOn_target());
+        if(tmp.isOn_target()!=level[a][b].isOn_target()) {
+        	setElem(i, j,level[a][b]);
+			setElem(a, b, tmp);
+
+			level[a][b].setOn_target(!level[a][b].on_target);
+			level[i][j].setOn_target(!level[i][j].on_target);
+
+			return;
         }
-        setElem(i, j,getElem(a, b));
-        setElem(a, b, temp);
+        setElem(i, j,level[a][b]);
+        setElem(a, b, tmp);
+
         return;
     }
     /*fonction qui prend comme argument un char qui représente la direction du mouvement z : haut, q : gauche, s : bas, d : droite, autre que ceux la il
@@ -366,8 +352,12 @@ public class Matrice extends Element{
 				if (can_move_up(x, y-1)){
 					move_up(x, y-1);
 					swap(y, x, y-1, x);
-				}else
+				}else{
 					enter_down((Matrice)getElem(y-1, x));
+					wrld_x=x;
+					wrld_y=y-1;
+					is_here=false;
+				}
 			}
         }
     }
@@ -406,8 +396,12 @@ public class Matrice extends Element{
 				if (can_move_down(x, y+1)){
 					move_down(x, y+1);
 					swap(y, x, y+1, x);
-				}else
+				}else{
 					enter_up((Matrice)getElem(y+1, x));
+					wrld_x=x;
+					wrld_y=y+1;
+					is_here=false;
+				}
             }
 		}
     }
@@ -446,8 +440,12 @@ public class Matrice extends Element{
             	if (can_move_right(x+1, y)){
 					move_right(x+1, y);
 					swap(y, x, y, x+1);
-				}else
-					enter_left((Matrice)getElem(y, x+1));		
+				}else{
+					enter_left((Matrice)getElem(y, x+1));
+					wrld_x=x+1;
+					wrld_y=y;
+					is_here=false;
+				}
 			}
         }
     }
@@ -486,20 +484,17 @@ public class Matrice extends Element{
             	if (can_move_left(x-1, y)){
 					move_left(x-1, y);
 					swap(y, x, y, x-1);
-				}else
+				}else{
 					enter_right((Matrice)getElem(y, x-1));
+					wrld_x=x-1;
+					wrld_y=y;
+					is_here=false;
+				}
             }
         }
     }
     /*
-     * fonction qui annule le dernier mouvement même si il y'a eu un déplacement de boite ou de monde causé
-     * utilise la pile last_move vérifie le dernier char donné par la pile qui représente le mouvement
-     * char =  '+' alors il y'a eu un déplacement de boite ou de monde (voir les fonctions move_dir)
-     * dans ce cas la il y'a un appel recursif afin d'annuler le mouvement du joueur puis d'annuler le mouvement de l'autre element
-     * char = 'z' || 's'  || 'q' || 'd' mouvement dans l'une des directions
-     * char = 'r' pour indiquer aux fonctions move de ne pas remettre encore le mouvement dans le pile quand on reset
-     * 
-     * la fonction retourne e si la pile est empty cela est utilisé dans la fonction reset pour revenir a l'etat de base du niveau
+     * Si last_move est vide alors
      */
     public void ctrl_z() {
     	
@@ -513,55 +508,23 @@ public class Matrice extends Element{
     	if(last_move.empty())
     		return;
 
+		for (int i = 0; i < nb_cible; i++)
+			if(level[pos_y_cible[i]][pos_x_cible[i]].on_target && !(level[pos_y_cible[i]][pos_x_cible[i]] instanceof Vide))
+				level[pos_y_cible[i]][pos_x_cible[i]].setOn_target(false);
+
     	level=last_move.pop();
+
+		for (int i = 0; i < nb_cible; i++)
+			level[pos_y_cible[i]][pos_x_cible[i]].setOn_target(true);
+		
 		pos_x=stack_x.pop();
 		pos_y=stack_y.pop();
     }
     
 	//Comme sont nom l'indique sa reset la matrice
     public void reset() {
-		int m=0;
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				level[i][j]=copie[i][j];
-
-				if(level[i][j].getSign()=='b'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='c'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='d'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='e'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='f'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='g'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='h'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='i'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='j'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='a'){
-					level[i][j].setOn_target(false);
-				}
-				if(i==pos_y_cible[m] && j==pos_x_cible[m]){
-					level[i][j].setOn_target(true);
-					m++;
-				}
-				
-			}
-		}
+		while(!last_move.isEmpty())
+			ctrl_z();
 
 		pos_x=pos_x_copie;
 		pos_y=pos_y_copie;
@@ -569,6 +532,9 @@ public class Matrice extends Element{
 		wrld_y=wrld_y_copie;
 		is_here=is_here_copie;
 		is_main=is_main_copie;
+		last_move.clear();
+		stack_x.clear();
+		stack_y.clear();
     }
     
     /*
