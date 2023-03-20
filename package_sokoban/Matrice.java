@@ -45,6 +45,7 @@ public class Matrice extends Element{
 
     private Stack<Integer> stack_x;
 	private Stack<Integer> stack_y;
+	private Stack<Matrice> m;
 
 	public Matrice(){
     	super('M',true,false,'m');
@@ -61,6 +62,7 @@ public class Matrice extends Element{
         this.last_move=new Stack<Element[][]>();
 		stack_x=new Stack<Integer>();
 		stack_y=new Stack<Integer>();
+		m=new Stack<Matrice>();
         this.is_here=true;
         this.wrld_x= wrld_x_copie=-1;
         this.wrld_y= wrld_y_copie=-1;
@@ -83,6 +85,7 @@ public class Matrice extends Element{
         this.last_move=new Stack<Element[][]>();
 		stack_x=new Stack<Integer>();
 		stack_y=new Stack<Integer>();
+		m=new Stack<Matrice>();
         this.is_here= is_here_copie=true;
         this.wrld_x=wrld_x_copie= -1;
         this.wrld_y=wrld_y_copie= -1;
@@ -122,8 +125,9 @@ public class Matrice extends Element{
         this.last_move=new Stack<Element[][]>();
 		stack_x=new Stack<Integer>();
 		stack_y=new Stack<Integer>();
+		m=new Stack<Matrice>();
         this.is_main=is_main_copie= is_main;
-        this.is_here=is_here_copie =is_here;
+        this.is_here=is_here_copie=is_here;
         this.wrld_x=wrld_x_copie= wrld_x;
         this.wrld_y=wrld_y_copie= wrld_y;
 
@@ -198,7 +202,7 @@ public class Matrice extends Element{
             pos_y=i;
         }
         if(tmp.isOn_target()!=level[a][b].isOn_target()) {
-        	setElem(i, j,level[a][b]);
+        	setElem(i, j, level[a][b]);
 			setElem(a, b, tmp);
 			
 			//on inverse les 'on_target'
@@ -238,7 +242,7 @@ public class Matrice extends Element{
 			Matrice m =(Matrice) this.getElem(wrld_y, wrld_x);
 			return m.can_move_up(x, y);
 		}
-		if (this.getElem(y-1, x).getClass() == Wall.class) //si c'est un mur rnevoie false
+		if (this.getElem(y-1, x).getClass() == Wall.class) //si c'est un mur renvoie false
 			return false;
 		//si c'est une boite ou une matrice on verifie si elle peuvent bouger, si oui renvoie true sinon false 
 		else if(this.getElem(y-1, x).getClass() == Box.class || this.getElem(y-1, x).getClass() == Matrice.class)
@@ -316,11 +320,17 @@ public class Matrice extends Element{
 	 * Série de fonctions qui  effectuent le mouvement dans les 4 directions cardinales, sont utilisé dans le fonction move()
 	 */
     public void move_up(int x, int y){
-		if(!this.is_here) {
-			Matrice m =(Matrice) this.getElem(wrld_y, wrld_x);
-			m.move_up(m.getPos_x(), m.getPos_y());
-			return;
-		}
+		if(!can_move_up(x, y)) {
+			if(getElem(y+1, x).getClass() == Matrice.class){
+				if (!can_enter_down((Matrice) getElem(y+1, x))) {
+					System.out.print("can't move there\n");
+					return;
+				}
+			}else{
+				System.out.print("can't move there\n");
+				return;
+			}
+    	}
 
     	if(!can_move_up(x, y)) {
 			if(getElem(y-1, x).getClass() == Matrice.class){ 
@@ -363,6 +373,7 @@ public class Matrice extends Element{
 					move_up(x, y-1);
 					swap(y, x, y-1, x);
 				}else{
+					m.push(this);
 					enter_down((Matrice)getElem(y-1, x));
 					wrld_x=x;
 					wrld_y=y-1;
@@ -374,11 +385,17 @@ public class Matrice extends Element{
    
 	//meme raisonement que move up mais avec des directions differentes
     public void move_down(int x, int y){
-		if(!this.is_here) {
-			Matrice m =(Matrice) this.getElem(wrld_y, wrld_x);
-			m.move_down(m.getPos_x(), m.getPos_y());
-			return;
-		}
+		if(!can_move_down(x, y)) {
+			if(getElem(y-1, x).getClass() == Matrice.class){
+				if (!can_enter_up((Matrice) getElem(y-1, x))) {
+					System.out.print("can't move there\n");
+					return;
+				}
+			}else{
+				System.out.print("can't move there\n");
+				return;
+			}
+    	}
 
     	if(!can_move_down(x, y)) {
 			if(getElem(y+1, x).getClass() == Matrice.class){
@@ -408,6 +425,7 @@ public class Matrice extends Element{
 					move_down(x, y+1);
 					swap(y, x, y+1, x);
 				}else{
+					m.push(this);
 					enter_up((Matrice)getElem(y+1, x));
 					wrld_x=x;
 					wrld_y=y+1;
@@ -418,11 +436,17 @@ public class Matrice extends Element{
     }
 
     public void move_right(int x, int y){
-		if(!this.is_here) {
-			Matrice m =(Matrice) this.getElem(wrld_y, wrld_x);
-			m.move_right(m.getPos_x(), m.getPos_y());
-			return;
-		}
+		if(!can_move_right(x, y)) {
+			if(getElem(y, x+1).getClass() == Matrice.class){
+				if (!can_enter_left((Matrice) getElem(y, x+1))) {
+					System.out.print("can't move there\n");
+					return;
+				}
+			}else{
+				System.out.print("can't move there\n");
+				return;
+			}
+    	}
 
     	if(!can_move_right(x, y)) {
 			if(getElem(y, x+1).getClass() == Matrice.class){
@@ -432,7 +456,7 @@ public class Matrice extends Element{
 				}
 			}else{
 				System.out.print("can't move there\n");
-					return;
+				return;
 			}
     	}
     	
@@ -452,6 +476,7 @@ public class Matrice extends Element{
 					move_right(x+1, y);
 					swap(y, x, y, x+1);
 				}else{
+					m.push(this);
 					enter_left((Matrice)getElem(y, x+1));
 					wrld_x=x+1;
 					wrld_y=y;
@@ -470,7 +495,7 @@ public class Matrice extends Element{
 				}
 			}else{
 				System.out.print("can't move there\n");
-					return;
+				return;
 			}
     	}
     	
@@ -490,6 +515,7 @@ public class Matrice extends Element{
 					move_left(x-1, y);
 					swap(y, x, y, x-1);
 				}else{
+					m.push(this);
 					enter_right((Matrice)getElem(y, x-1));
 					wrld_x=x-1;
 					wrld_y=y;
@@ -775,11 +801,11 @@ public class Matrice extends Element{
     
     public void enter_right(Matrice m) {
     	
-    	if(!this.is_here) {
+    	/*if(!this.is_here) {
 			Matrice n =(Matrice) this.getElem(wrld_y, wrld_x);
 			n.get_entry_right(n);
 			return;
-		}
+		}*/
 
 		int y=get_entry_right(m);
 		m.setPos_y(y);
@@ -923,5 +949,9 @@ public class Matrice extends Element{
 
 	public void setIsHere(boolean a){
 		is_here=a;
+	}
+
+	public Stack<Matrice> getStackM(){
+		return m;
 	}
 }
