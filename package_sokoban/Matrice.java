@@ -518,7 +518,7 @@ public class Matrice extends Element{
 		pos_y=stack_y.pop();
     }
     
-	//Comme sont nom l'indique sa reset la matrice
+	//Comme sont nom l'indique ca reset la matrice
     public void reset() {
 		while(!last_move.isEmpty())
 			ctrl_z();
