@@ -546,22 +546,23 @@ public class DrawLevel extends JPanel implements Runnable{
     	Matrice fils = (Matrice) pere.getElem(y, x);
     	int pos_x = fils.getPos_x(); int pos_y = fils.getPos_y();
     	
-    	Player joueur = (Player) fils.getElem(pos_x,pos_y);
+    	Player joueur = (Player) fils.getElem(pos_y,pos_x);
     	
-    	if(pere.getElem(x, y+1).getClass() == Box.class || pere.getElem(x, y+1).getClass() == Matrice.class) {
-    		pere.move_up(x, y+1); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
+    	if(pere.getElem(y-1, x).getClass() == Box.class || pere.getElem(y-1, x).getClass() == Matrice.class) {
+    		pere.move_up(y-1, x); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
     	}					      // si le move_up marche et dans ce cas on sais qu'il marche prsq on a fait peut_sortir_haut
     	
     	// ici c'est juste un échange avec le vide qu'il y'a dans (y,x+1)
-    	Vide temp = (Vide) pere.getElem(x, y+1);
+    	Vide temp = (Vide) pere.getElem(y-1, x);
 		
-		fils.setElem(pos_x,pos_y,temp);
-		fils.setPos_x(-1);pere.setPos_y(-1);
+		fils.setElem(pos_y,pos_x,temp);
+		fils.setPos_x(-1);fils.setPos_y(-1);
+		fils.setIsHere(false);
 		
-		pere.setPos_x(x);pere.setPos_y(y+1);
+		pere.setPos_x(x);pere.setPos_y(y-1);
 		pere.setWrldX(-1);pere.setWrldY(-1);
-		pere.setElem(x, y+1, joueur);
-    	
+		pere.setElem(y-1, x, joueur);
+		pere.setIsHere(true);
     		
     }
 
@@ -574,24 +575,27 @@ public class DrawLevel extends JPanel implements Runnable{
     	Matrice pere = matriceP.getStackM().pop();
     	int x = pere.getWrldX(), y = pere.getWrldY();
     	
-    	Matrice fils = (Matrice) pere.getElem(x, y);
+    	Matrice fils = (Matrice) pere.getElem(y, x);
     	int pos_x = fils.getPos_x(); int pos_y = fils.getPos_y();
     	
-    	Player joueur = (Player) fils.getElem(pos_x,pos_y);
+    	Player joueur = (Player) fils.getElem(pos_y,pos_x);
     	
-    	if(pere.getElem(x, y-1).getClass() == Box.class || pere.getElem(x, y-1).getClass() == Matrice.class) {
-    		pere.move_down(y, x-1); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
+    	if(pere.getElem(y+1, x).getClass() == Box.class || pere.getElem(y+1, x).getClass() == Matrice.class) {
+    		pere.move_down(y+1, x); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
     	}					      // si le move_up marche et dans ce cas on sais qu'il marche prsq on a fait peut_sortir_haut
     	
     	// ici c'est juste un échange avec le vide qu'il y'a dans (y,x+1)
-    	Vide temp = (Vide) pere.getElem(x, y+1);
+    	Vide temp = (Vide) pere.getElem(y+1, x);
 		
 		fils.setElem(pos_x,pos_y,temp);
-		fils.setPos_x(-1);pere.setPos_y(-1);
+		fils.setPos_x(-1);fils.setPos_y(-1);
+		fils.setIsHere(false);
 		
-		pere.setPos_x(x);pere.setPos_y(y-1);
+		
+		pere.setPos_x(x);pere.setPos_y(y+1);
 		pere.setWrldX(-1);pere.setWrldY(-1);
-		pere.setElem(x, y-1, joueur);
+		pere.setElem(y+1, x, joueur);
+		pere.setIsHere(true);
 
     }
 
@@ -604,25 +608,27 @@ public class DrawLevel extends JPanel implements Runnable{
     	Matrice pere = matriceP.getStackM().pop();
     	int x = pere.getWrldX(), y = pere.getWrldY();
     	
-    	Matrice fils = (Matrice) pere.getElem(x, y);
+    	Matrice fils = (Matrice) pere.getElem(y, x);
     	int pos_x = fils.getPos_x(); int pos_y = fils.getPos_y();
     	
-    	Player joueur = (Player) fils.getElem(pos_x,pos_y);
+    	Player joueur = (Player) fils.getElem(pos_y,pos_x);
     	
-    	if(pere.getElem(x-1, y).getClass() == Box.class || pere.getElem(x-1, y).getClass() == Matrice.class) {
-    		pere.move_up(x-1, y); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
+    	if(pere.getElem(y, x-1).getClass() == Box.class || pere.getElem(y, x-1).getClass() == Matrice.class) {
+    		pere.move_up(y, x-1); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
     	}					      // si le move_up marche et dans ce cas on sais qu'il marche prsq on a fait peut_sortir_haut
     	
     	// ici c'est juste un échange avec le vide qu'il y'a dans (y,x+1)
-    	Vide temp = (Vide) pere.getElem(x-1, y);
+    	Vide temp = (Vide) pere.getElem(y, x-1);
 		
 		fils.setElem(pos_x,pos_y,temp);
-		fils.setPos_x(-1);pere.setPos_y(-1);
+		fils.setPos_x(-1);fils.setPos_y(-1);
+		fils.setIsHere(false);
 		
 		pere.setPos_x(x-1);pere.setPos_y(y);
 		pere.setWrldX(-1);pere.setWrldY(-1);
-		pere.setElem(x-1, y, joueur);
-
+		pere.setElem(y, x-1, joueur);
+		pere.setIsHere(true);
+		
     }
 
     public void sort_droite() {
@@ -634,25 +640,27 @@ public class DrawLevel extends JPanel implements Runnable{
     	Matrice pere = matriceP.getStackM().pop();
     	int x = pere.getWrldX(), y = pere.getWrldY();
     	
-    	Matrice fils = (Matrice) pere.getElem(x, y);
+    	Matrice fils = (Matrice) pere.getElem(y, x);
     	int pos_x = fils.getPos_x(); int pos_y = fils.getPos_y();
     	
-    	Player joueur = (Player) fils.getElem(pos_x,pos_y);
+    	Player joueur = (Player) fils.getElem(pos_y,pos_x);
     	
-    	if(pere.getElem(y+1, x).getClass() == Box.class || pere.getElem(y+1, x).getClass() == Matrice.class) {
-    		pere.move_up(y+1, x); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
+    	if(pere.getElem(y, x+1).getClass() == Box.class || pere.getElem(y, x+1).getClass() == Matrice.class) {
+    		pere.move_up(y, x+1); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
     	}					      // si le move_up marche et dans ce cas on sais qu'il marche prsq on a fait peut_sortir_haut
     	
     	// ici c'est juste un échange avec le vide qu'il y'a dans (y,x+1)
-    	Vide temp = (Vide) pere.getElem(y+1, x);
+    	Vide temp = (Vide) pere.getElem(y, x+1);
 		
 		fils.setElem(pos_x,pos_y,temp);
 		fils.setPos_x(-1);pere.setPos_y(-1);
+		fils.setIsHere(false);
 		
-		pere.setPos_x(y+1);pere.setPos_y(x);
+		pere.setPos_x(x+1);pere.setPos_y(y);
 		pere.setWrldX(-1);pere.setWrldY(-1);
-		pere.setElem(y+1, x, joueur);
-
+		pere.setElem(y, x+1, joueur);
+		pere.setIsHere(true);
+		
     }
 
     public void resetAll() {
@@ -716,5 +724,7 @@ public class DrawLevel extends JPanel implements Runnable{
             lvl=matriceI;
         if(matriceJ.isHere())
             lvl=matriceJ;
+        if(matriceP.isHere())
+            lvl=matriceP;
     }
 }

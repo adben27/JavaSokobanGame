@@ -221,16 +221,16 @@ public class Matrice extends Element{
      */
 	public boolean can_move(char c) {
 		if (Character.compare(c, 'z') == 0) {
-			return can_move_up(pos_y, pos_x);
+			return can_move_up(pos_x, pos_y);
 		}
 		if (Character.compare(c, 's') == 0) {
-			return can_move_down(pos_y, pos_x);
+			return can_move_down(pos_x, pos_y);
 		}
 		if (Character.compare(c, 'q') == 0) {
-			return can_move_left(pos_y, pos_x);
+			return can_move_left(pos_x, pos_y);
 		}
 		if (Character.compare(c, 'd') == 0) {
-			return can_move_right(pos_y, pos_x);
+			return can_move_right(pos_x, pos_y);
 		}
 		return false;
 	}
