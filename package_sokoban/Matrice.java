@@ -761,11 +761,11 @@ public class Matrice extends Element{
     
     public void enter_right(Matrice m) {
     	
-    	/*if(!this.is_here) {
+    	if(!this.is_here) {
 			Matrice n =(Matrice) this.getElem(wrld_y, wrld_x);
 			n.get_entry_right(n);
 			return;
-		}*/
+		}
 
 		int y=get_entry_right(m);
 		m.setPos_y(y);
