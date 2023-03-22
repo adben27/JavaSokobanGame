@@ -22,7 +22,7 @@ public class Matrice extends Element{
     private int size;
     private int pos_x, pos_x_copie;
     private int pos_y, pos_y_copie;
-	private Element[][] level;
+	private Element[][] level, copie;
 	private int[] pos_x_cible, pos_y_cible;
 	private int nb_cible;
 	private int r,g,b;
@@ -55,7 +55,7 @@ public class Matrice extends Element{
 		pos_y_cible=new int[0];
 
 		nb_cible=0;
-
+		copie=lvlCopie();
         this.pos_x=pos_x_copie=0;
         this.pos_y=pos_y_copie=0;
         this.last_move=new Stack<Element[][]>();
@@ -81,6 +81,7 @@ public class Matrice extends Element{
         this.pos_x=pos_x_copie=0;
         this.pos_y=pos_y_copie=0;
         this.last_move=new Stack<Element[][]>();
+		copie=level.clone();
 		stack_x=new Stack<Integer>();
 		stack_y=new Stack<Integer>();
         this.is_here= is_here_copie=true;
@@ -105,6 +106,7 @@ public class Matrice extends Element{
         this.level=level;
 		pos_x_cible=new int[11];
 		pos_y_cible=new int[11];
+		copie=lvlCopie();
 
 		nb_cible=0;
 		for (int i = 0; i < level.length; i++) {
@@ -512,8 +514,47 @@ public class Matrice extends Element{
     
 	//Comme sont nom l'indique ca reset la matrice
     public void reset() {
-		while(!last_move.isEmpty())
-			ctrl_z();
+		int m=0;
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				level[i][j]=copie[i][j];
+
+				if(level[i][j].getSign()=='b'){
+					level[i][j].setOn_target(false);
+				}
+				if(level[i][j].getSign()=='c'){
+					level[i][j].setOn_target(false);
+				}
+				if(level[i][j].getSign()=='d'){
+					level[i][j].setOn_target(false);
+				}
+				if(level[i][j].getSign()=='e'){
+					level[i][j].setOn_target(false);
+				}
+				if(level[i][j].getSign()=='f'){
+					level[i][j].setOn_target(false);
+				}
+				if(level[i][j].getSign()=='g'){
+					level[i][j].setOn_target(false);
+				}
+				if(level[i][j].getSign()=='h'){
+					level[i][j].setOn_target(false);
+				}
+				if(level[i][j].getSign()=='i'){
+					level[i][j].setOn_target(false);
+				}
+				if(level[i][j].getSign()=='j'){
+					level[i][j].setOn_target(false);
+				}
+				if(level[i][j].getSign()=='a'){
+					level[i][j].setOn_target(false);
+				}
+				if(i==pos_y_cible[m] && j==pos_x_cible[m]){
+					level[i][j].setOn_target(true);
+					m++;
+				}
+			}
+		}
 
 		pos_x=pos_x_copie;
 		pos_y=pos_y_copie;
@@ -841,6 +882,7 @@ public class Matrice extends Element{
 
     public void setlevel(Element[][] level){
         this.level=level;
+		copie=lvlCopie();
     }
 
     public Element getElem(int y, int x) {
