@@ -70,7 +70,7 @@ public class Matrice extends Element{
         r=random.nextInt(256);
         g=random.nextInt(256);
         b=random.nextInt(256);
-        color = (new Color(r, g, b));
+        color = new Color(r, g, b);
     }
     
     //  constructeur qui initialise pos_x et pos_y a 0 utilisé par nandan pour la lecture de niveau
