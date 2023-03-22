@@ -45,7 +45,6 @@ public class Matrice extends Element{
 
     private Stack<Integer> stack_x;
 	private Stack<Integer> stack_y;
-	private Stack<Matrice> m;
 
 	public Matrice(){
     	super('M',true,false,'m');
@@ -62,7 +61,6 @@ public class Matrice extends Element{
         this.last_move=new Stack<Element[][]>();
 		stack_x=new Stack<Integer>();
 		stack_y=new Stack<Integer>();
-		m=new Stack<Matrice>();
         this.is_here=true;
         this.wrld_x= wrld_x_copie=-1;
         this.wrld_y= wrld_y_copie=-1;
@@ -85,7 +83,6 @@ public class Matrice extends Element{
         this.last_move=new Stack<Element[][]>();
 		stack_x=new Stack<Integer>();
 		stack_y=new Stack<Integer>();
-		m=new Stack<Matrice>();
         this.is_here= is_here_copie=true;
         this.wrld_x=wrld_x_copie= -1;
         this.wrld_y=wrld_y_copie= -1;
@@ -125,7 +122,6 @@ public class Matrice extends Element{
         this.last_move=new Stack<Element[][]>();
 		stack_x=new Stack<Integer>();
 		stack_y=new Stack<Integer>();
-		m=new Stack<Matrice>();
         this.is_main=is_main_copie= is_main;
         this.is_here=is_here_copie=is_here;
         this.wrld_x=wrld_x_copie= wrld_x;
@@ -360,7 +356,7 @@ public class Matrice extends Element{
 				move_up(x, y-1);
 				swap(y, x, y-1, x);
             }
-            if(this.getElem(y-1, x) instanceof Matrice) {
+            else if(this.getElem(y-1, x) instanceof Matrice) {
 				/*
 				 * meme chose que pour les boites mais cette fois, si on ne peut pas bouger la matrice mais 
 				 * qu'on peut rentrer dans celle ci alors on rentre et on modifie wrld_x et wrld_y et is_here
@@ -369,7 +365,6 @@ public class Matrice extends Element{
 					move_up(x, y-1);
 					swap(y, x, y-1, x);
 				}else{
-					m.push(this);
 					enter_down((Matrice)getElem(y-1, x));
 				}
 			}
@@ -401,12 +396,11 @@ public class Matrice extends Element{
 				move_down(x, y+1);
 				swap(y, x, y+1, x);
             }
-            if(this.getElem(y+1, x) instanceof Matrice) {
+            else if(this.getElem(y+1, x) instanceof Matrice) {
 				if (can_move_down(x, y+1)){
 					move_down(x, y+1);
 					swap(y, x, y+1, x);
 				}else{
-					m.push(this);
 					enter_up((Matrice)getElem(y+1, x));
 				}
             }
@@ -437,12 +431,11 @@ public class Matrice extends Element{
 				move_right(x+1, y);
 				swap(y, x, y, x+1);   
             }
-            if(this.getElem(y, x+1) instanceof Matrice) {
+            else if(this.getElem(y, x+1) instanceof Matrice) {
             	if (can_move_right(x+1, y)){
 					move_right(x+1, y);
 					swap(y, x, y, x+1);
 				}else{
-					m.push(this);
 					enter_left((Matrice)getElem(y, x+1));
 				}
 			}
@@ -473,12 +466,11 @@ public class Matrice extends Element{
 				move_left(x-1, y);
                 swap(y, x, y, x-1);
             }
-            if(this.getElem(y, x-1) instanceof Matrice) {
+            else if(this.getElem(y, x-1) instanceof Matrice) {
             	if (can_move_left(x-1, y)){
 					move_left(x-1, y);
 					swap(y, x, y, x-1);
 				}else{
-					m.push(this);
 					enter_right((Matrice)getElem(y, x-1));
 				}
             }
@@ -909,9 +901,5 @@ public class Matrice extends Element{
 
 	public void setIsHere(boolean a){
 		is_here=a;
-	}
-
-	public Stack<Matrice> getStackM(){
-		return m;
 	}
 }
