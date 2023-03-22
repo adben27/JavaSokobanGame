@@ -26,12 +26,15 @@ public class DrawLevel extends JPanel implements Runnable{
 
     private Player p;//Le joueur
     private Vide v;
+    private Stack<Matrice> m;
 
     //private Stack<Matrice> m;
 
     public DrawLevel() {
         super();
         setLayout(null);
+
+        m=new Stack<>();
 
         Box b= new Box(false, 'B');
         Box c= new Box(false, 'C');        
@@ -113,18 +116,28 @@ public class DrawLevel extends JPanel implements Runnable{
         matriceI=new Matrice("I", 'i', false, tab_i.length, tab_i, 0, 0, false, false,-1,-1);
         matriceJ=new Matrice("J", 'j', false, tab_j.length, tab_j, 0, 0, false, false,-1,-1);
         
+        tab_b[1][2]=matriceD;
+        tab_d[0][1]=matriceJ;
+        tab_j[3][3]=matriceC;
+        tab_c[4][4]=matriceH;
+
+        matriceB.setlevel(tab_b);
+        matriceC.setlevel(tab_c);
+        matriceD.setlevel(tab_d);
+        matriceJ.setlevel(tab_j);
+
         Element[][] tab_lvl={{m,m,m,m,m,m},
-                             {m,v,p,v,v,v},
+                             {m,matriceB,p,v,v,v},
                              {m,v,v,v,v,m},
                              {m,v,v,v,v,m},
-                             {m,v,matriceB,matriceC,matriceE,m},
+                             {m,v,v,v,v,m},
                              {m,m,m,m,m,m}};
         
         lvl=new Matrice("lvl", 'l', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
         matriceP=new Matrice("P", 'p', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
 
         //taille des images
-        sizeImg=(int)getToolkit().getScreenSize().getHeight()/lvl.getSize()-20;
+        sizeImg=(int)getToolkit().getScreenSize().getHeight()/(2*lvl.getSize());
 
         //on recupère les images qu'on va utiliser
         mur = getToolkit().getImage("package_sokoban/Image/mur.png");
@@ -197,8 +210,8 @@ public class DrawLevel extends JPanel implements Runnable{
                 return;
             }
             if (lvl.getElem(y+1, x).getClass() == Matrice.class)
-                if(lvl.can_enter_up((Matrice) lvl.getElem(y+1, x)))
-                    matriceP.getStackM().push(lvl);
+                if(lvl.can_enter_up((Matrice) lvl.getElem(y+1, x)) && !lvl.can_move_down(x, y))
+                    m.push(lvl);
             lvl.move_down(x, y);
             bas=false;
         }
@@ -212,8 +225,8 @@ public class DrawLevel extends JPanel implements Runnable{
                 return;
             }
             if (lvl.getElem(y-1, x).getClass() == Matrice.class)
-                if(lvl.can_enter_down((Matrice) lvl.getElem(y-1, x)))
-                    matriceP.getStackM().push(lvl);
+                if(lvl.can_enter_down((Matrice) lvl.getElem(y-1, x)) && !lvl.can_move_up(x, y))
+                    m.push(lvl);
 
             lvl.move_up(x, y);
             haut=false;
@@ -225,8 +238,8 @@ public class DrawLevel extends JPanel implements Runnable{
                 return;
             }
             if (lvl.getElem(y, x-1).getClass() == Matrice.class)
-                if(lvl.can_enter_right((Matrice) lvl.getElem(y, x-1)))
-                    matriceP.getStackM().push(lvl);
+                if(lvl.can_enter_right((Matrice) lvl.getElem(y, x-1)) && !lvl.can_move_left(x, y))
+                    m.push(lvl);
             lvl.move_left(x, y);
             gauche=false;
         }
@@ -237,8 +250,8 @@ public class DrawLevel extends JPanel implements Runnable{
                 return;
             }
             if (lvl.getElem(y, x+1).getClass() == Matrice.class)
-                if(lvl.can_enter_left((Matrice) lvl.getElem(y, x+1)))
-                    matriceP.getStackM().push(lvl);
+                if(lvl.can_enter_left((Matrice) lvl.getElem(y, x+1)) && !lvl.can_move_right(x, y))
+                    m.push(lvl);
             lvl.move_right(x, y);
             droite=false;
         }
@@ -264,6 +277,7 @@ public class DrawLevel extends JPanel implements Runnable{
 
         Graphics2D g2 = (Graphics2D) g;
         int pos_x,pos_y;
+        Element e;
 
         g2.drawImage(vide, ((getWidth() - sizeImg)/2)-sizeImg*(lvl.getSize()/2), ((getHeight() - sizeImg)/2)-sizeImg*(lvl.getSize()/2), sizeImg*lvl.getSize(), sizeImg*lvl.getSize(), lvl.getColor(), this);
 
@@ -271,81 +285,82 @@ public class DrawLevel extends JPanel implements Runnable{
             for (int j = 0; j < lvl.getSize(); j++) {
                 pos_x=((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2);
                 pos_y=((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2);
+                e=lvl.getElem(i, j);
                 
-                if(lvl.getElem(i,j).getSign()=='A'){
+                if(e.getSign()=='A'){
                     g2.drawImage(joueur, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
-                if(lvl.getElem(i,j).getSign()=='a'){
+                if(e.getSign()=='a'){
                     g2.drawImage(joueur, pos_x, pos_y, sizeImg, sizeImg, this);
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
-                if(lvl.getElem(i,j).getSign()=='B'){
-                    paintMonde(g2, matriceB, i, j);
+                if(e.getSign()=='B'){
+                    M_ou_B(g2, e, i, j);
                 }
-                if (lvl.getElem(i,j).getSign()=='b') {
-                    paintMonde(g2, matriceB, i, j);
+                if (e.getSign()=='b') {
+                    M_ou_B(g2, e, i, j);
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
-                if(lvl.getElem(i,j).getSign()=='C'){
-                    paintMonde(g2, matriceC, i, j);
+                if(e.getSign()=='C'){
+                    M_ou_B(g2, e, i, j);
                 }
-                if (lvl.getElem(i,j).getSign()=='c') {
-                    paintMonde(g2, matriceC, i, j);
+                if (e.getSign()=='c') {
+                    M_ou_B(g2, e, i, j);
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
-                if(lvl.getElem(i,j).getSign()=='D'){
-                    paintMonde(g2, matriceD, i, j);
+                if(e.getSign()=='D'){
+                    M_ou_B(g2, e, i, j);
                 }
-                if (lvl.getElem(i,j).getSign()=='d') {
-                    paintMonde(g2, matriceD, i, j);
+                if (e.getSign()=='d') {
+                    M_ou_B(g2, e, i, j);
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
-                if(lvl.getElem(i,j).getSign()=='E'){
-                    paintMonde(g2, matriceE, i, j);
+                if(e.getSign()=='E'){
+                    M_ou_B(g2, e, i, j);
                 }
-                if (lvl.getElem(i,j).getSign()=='e') {
-                    paintMonde(g2, matriceE, i, j);
+                if (e.getSign()=='e') {
+                    M_ou_B(g2, e, i, j);
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
-                if(lvl.getElem(i,j).getSign()=='F'){
-                    paintMonde(g2, matriceF, i, j);
+                if(e.getSign()=='F'){
+                    M_ou_B(g2, e, i, j);
                 }
-                if (lvl.getElem(i,j).getSign()=='f') {
-                    paintMonde(g2, matriceF, i, j);
+                if (e.getSign()=='f') {
+                    M_ou_B(g2, e, i, j);
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
-                if(lvl.getElem(i,j).getSign()=='G'){
-                    paintMonde(g2, matriceG, i, j);
+                if(e.getSign()=='G'){
+                    M_ou_B(g2, e, i, j);
                 }
-                if (lvl.getElem(i,j).getSign()=='g') {
-                    paintMonde(g2, matriceG, i, j);
+                if (e.getSign()=='g') {
+                    M_ou_B(g2, e, i, j);
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
-                if(lvl.getElem(i,j).getSign()=='H'){
-                    paintMonde(g2, matriceH, i, j);
+                if(e.getSign()=='H'){
+                    M_ou_B(g2, e, i, j);
                 }
-                if (lvl.getElem(i,j).getSign()=='h') {
-                    paintMonde(g2, matriceH, i, j);
+                if (e.getSign()=='h') {
+                    M_ou_B(g2, e, i, j);
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
-                if(lvl.getElem(i,j).getSign()=='I'){
-                    paintMonde(g2, matriceI, i, j);
+                if(e.getSign()=='I'){
+                    M_ou_B(g2, e, i, j);
                 }
-                if (lvl.getElem(i,j).getSign()=='i') {
-                    paintMonde(g2, matriceI, i, j);
+                if (e.getSign()=='i') {
+                    M_ou_B(g2, e, i, j);
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
-                if(lvl.getElem(i,j).getSign()=='J'){
-                    paintMonde(g2, matriceJ, i, j);
+                if(e.getSign()=='J'){
+                    M_ou_B(g2, e, i, j);
                 }
-                if (lvl.getElem(i,j).getSign()=='j') {
-                    paintMonde(g2, matriceJ, i, j);
+                if (e.getSign()=='j') {
+                    M_ou_B(g2, e, i, j);
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
-                if(lvl.getElem(i,j).getSign()=='@'){
+                if(e.getSign()=='@'){
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
-                if(lvl.getElem(i,j).getSign()=='#'){
+                if(e.getSign()=='#'){
                     g2.drawImage(mur, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
             }
@@ -355,118 +370,189 @@ public class DrawLevel extends JPanel implements Runnable{
     /* "m" est la matrice a afficher
      * "i" et "j" sont les coordonnées (j,i) de la localisation où il faut dessiner  
      */
-    public void paintMonde(Graphics2D g2, Matrice m, int i, int j) {
-        int pos_y=  ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2),
-            pos_x= ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2),
-            size;
+    public void paintMonde(Graphics2D g2, Matrice m, int i, int j, int pos_x, int pos_y) {
+        int size = sizeImg/m.getSize();
+        Element e;
 
-        if (m.getSize()==1)
-            g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, lvl.getColor(), this);
-        else
-            g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, m.getColor(), this);
+        g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, m.getColor(), this);
         
         for (int y = 0; y < m.getSize(); y++){
             for (int x = 0; x < m.getSize(); x++){
-                size = sizeImg/m.getSize();
                 pos_x = ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + size*x;
                 pos_y = ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + size*y;
+                e=m.getElem(y,x);
 
-                if(m.getElem(y,x).getSign()=='A'){
+                if(e.getSign()=='A'){
                     g2.drawImage(joueur, pos_x, pos_y, size, size, this);
                 }
-                if(m.getElem(y, x).getSign()=='a'){
+                if(e.getSign()=='a'){
                     g2.drawImage(joueur, pos_x, pos_y , size, size, this);
                     g2.drawImage(cible, pos_x, pos_y , size, size, this);
                 }
                 if (m.getElem(y, x).getSign()=='#'){
                     g2.drawImage(mur, pos_x,  pos_y , size, size, this);
                 }
-                if(m.getElem(y, x).getSign()=='@'){
+                if(e.getSign()=='@'){
                     g2.drawImage(vide, pos_x, pos_y, size, size, this);
                     g2.drawImage(cible, pos_x, pos_y, size, size, this);
                 }
-                if(m.getElem(y, x).getSign()=='B'){
+                if(e.getSign()=='B'){
                     g2.drawImage(vide, pos_x, pos_y, size, size, this);
                     g2.drawImage(mondeB, pos_x, pos_y, size, size, this);
                 }
-                if (m.getElem(y, x).getSign()=='b') {
+                if (e.getSign()=='b') {
                     g2.drawImage(vide, pos_x, pos_y, size, size, this);
                     g2.drawImage(mondeB, pos_x , pos_y, size, size, this);
                     g2.drawImage(cible, pos_x , pos_y, size, size, this);
                 }
-                if(m.getElem(y, x).getSign()=='C'){
+                if(e.getSign()=='C'){
                     g2.drawImage(vide, pos_x , pos_y, size, size, this);
                     g2.drawImage(mondeC, pos_x , pos_y, size, size, this);
                 }
-                if (m.getElem(y, x).getSign()=='c') {
+                if (e.getSign()=='c') {
                     g2.drawImage(vide, pos_x , pos_y, size, size, this);
                     g2.drawImage(mondeC, pos_x , pos_y, size, size, this);
                     g2.drawImage(cible, pos_x , pos_y, size, size, this);
                 }
-                if(m.getElem(y, x).getSign()=='D'){
+                if(e.getSign()=='D'){
                     g2.drawImage(vide, pos_x , pos_y, size, size, this);
                     g2.drawImage(mondeD, pos_x , pos_y, size, size, this);
                 }
-                if (m.getElem(y, x).getSign()=='d') {
+                if (e.getSign()=='d') {
                     g2.drawImage(vide, pos_x , pos_y, size, size, this);
                     g2.drawImage(mondeD, pos_x , pos_y, size, size, this);
                     g2.drawImage(cible, pos_x , pos_y, size, size, this);
                 }
-                if(m.getElem(y, x).getSign()=='E'){
+                if(e.getSign()=='E'){
                     g2.drawImage(vide, pos_x , pos_y, size, size, this);
                     g2.drawImage(mondeE, pos_x , pos_y, size, size, this);
                 }
-                if (m.getElem(y, x).getSign()=='e') {
+                if (e.getSign()=='e') {
                     g2.drawImage(vide, pos_x , pos_y, size, size, this);
                     g2.drawImage(mondeE, pos_x , pos_y, size, size, this);
                     g2.drawImage(cible, pos_x , pos_y, size, size, this);
                 }
-                if(m.getElem(y, x).getSign()=='F'){
+                if(e.getSign()=='F'){
                     g2.drawImage(vide, pos_x , pos_y, size, size, this);
                     g2.drawImage(mondeF, pos_x , pos_y, size, size, this);
                 }
-                if (m.getElem(y, x).getSign()=='f') {
+                if (e.getSign()=='f') {
                     g2.drawImage(vide, pos_x , pos_y, size, size, this);
                     g2.drawImage(mondeF, pos_x , pos_y, size, size, this);
                     g2.drawImage(cible, pos_x , pos_y, size, size, this);
                 }
-                if(m.getElem(y, x).getSign()=='G'){
+                if(e.getSign()=='G'){
                     g2.drawImage(vide, pos_x , pos_y, size, size, this);
                     g2.drawImage(mondeG, pos_x , pos_y, size, size, this);
                 }
-                if (m.getElem(y, x).getSign()=='g') {
+                if (e.getSign()=='g') {
                     g2.drawImage(vide, pos_x , pos_y, size, size, this);
                     g2.drawImage(mondeG, pos_x , pos_y, size, size, this);
                     g2.drawImage(cible, pos_x , pos_y, size, size, this);
                 }
-                if(m.getElem(y, x).getSign()=='H'){
+                if(e.getSign()=='H'){
                     g2.drawImage(vide, pos_x , pos_y, size, size, this);
                     g2.drawImage(mondeH, pos_x , pos_y, size, size, this);
                 }
-                if (m.getElem(y, x).getSign()=='h') {
+                if (e.getSign()=='h') {
                     g2.drawImage(vide, pos_x , pos_y, size, size, this);
                     g2.drawImage(mondeH, pos_x , pos_y, size, size, this);
                     g2.drawImage(cible, pos_x , pos_y, size, size, this);
                 }
-                if(m.getElem(y, x).getSign()=='I'){
+                if(e.getSign()=='I'){
                     g2.drawImage(vide, pos_x , pos_y, size, size, this);
                     g2.drawImage(mondeI, pos_x , pos_y, size, size, this);
                 }
-                if (m.getElem(y, x).getSign()=='i') {
+                if (e.getSign()=='i') {
                     g2.drawImage(vide,pos_x , pos_y, size, size, this);
                     g2.drawImage(mondeI,pos_x , pos_y, size, size, this);
                     g2.drawImage(cible,pos_x , pos_y, size, size, this);
                 }
-                if(m.getElem(y, x).getSign()=='J'){
-                    g2.drawImage(vide,pos_x , pos_y, size, size, this);
+                if(e.getSign()=='J'){
+                    g2.drawImage(vide, pos_x, pos_y, size, size, this);
                     g2.drawImage(mondeJ, pos_x , pos_y, size, size, this);
                 }
-                if (m.getElem(y, x).getSign()=='j') {
+                if (e.getSign()=='j') {
                     g2.drawImage(vide, pos_x , pos_y, size, size, this);
                     g2.drawImage(mondeJ, pos_x , pos_y, size, size, this);
                     g2.drawImage(cible, pos_x , pos_y, size, size, this);
                 }
             }
+        }
+    }
+
+    public void M_ou_B(Graphics2D g2, Element e, int i, int j) {
+        int pos_y=((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2),
+            pos_x=((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2);
+
+        g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, lvl.getColor(), this);
+
+        if(e.getClass() == Box.class){
+            if(e.getSign()=='B'){
+                g2.drawImage(mondeB, pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+            if (e.getSign()=='b') {
+                g2.drawImage(mondeB, pos_x, pos_y, sizeImg, sizeImg, this);
+                g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+            if(e.getSign()=='C'){
+                g2.drawImage(mondeC, pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+            if (e.getSign()=='c') {
+                g2.drawImage(mondeC, pos_x, pos_y, sizeImg, sizeImg, this);
+                g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+            if(e.getSign()=='D'){
+                g2.drawImage(mondeD, pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+            if (e.getSign()=='d') {
+                g2.drawImage(mondeD, pos_x, pos_y, sizeImg, sizeImg, this);
+                g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+            if(e.getSign()=='E'){
+                g2.drawImage(mondeE, pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+            if (e.getSign()=='e') {
+                g2.drawImage(mondeE, pos_x, pos_y, sizeImg, sizeImg, this);
+                g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+            if(e.getSign()=='F'){
+                g2.drawImage(mondeF, pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+            if (e.getSign()=='f') {
+                g2.drawImage(mondeF, pos_x, pos_y, sizeImg, sizeImg, this);
+                g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+            if(e.getSign()=='G'){
+                g2.drawImage(mondeG, pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+            if (e.getSign()=='g') {
+                g2.drawImage(mondeG, pos_x, pos_y, sizeImg, sizeImg, this);
+                g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+            if(e.getSign()=='H'){
+                g2.drawImage(mondeH, pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+            if (e.getSign()=='h') {
+                g2.drawImage(mondeH, pos_x, pos_y, sizeImg, sizeImg, this);
+                g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+            if(e.getSign()=='I'){
+                g2.drawImage(mondeI, pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+            if (e.getSign()=='i') {
+                g2.drawImage(mondeI,pos_x, pos_y, sizeImg, sizeImg, this);
+                g2.drawImage(cible,pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+            if(e.getSign()=='J'){
+                g2.drawImage(mondeJ, pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+            if (e.getSign()=='j') {
+                g2.drawImage(mondeJ, pos_x, pos_y, sizeImg, sizeImg, this);
+                g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
+            }
+        }else{
+            paintMonde(g2, (Matrice) e, i, j, pos_x, pos_y);
         }
     }
 
@@ -477,10 +563,13 @@ public class DrawLevel extends JPanel implements Runnable{
      */
 
     public boolean peut_sortir_haut(){
-        Matrice pere=matriceP.getStackM().peek();//on recupère la matrice pere
+        if(m.isEmpty())
+            return false;
+
+        Matrice pere=m.peek();//on recupère la matrice pere
         int x=pere.getWrldX(), y=pere.getWrldY();//on recupère les coordonnées (x, y) du monde ou se trouve le joueur
 
-        if (pere.getElem(y-1, x).getClass() == Wall.class || matriceP.getStackM().isEmpty())
+       if (pere.getElem(y-1, x).getClass() == Wall.class || m.isEmpty())
         //si il y a un mur au dessus du monde ou est le joueur on renvoie false
             return false;
         else if(pere.getElem(y-1, x).getClass() == Box.class || pere.getElem(y-1, x).getClass() == Matrice.class)
@@ -492,10 +581,13 @@ public class DrawLevel extends JPanel implements Runnable{
 
     //Meme raisonnemnt pour les 3 autres methodes mais avec des coordonnées differente
     public boolean peut_sortir_bas(){
-        Matrice pere=matriceP.getStackM().peek();
+        if(m.isEmpty())
+            return false;
+
+        Matrice pere=m.peek();
         int x=pere.getWrldX(), y=pere.getWrldY();
 
-        if (pere.getElem(y+1, x).getClass() == Wall.class || matriceP.getStackM().isEmpty())
+        if (pere.getElem(y+1, x).getClass() == Wall.class || m.isEmpty())
             return false;
         else if(pere.getElem(y+1, x).getClass() == Box.class || pere.getElem(y+1, x).getClass() == Matrice.class)
             return pere.can_move_down(x, y+1);
@@ -504,10 +596,13 @@ public class DrawLevel extends JPanel implements Runnable{
     }
 
     public boolean peut_sortir_gauche(){
-        Matrice pere=matriceP.getStackM().peek();
+        if(m.isEmpty())
+            return false;
+
+        Matrice pere=m.peek();
         int x=pere.getWrldX(), y=pere.getWrldY();
 
-        if (pere.getElem(y, x-1).getClass() == Wall.class || matriceP.getStackM().isEmpty())
+        if (pere.getElem(y, x-1).getClass() == Wall.class || m.isEmpty())
             return false;
         else if(pere.getElem(y, x-1).getClass() == Box.class || pere.getElem(y, x-1).getClass() == Matrice.class)
             return pere.can_move_left(x-1, y);
@@ -516,10 +611,13 @@ public class DrawLevel extends JPanel implements Runnable{
     }
 
     public boolean peut_sortir_droite(){
-        Matrice pere=matriceP.getStackM().peek();
+        if(m.isEmpty())
+            return false;
+
+        Matrice pere=m.peek();
         int x=pere.getWrldX(), y=pere.getWrldY();
 
-        if (pere.getElem(y, x+1).getClass() == Wall.class || matriceP.getStackM().isEmpty())
+        if (pere.getElem(y, x+1).getClass() == Wall.class)
             return false;
         else if(pere.getElem(y, x+1).getClass() == Box.class || pere.getElem(y, x+1).getClass() == Matrice.class)
             return pere.can_move_right(x+1, y);
@@ -536,111 +634,103 @@ public class DrawLevel extends JPanel implements Runnable{
 
     public void sort_haut() {
     	if(!peut_sortir_haut()) {
+            System.out.print("can't move there\n");
     		return;
     	}
-    	System.out.println(peut_sortir_haut());
     	
-    	Matrice pere = matriceP.getStackM().pop();
+    	Matrice pere = m.pop();
     	int x = pere.getWrldX(), y = pere.getWrldY();
     	
-    	Matrice fils = (Matrice) pere.getElem(y, x);
+        Matrice fils = (Matrice) pere.getElem(y, x);
     	int pos_x = fils.getPos_x(); int pos_y = fils.getPos_y();
-    	
-    	
+    	    	
     	if(pere.getElem(y-1, x).getClass() == Box.class || pere.getElem(y-1, x).getClass() == Matrice.class) {
     		pere.move_up(y-1, x); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
     	}					      // si le move_up marche et dans ce cas on sais qu'il marche prsq on a fait peut_sortir_haut
     	
     	// ici c'est juste un échange avec le vide qu'il y'a dans (y,x+1)
     	Vide temp = (Vide) pere.getElem(y-1, x);
-		
 		fils.setElem(pos_y,pos_x,temp);
-		fils.setPos_x(-1);fils.setPos_y(-1);
-		fils.setIsHere(false);
-		
+        pere.setElem(y-1, x, p);
+        
+		fils.setPos_x(-1); fils.setPos_y(-1);
 		pere.setPos_x(x);pere.setPos_y(y-1);
 		pere.setWrldX(-1);pere.setWrldY(-1);
-		pere.setElem(y-1, x, p);
+		
+        fils.setIsHere(false);
 		pere.setIsHere(true);
-    		
     }
 
     public void sort_bas() {
         if(!peut_sortir_bas()) {
+            System.out.print("can't move there\n");
     		return;
     	}
-    	System.out.println(peut_sortir_bas());
     	
-    	Matrice pere = matriceP.getStackM().pop();
+    	Matrice pere = m.pop();
     	int x = pere.getWrldX(), y = pere.getWrldY();
     	
-    	Matrice fils = (Matrice) pere.getElem(y, x);
+        Matrice fils = (Matrice) pere.getElem(y, x);
     	int pos_x = fils.getPos_x(); int pos_y = fils.getPos_y();
-    	
-    	
+    	    	
     	if(pere.getElem(y+1, x).getClass() == Box.class || pere.getElem(y+1, x).getClass() == Matrice.class) {
-    		pere.move_down(y+1, x); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
+    		pere.move_up(y+1, x); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
     	}					      // si le move_up marche et dans ce cas on sais qu'il marche prsq on a fait peut_sortir_haut
     	
     	// ici c'est juste un échange avec le vide qu'il y'a dans (y,x+1)
     	Vide temp = (Vide) pere.getElem(y+1, x);
-		
-		fils.setElem(pos_x,pos_y,temp);
-		fils.setPos_x(-1);fils.setPos_y(-1);
-		fils.setIsHere(false);
-		
-		
+		fils.setElem(pos_y,pos_x,temp);
+        pere.setElem(y+1, x, p);
+        
+		fils.setPos_x(-1); fils.setPos_y(-1);
 		pere.setPos_x(x);pere.setPos_y(y+1);
 		pere.setWrldX(-1);pere.setWrldY(-1);
-		pere.setElem(y+1, x, p);
+		
+        fils.setIsHere(false);
 		pere.setIsHere(true);
-
     }
 
     public void sort_gauche() {
         if(!peut_sortir_gauche()) {
+            System.out.print("can't move there\n");
     		return;
     	}
-    	System.out.println(peut_sortir_gauche());
     	
-    	Matrice pere = matriceP.getStackM().pop();
+    	Matrice pere = m.pop();
     	int x = pere.getWrldX(), y = pere.getWrldY();
     	
-    	Matrice fils = (Matrice) pere.getElem(y, x);
+        Matrice fils = (Matrice) pere.getElem(y, x);
     	int pos_x = fils.getPos_x(); int pos_y = fils.getPos_y();
-    	
-    	
+    	    	
     	if(pere.getElem(y, x-1).getClass() == Box.class || pere.getElem(y, x-1).getClass() == Matrice.class) {
-    		pere.move_left(y, x-1); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
+    		pere.move_right(y, x-1); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
     	}					      // si le move_up marche et dans ce cas on sais qu'il marche prsq on a fait peut_sortir_haut
     	
     	// ici c'est juste un échange avec le vide qu'il y'a dans (y,x+1)
     	Vide temp = (Vide) pere.getElem(y, x-1);
-		
-		fils.setElem(pos_x,pos_y,temp);
-		fils.setPos_x(-1);fils.setPos_y(-1);
-		fils.setIsHere(false);
-		
+		fils.setElem(pos_y,pos_x,temp);
+        pere.setElem(y, x-1, p);
+        
+		fils.setPos_x(-1); fils.setPos_y(-1);
 		pere.setPos_x(x-1);pere.setPos_y(y);
 		pere.setWrldX(-1);pere.setWrldY(-1);
-		pere.setElem(y, x-1, p);
-		pere.setIsHere(true);
 		
+        fils.setIsHere(false);
+		pere.setIsHere(true);
     }
 
     public void sort_droite() {
         if(!peut_sortir_droite()) {
+            System.out.print("can't move there\n");
     		return;
     	}
-    	System.out.println(peut_sortir_droite());
     	
-    	Matrice pere = matriceP.getStackM().pop();
+    	Matrice pere = m.pop();
     	int x = pere.getWrldX(), y = pere.getWrldY();
     	
-    	Matrice fils = (Matrice) pere.getElem(y, x);
+        Matrice fils = (Matrice) pere.getElem(y, x);
     	int pos_x = fils.getPos_x(); int pos_y = fils.getPos_y();
-    	
-    	
+    	    	
     	if(pere.getElem(y, x+1).getClass() == Box.class || pere.getElem(y, x+1).getClass() == Matrice.class) {
     		pere.move_right(y, x+1); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
     	}					      // si le move_up marche et dans ce cas on sais qu'il marche prsq on a fait peut_sortir_haut
@@ -648,15 +738,15 @@ public class DrawLevel extends JPanel implements Runnable{
     	// ici c'est juste un échange avec le vide qu'il y'a dans (y,x+1)
     	Vide temp = (Vide) pere.getElem(y, x+1);
 		
-		fils.setElem(pos_x,pos_y,temp);
-		fils.setPos_x(-1);pere.setPos_y(-1);
-		fils.setIsHere(false);
-		
+		fils.setElem(pos_y,pos_x,temp);
+        pere.setElem(y, x+1, p);
+
+		fils.setPos_x(-1); fils.setPos_y(-1);
 		pere.setPos_x(x+1);pere.setPos_y(y);
 		pere.setWrldX(-1);pere.setWrldY(-1);
-		pere.setElem(y, x+1, p);
-		pere.setIsHere(true);
 		
+        fils.setIsHere(false);
+		pere.setIsHere(true);
     }
 
     public void resetAll() {
