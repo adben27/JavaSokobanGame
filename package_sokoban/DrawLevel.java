@@ -283,7 +283,7 @@ public class DrawLevel extends JPanel implements Runnable{
 
         paintBordure(g2, pos_x, pos_y);
 
-        g2.drawImage(vide, ((getWidth() - sizeImg)/2)-sizeImg*(lvl.getSize()/2), ((getHeight() - sizeImg)/2)-sizeImg*(lvl.getSize()/2), sizeImg*lvl.getSize(), sizeImg*lvl.getSize(), lvl.getColor(), this);
+        g2.drawImage(vide, pos_x, pos_y, sizeImg*lvl.getSize(), sizeImg*lvl.getSize(), lvl.getColor(), this);
 
         for (int i = 0; i < lvl.getSize(); i++) {
             for (int j = 0; j < lvl.getSize(); j++) {
@@ -570,12 +570,16 @@ public class DrawLevel extends JPanel implements Runnable{
         int ecart=sizeImg*lvl.getSize();
         int pos_y=lvl_y-ecart, pos_x=lvl_x-ecart;
 
-        for (int i = pere.getWrldY()-1; i < pere.getWrldY()+1; i++) {
-            for (int j = pere.getWrldX()-1; j < pere.getWrldX()+1; j++) {
+        for (int i = pere.getWrldY()-1; i <= pere.getWrldY()+1; i++) {
+            for (int j = pere.getWrldX()-1; j <= pere.getWrldX()+1; j++) {
                 if(i==pere.getWrldY() && j==pere.getWrldX())
                     continue;
                 
-                e = pere.getElem(i, j);
+                if(i<0 || i>=pere.getSize() || j<0 || j>=pere.getSize()){
+                    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
+                    continue;
+                }
+
                 
                 if(i==pere.getWrldY()-1) pos_y=lvl_y-ecart;
                 if(i==pere.getWrldY()) pos_y=lvl_y;
@@ -584,6 +588,8 @@ public class DrawLevel extends JPanel implements Runnable{
                 if(j==pere.getWrldX()-1) pos_x=lvl_x-ecart;
                 if(j==pere.getWrldX()) pos_x=lvl_x;
                 if(j==pere.getWrldX()+1) pos_x= lvl_x+ecart;
+
+                e = pere.getElem(i, j);
 
                 if(e.getSign()==' '){
                     g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
@@ -866,7 +872,7 @@ public class DrawLevel extends JPanel implements Runnable{
         matriceH.reset();
         matriceI.reset();
         matriceJ.reset();
-
+        m.clear();
         setPrincipale();
     }
 
