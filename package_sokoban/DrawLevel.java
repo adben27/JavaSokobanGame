@@ -127,10 +127,10 @@ public class DrawLevel extends JPanel implements Runnable{
         matriceJ.setlevel(tab_j);
 
         Element[][] tab_lvl={{m,m,m,m,m,m},
-                             {m,matriceB,p,v,v,v},
+                             {m,v,p,v,v,v},
                              {m,v,v,v,v,m},
-                             {m,v,v,v,v,m},
-                             {m,v,v,v,v,m},
+                             {m,m,matriceB,m,v,m},
+                             {m,v,m,v,v,m},
                              {m,m,m,m,m,m}};
         
         lvl=new Matrice("lvl", 'l', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
@@ -278,8 +278,8 @@ public class DrawLevel extends JPanel implements Runnable{
         Element e;
         Graphics2D g2 = (Graphics2D) g;
 
-        int pos_x=((getWidth() - sizeImg)/2)+sizeImg*(-lvl.getSize()/2),
-            pos_y=((getHeight() - sizeImg)/2)+sizeImg*(-lvl.getSize()/2);
+        int pos_x=((getWidth() - sizeImg)/2)-sizeImg*(lvl.getSize()/2),
+            pos_y=((getHeight() - sizeImg)/2)-sizeImg*(lvl.getSize()/2);
 
         paintBordure(g2, pos_x, pos_y);
 
@@ -568,28 +568,27 @@ public class DrawLevel extends JPanel implements Runnable{
         Element e;
         Color c = pere.getColor();
         int ecart=sizeImg*lvl.getSize();
-        int pos_y=lvl_y-ecart, pos_x=lvl_x-ecart;
+        int pos_y=lvl_y-ecart, pos_x=lvl_x-ecart, a=-2, b=-2;
 
-        for (int i = pere.getWrldY()-1; i <= pere.getWrldY()+1; i++) {
-            for (int j = pere.getWrldX()-1; j <= pere.getWrldX()+1; j++) {
-                if(i==pere.getWrldY() && j==pere.getWrldX())
+        for (int i = pere.getWrldY()-2; i <= pere.getWrldY()+2; i++) {
+            for (int j = pere.getWrldX()-2; j <= pere.getWrldX()+2; j++) {
+
+                if(i<0 || i>=pere.getSize() || j<0 || j>=pere.getSize())
                     continue;
                 
-                if(i<0 || i>=pere.getSize() || j<0 || j>=pere.getSize()){
-                    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
-                    continue;
-                }
-
-                
+                if(i==pere.getWrldY()-2) pos_y=lvl_y-ecart-ecart;
                 if(i==pere.getWrldY()-1) pos_y=lvl_y-ecart;
                 if(i==pere.getWrldY()) pos_y=lvl_y;
                 if(i==pere.getWrldY()+1) pos_y= lvl_y+ecart;
+                if(i==pere.getWrldY()+2) pos_y=lvl_y+ecart+ecart;
 
+                if(j==pere.getWrldX()-2) pos_x=lvl_x-ecart-ecart;
                 if(j==pere.getWrldX()-1) pos_x=lvl_x-ecart;
                 if(j==pere.getWrldX()) pos_x=lvl_x;
                 if(j==pere.getWrldX()+1) pos_x= lvl_x+ecart;
+                if(j==pere.getWrldX()+2) pos_x=lvl_x+ecart+ecart;
 
-                e = pere.getElem(i, j);
+                e=pere.getElem(i, j);
 
                 if(e.getSign()==' '){
                     g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
@@ -663,7 +662,9 @@ public class DrawLevel extends JPanel implements Runnable{
                     g2.drawImage(mondeJ, pos_x, pos_y, ecart, ecart, c, this);
                     g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
                 }
+                b++;
             }
+            a++;
         }
     }
 
