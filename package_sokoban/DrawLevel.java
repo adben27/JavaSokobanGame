@@ -275,9 +275,13 @@ public class DrawLevel extends JPanel implements Runnable{
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        Graphics2D g2 = (Graphics2D) g;
-        int pos_x,pos_y;
         Element e;
+        Graphics2D g2 = (Graphics2D) g;
+
+        int pos_x=((getWidth() - sizeImg)/2)+sizeImg*(-lvl.getSize()/2),
+            pos_y=((getHeight() - sizeImg)/2)+sizeImg*(-lvl.getSize()/2);
+
+        paintBordure(g2, pos_x, pos_y);
 
         g2.drawImage(vide, ((getWidth() - sizeImg)/2)-sizeImg*(lvl.getSize()/2), ((getHeight() - sizeImg)/2)-sizeImg*(lvl.getSize()/2), sizeImg*lvl.getSize(), sizeImg*lvl.getSize(), lvl.getColor(), this);
 
@@ -556,6 +560,107 @@ public class DrawLevel extends JPanel implements Runnable{
         }
     }
 
+    public void paintBordure(Graphics2D g2, int lvl_x, int lvl_y){
+        if(m.isEmpty())
+            return;
+
+        Matrice pere = m.peek();
+        Element e;
+        Color c = pere.getColor();
+        int ecart=sizeImg*lvl.getSize();
+        int pos_y=lvl_y-ecart, pos_x=lvl_x-ecart;
+
+        for (int i = pere.getWrldY()-1; i < pere.getWrldY()+1; i++) {
+            for (int j = pere.getWrldX()-1; j < pere.getWrldX()+1; j++) {
+                if(i==pere.getWrldY() && j==pere.getWrldX())
+                    continue;
+                
+                e = pere.getElem(i, j);
+                
+                if(i==pere.getWrldY()-1) pos_y=lvl_y-ecart;
+                if(i==pere.getWrldY()) pos_y=lvl_y;
+                if(i==pere.getWrldY()+1) pos_y= lvl_y+ecart;
+
+                if(j==pere.getWrldX()-1) pos_x=lvl_x-ecart;
+                if(j==pere.getWrldX()) pos_x=lvl_x;
+                if(j==pere.getWrldX()+1) pos_x= lvl_x+ecart;
+
+                if(e.getSign()==' '){
+                    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
+                }
+                if(e.getSign()=='#'){
+                    g2.drawImage(mur, pos_x, pos_y, ecart, ecart, this);
+                }
+                if(e.getSign()=='@'){
+                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, c, this);
+                }
+                if(e.getSign()=='B'){
+                    g2.drawImage(mondeB, pos_x, pos_y, ecart, ecart, c, this);
+                }
+                if (e.getSign()=='b') {
+                    g2.drawImage(mondeB, pos_x, pos_y, ecart, ecart, c, this);
+                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
+                }
+                if(e.getSign()=='C'){
+                    g2.drawImage(mondeC, pos_x, pos_y, ecart, ecart, c, this);
+                }
+                if (e.getSign()=='c') {
+                    g2.drawImage(mondeC, pos_x, pos_y, ecart, ecart, c, this);
+                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
+                }
+                if(e.getSign()=='D'){
+                    g2.drawImage(mondeD, pos_x, pos_y, ecart, ecart, c, this);
+                }
+                if (e.getSign()=='d') {
+                    g2.drawImage(mondeD, pos_x, pos_y, ecart, ecart, c, this);
+                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
+                }
+                if(e.getSign()=='E'){
+                    g2.drawImage(mondeE, pos_x, pos_y, ecart, ecart, c, this);
+                }
+                if (e.getSign()=='e') {
+                    g2.drawImage(mondeE, pos_x, pos_y, ecart, ecart, c, this);
+                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
+                }
+                if(e.getSign()=='F'){
+                    g2.drawImage(mondeF, pos_x, pos_y, ecart, ecart, c, this);
+                }
+                if (e.getSign()=='f') {
+                    g2.drawImage(mondeF, pos_x, pos_y, ecart, ecart, c, this);
+                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
+                }
+                if(e.getSign()=='G'){
+                    g2.drawImage(mondeG, pos_x, pos_y, ecart, ecart, c, this);
+                }
+                if (e.getSign()=='g') {
+                    g2.drawImage(mondeG, pos_x, pos_y, ecart, ecart, c, this);
+                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
+                }
+                if(e.getSign()=='H'){
+                    g2.drawImage(mondeH, pos_x, pos_y, ecart, ecart, c, this);
+                }
+                if (e.getSign()=='h') {
+                    g2.drawImage(mondeH, pos_x, pos_y, ecart, ecart, c, this);
+                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
+                }
+                if(e.getSign()=='I'){
+                    g2.drawImage(mondeI, pos_x, pos_y, ecart, ecart, c, this);
+                }
+                if (e.getSign()=='i') {
+                    g2.drawImage(mondeI,pos_x, pos_y, ecart, ecart, c, this);
+                    g2.drawImage(cible,pos_x, pos_y, ecart, ecart, this);
+                }
+                if(e.getSign()=='J'){
+                    g2.drawImage(mondeJ, pos_x, pos_y, ecart, ecart, c, this);
+                }
+                if (e.getSign()=='j') {
+                    g2.drawImage(mondeJ, pos_x, pos_y, ecart, ecart, c, this);
+                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
+                }
+            }
+        }
+    }
+
     /*
      * Les methodes peut_sortir_(dir) renvoie true si le joueur qui est la matrice principale peut aller dans
      * la matrice pere qui est dans la pile 'm' sinon les methodes renvoie false
@@ -761,6 +866,8 @@ public class DrawLevel extends JPanel implements Runnable{
         matriceH.reset();
         matriceI.reset();
         matriceJ.reset();
+
+        setPrincipale();
     }
 
     //permet les mouvements (dit si on a appuiez sur les fleches ou les bouttons)
