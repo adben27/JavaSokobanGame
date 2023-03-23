@@ -16,7 +16,6 @@ public class DrawLevel extends JPanel implements Runnable{
     private Image[] monde;
     
     //pour les explications voir ligne 146
-    private int[] nomI; //indice d'un monde dans le tableau
     private char[] nomC; //nom d'un monde dans le tableau
 
     private boolean haut, bas, gauche, droite, ctrlZ;//pour faire bouger le joueur
@@ -121,7 +120,7 @@ public class DrawLevel extends JPanel implements Runnable{
         tab_b[1][2]=matriceD;
         tab_d[0][1]=matriceJ;
         tab_j[3][3]=matriceC;
-        tab_c[4][4]=matriceH;
+        tab_c[4][4]=matriceE;
 
         matriceB.setlevel(tab_b);
         matriceC.setlevel(tab_c);
@@ -142,21 +141,17 @@ public class DrawLevel extends JPanel implements Runnable{
         sizeImg=(int)getToolkit().getScreenSize().getHeight()/(2*lvl.getSize());
 
         /*on recupère les images qu'on va utiliser
-         * nomI[0]=0=mondeB, nomC[0]='B' et monde[nom[0]]=l'image du mondeB
-         * nomI[1]=1=mondeC, nomC[1]='C' et monde[nom[1]]=l'image du mondeC
+         * nomC[0]='B' et monde[0]=l'image du mondeB
+         * nomC[1]='C' et monde[1]=l'image du mondeC
          * etc...
          * 
-         * nomI -> indice dans le tableau monde
          * nomC -> char du monde[i] (i=nomI)
         */
         monde = new Image[9];
-        nomI = new int[9];
         nomC = new char[9];
 
-        for (int l=0, k=66 ; l < 9; l++, k++){
-            nomI[l]=l;
+        for (int l=0, k=66 ; l < 9; l++, k++)
             nomC[l]=(char) k;
-        }
 
         monde[0] = getToolkit().getImage("package_sokoban/Image/mondeB.png");
         monde[1] = getToolkit().getImage("package_sokoban/Image/mondeC.png");
@@ -297,42 +292,53 @@ public class DrawLevel extends JPanel implements Runnable{
         Element e;
         Graphics2D g2 = (Graphics2D) g;
 
+        //on calcule la pos x et y où dessiner le 1er element du tableau
         int pos_x=((getWidth() - sizeImg)/2)-sizeImg*(lvl.getSize()/2),
             pos_y=((getHeight() - sizeImg)/2)-sizeImg*(lvl.getSize()/2);
 
-        paintBordure(g2, pos_x, pos_y);
+        paintBordure(g2, pos_x, pos_y);//on dessine le monde pere si il existe
 
-        g2.drawImage(vide, pos_x, pos_y, sizeImg*lvl.getSize(), sizeImg*lvl.getSize(), lvl.getColor(), this);
+        //on dessine du vide qui fera la taille de la matrice 
+        g2.drawImage(vide, pos_x, pos_y, sizeImg*lvl.getSize(), sizeImg*lvl.getSize(), lvl.getColor(), this); 
 
         for (int i = 0; i < lvl.getSize(); i++) {
             for (int j = 0; j < lvl.getSize(); j++) {
+
+                //on calcule la pos x et y de chaque image et on recupere l'element en pos (j, i)
                 pos_x=((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2);
                 pos_y=((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2);
                 e=lvl.getElem(i, j);
 
+                //si c'est du vide on passe a la prochaine interation de la boucle 
                 if(e.getSign()==' '){
                     continue;
                 }
+                //si c'est un mur on dessine le mur et on passe a la prochaine interation de la boucle
                 if(e.getSign()=='#'){
                     g2.drawImage(mur, pos_x, pos_y, sizeImg, sizeImg, this);
                     continue;
                 }
+                //si c'est une cible on la dessine et on passe a la prochaine interation de la boucle
                 if(e.getSign()=='@'){
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                     continue;
                 }
+                //si c'est un joueur on le dessine et on passe a la prochaine interation de la boucle
                 if(e.getSign()=='A'){
                     g2.drawImage(joueur, pos_x, pos_y, sizeImg, sizeImg, this);
                     continue;
                 }
+                //si c'est un joueur dans une cible on le dessine et on passe a la prochaine interation de la boucle
                 if(e.getSign()=='a'){
                     g2.drawImage(joueur, pos_x, pos_y, sizeImg, sizeImg, this);
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                     continue;
                 }
+                //si c'est un monde/box on la dessine et on passe a la prochaine interation de la boucle
                 if(Character.isUpperCase(e.getSign())){
                     m_OU_b(g2, e, i, j);
                 }else{
+                //si c'est un monde/box dans une cible on la dessine et on passe a la prochaine interation de la boucle
                     m_OU_b(g2, e, i, j);
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
@@ -341,24 +347,28 @@ public class DrawLevel extends JPanel implements Runnable{
     }
 
     /* "m" est la matrice a afficher
-     * "i" et "j" sont les coordonnées (j,i) de la localisation où il faut dessiner  
+     * "pos_x" et "pos_y" sont les coordonnées (pos_x, pos_y) de la localisation où il faut dessiner  
      */
-    public void paintMonde(Graphics2D g2, Matrice m, int i, int j, int pos_x, int pos_y) {
-        int size = sizeImg/m.getSize(), a=0;
+    public void paintMonde(Graphics2D g2, Matrice m, int pos_x, int pos_y) {
+        //on calcule la taille des images à dessiner et on sauvegarde la pos x et y du monde a dessiner
+        int size = sizeImg/m.getSize(), i=pos_y, j=pos_x, a=0;
         Element e;
 
+        //on dessine du vide qui fera la taille du monde
         g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, m.getColor(), this);
         
         for (int y = 0; y < m.getSize(); y++){
             for (int x = 0; x < m.getSize(); x++){
-                pos_x = ((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2) + size*x;
-                pos_y = ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + size*y;
+                //on calcule la pos x et y de la case a dessine et on recupere l'element a dessiner
+                pos_x = j + size*x;
+                pos_y = i + size*y;
                 e=m.getElem(y,x);
 
+                //meme commentaire que dans paintCompponante
                 if(e.getSign()==' '){
                     continue;
                 }
-                if (m.getElem(y, x).getSign()=='#'){
+                if (e.getSign()=='#'){
                     g2.drawImage(mur, pos_x,  pos_y , size, size, this);
                     continue;
                 }
@@ -383,7 +393,7 @@ public class DrawLevel extends JPanel implements Runnable{
                             break;
                         }
                     }
-                    g2.drawImage(monde[nomI[a]], pos_x, pos_y, size, size, this);
+                    g2.drawImage(monde[a], pos_x, pos_y, size, size, this);
                 }else{
                     for (int k = 0; k < 9; k++) {
                         if(e.getSign()==nomC[k]){
@@ -391,7 +401,7 @@ public class DrawLevel extends JPanel implements Runnable{
                             break;
                         }
                     }
-                    g2.drawImage(monde[nomI[a]], pos_x, pos_y, size, size, this);
+                    g2.drawImage(monde[a], pos_x, pos_y, size, size, this);
                     g2.drawImage(cible, pos_x , pos_y, size, size, this);
                 }
             }
@@ -399,11 +409,13 @@ public class DrawLevel extends JPanel implements Runnable{
     }
 
     public void m_OU_b(Graphics2D g2, Element e, int i, int j) {
+        //meme commentaire que paintComponent
         int pos_y=((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2),
             pos_x=((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2);
 
         g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, lvl.getColor(), this);
 
+        //si c'est une box on la dessine sinon on dessine un monde
         if(e.getClass() == Box.class){
             int a=0;
             if(Character.isUpperCase(e.getSign())){
@@ -413,7 +425,7 @@ public class DrawLevel extends JPanel implements Runnable{
                         break;
                     }
                 }
-                g2.drawImage(monde[nomI[a]], pos_x, pos_y, sizeImg, sizeImg, this);
+                g2.drawImage(monde[a], pos_x, pos_y, sizeImg, sizeImg, this);
             }else{
                 for (int k = 0; k < 9; k++) {
                     if(e.getSign()==nomC[k]){
@@ -421,11 +433,11 @@ public class DrawLevel extends JPanel implements Runnable{
                         break;
                     }
                 }
-                g2.drawImage(monde[nomI[a]], pos_x, pos_y, sizeImg, sizeImg, this);
+                g2.drawImage(monde[a], pos_x, pos_y, sizeImg, sizeImg, this);
                 g2.drawImage(cible, pos_x , pos_y, sizeImg, sizeImg, this);
             }
         }else{
-            paintMonde(g2, (Matrice) e, i, j, pos_x, pos_y);
+            paintMonde(g2, (Matrice) e, pos_x, pos_y);
         }
     }
 
@@ -433,45 +445,36 @@ public class DrawLevel extends JPanel implements Runnable{
         if(m.isEmpty())
             return;
 
+        //on recupere la matrice pere, la couleur du pere, on calcule la taille des images et la pos x et y des images a dessiner
         Matrice pere = m.peek();
         Element e;
         Color c = pere.getColor();
         int ecart=sizeImg*lvl.getSize();
-        int pos_y=lvl_y-ecart, pos_x=lvl_x-ecart, a=0;
+        int pos_y=((getHeight() - sizeImg)/2)-sizeImg*(lvl.getSize()/2), 
+            pos_x=((getWidth() - sizeImg)/2)-sizeImg*(lvl.getSize()/2), a=0;
 
-        for (int i = pere.getWrldY()-2; i <= pere.getWrldY()+2; i++) {
-            for (int j = pere.getWrldX()-2; j <= pere.getWrldX()+2; j++) {
+        for (int i=0; i<pere.getSize(); i++) {
+            for (int j=0; j<pere.getSize(); j++) {
+                //meme commentaire que paintComponent
+                pos_x = lvl_x + ecart*(j-pere.getWrldX());
+                pos_y = lvl_y + ecart*(i-pere.getWrldY());
+                e=pere.getElem(i,j);
 
-                if(i<0 || i>=pere.getSize() || j<0 || j>=pere.getSize())
-                    continue;
-                
-                if(i==pere.getWrldY()-2) pos_y=lvl_y-ecart-ecart;
-                if(i==pere.getWrldY()-1) pos_y=lvl_y-ecart;
-                if(i==pere.getWrldY()) pos_y=lvl_y;
-                if(i==pere.getWrldY()+1) pos_y= lvl_y+ecart;
-                if(i==pere.getWrldY()+2) pos_y=lvl_y+ecart+ecart;
-
-                if(j==pere.getWrldX()-2) pos_x=lvl_x-ecart-ecart;
-                if(j==pere.getWrldX()-1) pos_x=lvl_x-ecart;
-                if(j==pere.getWrldX()) pos_x=lvl_x;
-                if(j==pere.getWrldX()+1) pos_x= lvl_x+ecart;
-                if(j==pere.getWrldX()+2) pos_x=lvl_x+ecart+ecart;
-
-                e=pere.getElem(i, j);
-
-                if(e.getSign()==' '){
-                    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
+                if(pos_x == pere.getWrldX() && pos_y == pere.getWrldY()){
                     continue;
                 }
-                if(e.getSign()=='#'){
-                    g2.drawImage(mur, pos_x, pos_y, ecart, ecart, this);
+                if (e.getSign()=='#'){
+                    g2.drawImage(mur, pos_x, pos_y , ecart, ecart, this);
+                    continue;
+                }
+                if (e.getSign()==' ') {
+                    g2.drawImage(vide, pos_x, pos_y , ecart, ecart, c, this);
                     continue;
                 }
                 if(e.getSign()=='@'){
-                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, c, this);
+                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
                     continue;
                 }
-
                 if(Character.isUpperCase(e.getSign())){
                     for (int k = 0; k < 9; k++) {
                         if(e.getSign()==nomC[k]){
@@ -479,7 +482,8 @@ public class DrawLevel extends JPanel implements Runnable{
                             break;
                         }
                     }
-                    g2.drawImage(monde[nomI[a]], pos_x, pos_y, ecart, ecart, this);
+                    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
+                    g2.drawImage(monde[a], pos_x, pos_y, ecart, ecart, this);
                 }else{
                     for (int k = 0; k < 9; k++) {
                         if(e.getSign()==nomC[k]){
@@ -487,7 +491,8 @@ public class DrawLevel extends JPanel implements Runnable{
                             break;
                         }
                     }
-                    g2.drawImage(monde[nomI[a]], pos_x, pos_y, ecart, ecart, this);
+                    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
+                    g2.drawImage(monde[a], pos_x, pos_y, ecart, ecart, this);
                     g2.drawImage(cible, pos_x , pos_y, ecart, ecart, this);
                 }
             }
@@ -687,6 +692,7 @@ public class DrawLevel extends JPanel implements Runnable{
 		pere.setIsHere(true);
     }
 
+    //on reinitialise toute les matrices et on dit que la matrice lvl est la matrice a afficher
     public void resetAll() {
         lvl.reset();       
         matriceP.reset();
