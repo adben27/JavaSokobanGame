@@ -102,8 +102,8 @@ public class DrawLevel extends JPanel implements Runnable{
         Element[][] tab_i={{i}};
 
         Element[][] tab_j={{m,v,m,m,m},
-                           {v,j,v,m,m},
-                           {m,v,v,v,v},
+                           {v,v,v,m,m},
+                           {m,v,j,v,v},
                            {m,v,v,m,m},
                            {m,m,v,m,m}};
 
@@ -130,7 +130,7 @@ public class DrawLevel extends JPanel implements Runnable{
         Element[][] tab_lvl={{m,m,m,m,m,m},
                              {m,v,p,v,v,v},
                              {m,v,v,v,v,m},
-                             {m,m,matriceB,m,v,m},
+                             {m,v,matriceB,v,v,m},
                              {m,v,m,v,v,m},
                              {m,m,m,m,m,m}};
         
@@ -273,7 +273,7 @@ public class DrawLevel extends JPanel implements Runnable{
             lvl.ctrl_z();
             ctrlZ=false;
         }
-        if (lvl.all_ontarget()) {
+        if (matriceP.estFini()) {
             next=JOptionPane.showConfirmDialog(this, "Félicitation vous avez terminer le niveau.\nVoulez-vous passez au niveau suivant ?");
             if(next==0)
                 loadLvl();
@@ -512,7 +512,7 @@ public class DrawLevel extends JPanel implements Runnable{
         Matrice pere=m.peek();//on recupère la matrice pere
         int x=pere.getWrldX(), y=pere.getWrldY();//on recupère les coordonnées (x, y) du monde ou se trouve le joueur
 
-       if (pere.getElem(y-1, x).getClass() == Wall.class || m.isEmpty())
+       if (y-1<0 || pere.getElem(y-1, x).getClass() == Wall.class)
         //si il y a un mur au dessus du monde ou est le joueur on renvoie false
             return false;
         else if(pere.getElem(y-1, x).getClass() == Box.class || pere.getElem(y-1, x).getClass() == Matrice.class)
@@ -530,7 +530,7 @@ public class DrawLevel extends JPanel implements Runnable{
         Matrice pere=m.peek();
         int x=pere.getWrldX(), y=pere.getWrldY();
 
-        if (pere.getElem(y+1, x).getClass() == Wall.class || m.isEmpty())
+        if (y+1>pere.getSize() || pere.getElem(y+1, x).getClass() == Wall.class)
             return false;
         else if(pere.getElem(y+1, x).getClass() == Box.class || pere.getElem(y+1, x).getClass() == Matrice.class)
             return pere.can_move_down(x, y+1);
@@ -545,7 +545,7 @@ public class DrawLevel extends JPanel implements Runnable{
         Matrice pere=m.peek();
         int x=pere.getWrldX(), y=pere.getWrldY();
 
-        if (pere.getElem(y, x-1).getClass() == Wall.class || m.isEmpty())
+        if (x-1<0 || pere.getElem(y, x-1).getClass() == Wall.class)
             return false;
         else if(pere.getElem(y, x-1).getClass() == Box.class || pere.getElem(y, x-1).getClass() == Matrice.class)
             return pere.can_move_left(x-1, y);
@@ -560,7 +560,7 @@ public class DrawLevel extends JPanel implements Runnable{
         Matrice pere=m.peek();
         int x=pere.getWrldX(), y=pere.getWrldY();
 
-        if (pere.getElem(y, x+1).getClass() == Wall.class)
+        if (x+1>=pere.getSize() || pere.getElem(y, x+1).getClass() == Wall.class)
             return false;
         else if(pere.getElem(y, x+1).getClass() == Box.class || pere.getElem(y, x+1).getClass() == Matrice.class)
             return pere.can_move_right(x+1, y);
