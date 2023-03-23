@@ -11,14 +11,18 @@ public class DrawLevel extends JPanel implements Runnable{
     private static final int FPS=60;//nombre de FPS du jeu
     private int sizeImg, next;//taille des images et pour savoir si on lance le prochain niveau 
 
-    //image que l'on va afficher les "monde(x)" seront utiliser pour la version classique
-    private Image mur, vide, cible, mondeB, mondeC, mondeD, mondeE,
-                  mondeF, mondeG, mondeH, mondeI, mondeJ, joueur;
+    //image que l'on va afficher, "monde" est un tableau d'images qui contient toute les images
+    private Image mur, vide, cible, joueur;
+    private Image[] monde;
+    
+    //pour les explications voir ligne 146
+    private int[] nomI; //indice d'un monde dans le tableau
+    private char[] nomC; //nom d'un monde dans le tableau
 
     private boolean haut, bas, gauche, droite, ctrlZ;//pour faire bouger le joueur
 
     /* Matrice que l'on va utiliser pour la version recursive
-     * lvl sera la matrice que l'on va afficher (changera a chaque appel des methodes de deplacement)
+     * lvl sera la matrice que l'on va afficher (changera a chaque appel des methodes d'entrer et de sorie de monde)
      * matriceP sera la matrice qui contient le 1er monde lors du démarage du jeu
      */
     public Matrice lvl, matriceP, matriceB, matriceC, matriceD, matriceE,
@@ -26,15 +30,13 @@ public class DrawLevel extends JPanel implements Runnable{
 
     private Player p;//Le joueur
     private Vide v;
-    private Stack<Matrice> m;
-
-    //private Stack<Matrice> m;
+    private Stack<Matrice> m;//pile qui contient les matrices peres
 
     public DrawLevel() {
         super();
         setLayout(null);
 
-        m=new Stack<>();
+        m=new Stack<Matrice>();
 
         Box b= new Box(false, 'B');
         Box c= new Box(false, 'C');        
@@ -115,7 +117,7 @@ public class DrawLevel extends JPanel implements Runnable{
         matriceH=new Matrice("H", 'h', false, tab_h.length, tab_h, 0, 0, false, false,-1,-1);
         matriceI=new Matrice("I", 'i', false, tab_i.length, tab_i, 0, 0, false, false,-1,-1);
         matriceJ=new Matrice("J", 'j', false, tab_j.length, tab_j, 0, 0, false, false,-1,-1);
-        
+
         tab_b[1][2]=matriceD;
         tab_d[0][1]=matriceJ;
         tab_j[3][3]=matriceC;
@@ -139,20 +141,37 @@ public class DrawLevel extends JPanel implements Runnable{
         //taille des images
         sizeImg=(int)getToolkit().getScreenSize().getHeight()/(2*lvl.getSize());
 
-        //on recupère les images qu'on va utiliser
+        /*on recupère les images qu'on va utiliser
+         * nomI[0]=0=mondeB, nomC[0]='B' et monde[nom[0]]=l'image du mondeB
+         * nomI[1]=1=mondeC, nomC[1]='C' et monde[nom[1]]=l'image du mondeC
+         * etc...
+         * 
+         * nomI -> indice dans le tableau monde
+         * nomC -> char du monde[i] (i=nomI)
+        */
+        monde = new Image[9];
+        nomI = new int[9];
+        nomC = new char[9];
+
+        for (int l=0, k=66 ; l < 9; l++, k++){
+            nomI[l]=l;
+            nomC[l]=(char) k;
+        }
+
+        monde[0] = getToolkit().getImage("package_sokoban/Image/mondeB.png");
+        monde[1] = getToolkit().getImage("package_sokoban/Image/mondeC.png");
+        monde[2] = getToolkit().getImage("package_sokoban/Image/mondeD.png");
+        monde[3] = getToolkit().getImage("package_sokoban/Image/mondeE.png");
+        monde[4] = getToolkit().getImage("package_sokoban/Image/mondeF.png");
+        monde[5] = getToolkit().getImage("package_sokoban/Image/mondeG.png");
+        monde[6] = getToolkit().getImage("package_sokoban/Image/mondeH.png");
+        monde[7] = getToolkit().getImage("package_sokoban/Image/mondeI.png");
+        monde[8] = getToolkit().getImage("package_sokoban/Image/mondeJ.png");
+
+        joueur = getToolkit().getImage("package_sokoban/Image/joueur.png");
         mur = getToolkit().getImage("package_sokoban/Image/mur.png");
         vide = getToolkit().getImage("package_sokoban/Image/vide.png");
         cible = getToolkit().getImage("package_sokoban/Image/cible.png");
-        mondeB = getToolkit().getImage("package_sokoban/Image/mondeB.png");
-        mondeC = getToolkit().getImage("package_sokoban/Image/mondeC.png");
-        mondeD = getToolkit().getImage("package_sokoban/Image/mondeD.png");
-        mondeE = getToolkit().getImage("package_sokoban/Image/mondeE.png");
-        mondeF = getToolkit().getImage("package_sokoban/Image/mondeF.png");
-        mondeG = getToolkit().getImage("package_sokoban/Image/mondeG.png");
-        mondeH = getToolkit().getImage("package_sokoban/Image/mondeH.png");
-        mondeI = getToolkit().getImage("package_sokoban/Image/mondeI.png");
-        mondeJ = getToolkit().getImage("package_sokoban/Image/mondeJ.png");
-        joueur = getToolkit().getImage("package_sokoban/Image/joueur.png");
 
         //on met tout a false pour pas bouger le joueur
         haut=bas=gauche=droite=ctrlZ=false;
@@ -290,82 +309,32 @@ public class DrawLevel extends JPanel implements Runnable{
                 pos_x=((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2);
                 pos_y=((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2);
                 e=lvl.getElem(i, j);
-                
+
+                if(e.getSign()==' '){
+                    continue;
+                }
+                if(e.getSign()=='#'){
+                    g2.drawImage(mur, pos_x, pos_y, sizeImg, sizeImg, this);
+                    continue;
+                }
+                if(e.getSign()=='@'){
+                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
+                    continue;
+                }
                 if(e.getSign()=='A'){
                     g2.drawImage(joueur, pos_x, pos_y, sizeImg, sizeImg, this);
+                    continue;
                 }
                 if(e.getSign()=='a'){
                     g2.drawImage(joueur, pos_x, pos_y, sizeImg, sizeImg, this);
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
+                    continue;
                 }
-                if(e.getSign()=='B'){
-                    M_ou_B(g2, e, i, j);
-                }
-                if (e.getSign()=='b') {
-                    M_ou_B(g2, e, i, j);
+                if(Character.isUpperCase(e.getSign())){
+                    m_OU_b(g2, e, i, j);
+                }else{
+                    m_OU_b(g2, e, i, j);
                     g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
-                }
-                if(e.getSign()=='C'){
-                    M_ou_B(g2, e, i, j);
-                }
-                if (e.getSign()=='c') {
-                    M_ou_B(g2, e, i, j);
-                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
-                }
-                if(e.getSign()=='D'){
-                    M_ou_B(g2, e, i, j);
-                }
-                if (e.getSign()=='d') {
-                    M_ou_B(g2, e, i, j);
-                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
-                }
-                if(e.getSign()=='E'){
-                    M_ou_B(g2, e, i, j);
-                }
-                if (e.getSign()=='e') {
-                    M_ou_B(g2, e, i, j);
-                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
-                }
-                if(e.getSign()=='F'){
-                    M_ou_B(g2, e, i, j);
-                }
-                if (e.getSign()=='f') {
-                    M_ou_B(g2, e, i, j);
-                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
-                }
-                if(e.getSign()=='G'){
-                    M_ou_B(g2, e, i, j);
-                }
-                if (e.getSign()=='g') {
-                    M_ou_B(g2, e, i, j);
-                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
-                }
-                if(e.getSign()=='H'){
-                    M_ou_B(g2, e, i, j);
-                }
-                if (e.getSign()=='h') {
-                    M_ou_B(g2, e, i, j);
-                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
-                }
-                if(e.getSign()=='I'){
-                    M_ou_B(g2, e, i, j);
-                }
-                if (e.getSign()=='i') {
-                    M_ou_B(g2, e, i, j);
-                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
-                }
-                if(e.getSign()=='J'){
-                    M_ou_B(g2, e, i, j);
-                }
-                if (e.getSign()=='j') {
-                    M_ou_B(g2, e, i, j);
-                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
-                }
-                if(e.getSign()=='@'){
-                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
-                }
-                if(e.getSign()=='#'){
-                    g2.drawImage(mur, pos_x, pos_y, sizeImg, sizeImg, this);
                 }
             }
         }
@@ -375,7 +344,7 @@ public class DrawLevel extends JPanel implements Runnable{
      * "i" et "j" sont les coordonnées (j,i) de la localisation où il faut dessiner  
      */
     public void paintMonde(Graphics2D g2, Matrice m, int i, int j, int pos_x, int pos_y) {
-        int size = sizeImg/m.getSize();
+        int size = sizeImg/m.getSize(), a=0;
         Element e;
 
         g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, m.getColor(), this);
@@ -386,174 +355,74 @@ public class DrawLevel extends JPanel implements Runnable{
                 pos_y = ((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2) + size*y;
                 e=m.getElem(y,x);
 
+                if(e.getSign()==' '){
+                    continue;
+                }
+                if (m.getElem(y, x).getSign()=='#'){
+                    g2.drawImage(mur, pos_x,  pos_y , size, size, this);
+                    continue;
+                }
                 if(e.getSign()=='A'){
                     g2.drawImage(joueur, pos_x, pos_y, size, size, this);
+                    continue;
                 }
                 if(e.getSign()=='a'){
                     g2.drawImage(joueur, pos_x, pos_y , size, size, this);
                     g2.drawImage(cible, pos_x, pos_y , size, size, this);
-                }
-                if (m.getElem(y, x).getSign()=='#'){
-                    g2.drawImage(mur, pos_x,  pos_y , size, size, this);
+                    continue;
                 }
                 if(e.getSign()=='@'){
-                    g2.drawImage(vide, pos_x, pos_y, size, size, this);
                     g2.drawImage(cible, pos_x, pos_y, size, size, this);
+                    continue;
                 }
-                if(e.getSign()=='B'){
-                    g2.drawImage(vide, pos_x, pos_y, size, size, this);
-                    g2.drawImage(mondeB, pos_x, pos_y, size, size, this);
-                }
-                if (e.getSign()=='b') {
-                    g2.drawImage(vide, pos_x, pos_y, size, size, this);
-                    g2.drawImage(mondeB, pos_x , pos_y, size, size, this);
-                    g2.drawImage(cible, pos_x , pos_y, size, size, this);
-                }
-                if(e.getSign()=='C'){
-                    g2.drawImage(vide, pos_x , pos_y, size, size, this);
-                    g2.drawImage(mondeC, pos_x , pos_y, size, size, this);
-                }
-                if (e.getSign()=='c') {
-                    g2.drawImage(vide, pos_x , pos_y, size, size, this);
-                    g2.drawImage(mondeC, pos_x , pos_y, size, size, this);
-                    g2.drawImage(cible, pos_x , pos_y, size, size, this);
-                }
-                if(e.getSign()=='D'){
-                    g2.drawImage(vide, pos_x , pos_y, size, size, this);
-                    g2.drawImage(mondeD, pos_x , pos_y, size, size, this);
-                }
-                if (e.getSign()=='d') {
-                    g2.drawImage(vide, pos_x , pos_y, size, size, this);
-                    g2.drawImage(mondeD, pos_x , pos_y, size, size, this);
-                    g2.drawImage(cible, pos_x , pos_y, size, size, this);
-                }
-                if(e.getSign()=='E'){
-                    g2.drawImage(vide, pos_x , pos_y, size, size, this);
-                    g2.drawImage(mondeE, pos_x , pos_y, size, size, this);
-                }
-                if (e.getSign()=='e') {
-                    g2.drawImage(vide, pos_x , pos_y, size, size, this);
-                    g2.drawImage(mondeE, pos_x , pos_y, size, size, this);
-                    g2.drawImage(cible, pos_x , pos_y, size, size, this);
-                }
-                if(e.getSign()=='F'){
-                    g2.drawImage(vide, pos_x , pos_y, size, size, this);
-                    g2.drawImage(mondeF, pos_x , pos_y, size, size, this);
-                }
-                if (e.getSign()=='f') {
-                    g2.drawImage(vide, pos_x , pos_y, size, size, this);
-                    g2.drawImage(mondeF, pos_x , pos_y, size, size, this);
-                    g2.drawImage(cible, pos_x , pos_y, size, size, this);
-                }
-                if(e.getSign()=='G'){
-                    g2.drawImage(vide, pos_x , pos_y, size, size, this);
-                    g2.drawImage(mondeG, pos_x , pos_y, size, size, this);
-                }
-                if (e.getSign()=='g') {
-                    g2.drawImage(vide, pos_x , pos_y, size, size, this);
-                    g2.drawImage(mondeG, pos_x , pos_y, size, size, this);
-                    g2.drawImage(cible, pos_x , pos_y, size, size, this);
-                }
-                if(e.getSign()=='H'){
-                    g2.drawImage(vide, pos_x , pos_y, size, size, this);
-                    g2.drawImage(mondeH, pos_x , pos_y, size, size, this);
-                }
-                if (e.getSign()=='h') {
-                    g2.drawImage(vide, pos_x , pos_y, size, size, this);
-                    g2.drawImage(mondeH, pos_x , pos_y, size, size, this);
-                    g2.drawImage(cible, pos_x , pos_y, size, size, this);
-                }
-                if(e.getSign()=='I'){
-                    g2.drawImage(vide, pos_x , pos_y, size, size, this);
-                    g2.drawImage(mondeI, pos_x , pos_y, size, size, this);
-                }
-                if (e.getSign()=='i') {
-                    g2.drawImage(vide,pos_x , pos_y, size, size, this);
-                    g2.drawImage(mondeI,pos_x , pos_y, size, size, this);
-                    g2.drawImage(cible,pos_x , pos_y, size, size, this);
-                }
-                if(e.getSign()=='J'){
-                    g2.drawImage(vide, pos_x, pos_y, size, size, this);
-                    g2.drawImage(mondeJ, pos_x , pos_y, size, size, this);
-                }
-                if (e.getSign()=='j') {
-                    g2.drawImage(vide, pos_x , pos_y, size, size, this);
-                    g2.drawImage(mondeJ, pos_x , pos_y, size, size, this);
+
+                if(Character.isUpperCase(e.getSign())){
+                    for (int k = 0; k < 9; k++) {
+                        if(e.getSign()==nomC[k]){
+                            a=k;
+                            break;
+                        }
+                    }
+                    g2.drawImage(monde[nomI[a]], pos_x, pos_y, size, size, this);
+                }else{
+                    for (int k = 0; k < 9; k++) {
+                        if(e.getSign()==nomC[k]){
+                            a=k;
+                            break;
+                        }
+                    }
+                    g2.drawImage(monde[nomI[a]], pos_x, pos_y, size, size, this);
                     g2.drawImage(cible, pos_x , pos_y, size, size, this);
                 }
             }
         }
     }
 
-    public void M_ou_B(Graphics2D g2, Element e, int i, int j) {
+    public void m_OU_b(Graphics2D g2, Element e, int i, int j) {
         int pos_y=((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2),
             pos_x=((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2);
 
         g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, lvl.getColor(), this);
 
         if(e.getClass() == Box.class){
-            if(e.getSign()=='B'){
-                g2.drawImage(mondeB, pos_x, pos_y, sizeImg, sizeImg, this);
-            }
-            if (e.getSign()=='b') {
-                g2.drawImage(mondeB, pos_x, pos_y, sizeImg, sizeImg, this);
-                g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
-            }
-            if(e.getSign()=='C'){
-                g2.drawImage(mondeC, pos_x, pos_y, sizeImg, sizeImg, this);
-            }
-            if (e.getSign()=='c') {
-                g2.drawImage(mondeC, pos_x, pos_y, sizeImg, sizeImg, this);
-                g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
-            }
-            if(e.getSign()=='D'){
-                g2.drawImage(mondeD, pos_x, pos_y, sizeImg, sizeImg, this);
-            }
-            if (e.getSign()=='d') {
-                g2.drawImage(mondeD, pos_x, pos_y, sizeImg, sizeImg, this);
-                g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
-            }
-            if(e.getSign()=='E'){
-                g2.drawImage(mondeE, pos_x, pos_y, sizeImg, sizeImg, this);
-            }
-            if (e.getSign()=='e') {
-                g2.drawImage(mondeE, pos_x, pos_y, sizeImg, sizeImg, this);
-                g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
-            }
-            if(e.getSign()=='F'){
-                g2.drawImage(mondeF, pos_x, pos_y, sizeImg, sizeImg, this);
-            }
-            if (e.getSign()=='f') {
-                g2.drawImage(mondeF, pos_x, pos_y, sizeImg, sizeImg, this);
-                g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
-            }
-            if(e.getSign()=='G'){
-                g2.drawImage(mondeG, pos_x, pos_y, sizeImg, sizeImg, this);
-            }
-            if (e.getSign()=='g') {
-                g2.drawImage(mondeG, pos_x, pos_y, sizeImg, sizeImg, this);
-                g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
-            }
-            if(e.getSign()=='H'){
-                g2.drawImage(mondeH, pos_x, pos_y, sizeImg, sizeImg, this);
-            }
-            if (e.getSign()=='h') {
-                g2.drawImage(mondeH, pos_x, pos_y, sizeImg, sizeImg, this);
-                g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
-            }
-            if(e.getSign()=='I'){
-                g2.drawImage(mondeI, pos_x, pos_y, sizeImg, sizeImg, this);
-            }
-            if (e.getSign()=='i') {
-                g2.drawImage(mondeI,pos_x, pos_y, sizeImg, sizeImg, this);
-                g2.drawImage(cible,pos_x, pos_y, sizeImg, sizeImg, this);
-            }
-            if(e.getSign()=='J'){
-                g2.drawImage(mondeJ, pos_x, pos_y, sizeImg, sizeImg, this);
-            }
-            if (e.getSign()=='j') {
-                g2.drawImage(mondeJ, pos_x, pos_y, sizeImg, sizeImg, this);
-                g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
+            int a=0;
+            if(Character.isUpperCase(e.getSign())){
+                for (int k = 0; k < 9; k++) {
+                    if(e.getSign()==nomC[k]){
+                        a=k;
+                        break;
+                    }
+                }
+                g2.drawImage(monde[nomI[a]], pos_x, pos_y, sizeImg, sizeImg, this);
+            }else{
+                for (int k = 0; k < 9; k++) {
+                    if(e.getSign()==nomC[k]){
+                        a=k;
+                        break;
+                    }
+                }
+                g2.drawImage(monde[nomI[a]], pos_x, pos_y, sizeImg, sizeImg, this);
+                g2.drawImage(cible, pos_x , pos_y, sizeImg, sizeImg, this);
             }
         }else{
             paintMonde(g2, (Matrice) e, i, j, pos_x, pos_y);
@@ -568,7 +437,7 @@ public class DrawLevel extends JPanel implements Runnable{
         Element e;
         Color c = pere.getColor();
         int ecart=sizeImg*lvl.getSize();
-        int pos_y=lvl_y-ecart, pos_x=lvl_x-ecart, a=-2, b=-2;
+        int pos_y=lvl_y-ecart, pos_x=lvl_x-ecart, a=0;
 
         for (int i = pere.getWrldY()-2; i <= pere.getWrldY()+2; i++) {
             for (int j = pere.getWrldX()-2; j <= pere.getWrldX()+2; j++) {
@@ -592,79 +461,36 @@ public class DrawLevel extends JPanel implements Runnable{
 
                 if(e.getSign()==' '){
                     g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
+                    continue;
                 }
                 if(e.getSign()=='#'){
                     g2.drawImage(mur, pos_x, pos_y, ecart, ecart, this);
+                    continue;
                 }
                 if(e.getSign()=='@'){
                     g2.drawImage(cible, pos_x, pos_y, ecart, ecart, c, this);
+                    continue;
                 }
-                if(e.getSign()=='B'){
-                    g2.drawImage(mondeB, pos_x, pos_y, ecart, ecart, c, this);
+
+                if(Character.isUpperCase(e.getSign())){
+                    for (int k = 0; k < 9; k++) {
+                        if(e.getSign()==nomC[k]){
+                            a=k;
+                            break;
+                        }
+                    }
+                    g2.drawImage(monde[nomI[a]], pos_x, pos_y, ecart, ecart, this);
+                }else{
+                    for (int k = 0; k < 9; k++) {
+                        if(e.getSign()==nomC[k]){
+                            a=k;
+                            break;
+                        }
+                    }
+                    g2.drawImage(monde[nomI[a]], pos_x, pos_y, ecart, ecart, this);
+                    g2.drawImage(cible, pos_x , pos_y, ecart, ecart, this);
                 }
-                if (e.getSign()=='b') {
-                    g2.drawImage(mondeB, pos_x, pos_y, ecart, ecart, c, this);
-                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
-                }
-                if(e.getSign()=='C'){
-                    g2.drawImage(mondeC, pos_x, pos_y, ecart, ecart, c, this);
-                }
-                if (e.getSign()=='c') {
-                    g2.drawImage(mondeC, pos_x, pos_y, ecart, ecart, c, this);
-                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
-                }
-                if(e.getSign()=='D'){
-                    g2.drawImage(mondeD, pos_x, pos_y, ecart, ecart, c, this);
-                }
-                if (e.getSign()=='d') {
-                    g2.drawImage(mondeD, pos_x, pos_y, ecart, ecart, c, this);
-                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
-                }
-                if(e.getSign()=='E'){
-                    g2.drawImage(mondeE, pos_x, pos_y, ecart, ecart, c, this);
-                }
-                if (e.getSign()=='e') {
-                    g2.drawImage(mondeE, pos_x, pos_y, ecart, ecart, c, this);
-                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
-                }
-                if(e.getSign()=='F'){
-                    g2.drawImage(mondeF, pos_x, pos_y, ecart, ecart, c, this);
-                }
-                if (e.getSign()=='f') {
-                    g2.drawImage(mondeF, pos_x, pos_y, ecart, ecart, c, this);
-                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
-                }
-                if(e.getSign()=='G'){
-                    g2.drawImage(mondeG, pos_x, pos_y, ecart, ecart, c, this);
-                }
-                if (e.getSign()=='g') {
-                    g2.drawImage(mondeG, pos_x, pos_y, ecart, ecart, c, this);
-                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
-                }
-                if(e.getSign()=='H'){
-                    g2.drawImage(mondeH, pos_x, pos_y, ecart, ecart, c, this);
-                }
-                if (e.getSign()=='h') {
-                    g2.drawImage(mondeH, pos_x, pos_y, ecart, ecart, c, this);
-                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
-                }
-                if(e.getSign()=='I'){
-                    g2.drawImage(mondeI, pos_x, pos_y, ecart, ecart, c, this);
-                }
-                if (e.getSign()=='i') {
-                    g2.drawImage(mondeI,pos_x, pos_y, ecart, ecart, c, this);
-                    g2.drawImage(cible,pos_x, pos_y, ecart, ecart, this);
-                }
-                if(e.getSign()=='J'){
-                    g2.drawImage(mondeJ, pos_x, pos_y, ecart, ecart, c, this);
-                }
-                if (e.getSign()=='j') {
-                    g2.drawImage(mondeJ, pos_x, pos_y, ecart, ecart, c, this);
-                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
-                }
-                b++;
             }
-            a++;
         }
     }
 
@@ -903,7 +729,8 @@ public class DrawLevel extends JPanel implements Runnable{
     }
 
     /*
-     * Methodes qui permet de savoir quelle est la matrice ou ce trouve le joueur et met l'ancienne matrice dans la pile 'm'
+     * Methode qui permet de savoir quelle est la matrice ou ce trouve le joueur et met l'ancienne matrice
+     * dans la pile 'm'. Cette methode permet aussi de mettre a jour la taille des images 
      */
     public void setPrincipale() {
         if(matriceB.isHere())
