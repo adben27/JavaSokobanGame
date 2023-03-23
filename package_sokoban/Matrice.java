@@ -140,10 +140,15 @@ public class Matrice extends Element{
     // première version des fonctions de fin de niveau pas opti mais bon on verra aprés pour ca
     
     public boolean estFini() {
-    	if(all_ontarget()) {
-    		return true;
-    	}
-    	return false;
+		boolean res=all_ontarget();
+
+    	for (int i = 0; i < size; i++)
+			for (int j = 0; j < copie.length; j++)
+				if(level[i][j].getClass() == Matrice.class)
+					res=((Matrice) level[i][j]).all_ontarget();
+
+
+		return res;
     }
     /*
 	 * ('estFini' fait la meme chose que 'all_ontarget' autant la supprimer)
@@ -188,6 +193,7 @@ public class Matrice extends Element{
      */
     public void swap(int i, int j, int a, int b){
         Element tmp = level[i][j];
+
         if(!tmp.isMoveable()||!level[a][b].isMoveable()) {
         	return;
         }
@@ -199,16 +205,14 @@ public class Matrice extends Element{
             pos_x=j;
             pos_y=i;
         }
-        if(tmp.isOn_target()!=level[a][b].isOn_target()) {
-        	setElem(i, j, level[a][b]);
-			setElem(a, b, tmp);
-			
-			//on inverse les 'on_target'
-			level[a][b].setOn_target(!level[a][b].on_target);
-			level[i][j].setOn_target(!level[i][j].on_target);
 
-			return;
-        }
+		if (level[i][j].on_target != level[a][b].on_target) {
+			if (level[i][j].getClass() == Player.class || level[a][b].getClass() == Player.class) {
+				level[i][j].setOn_target(!level[i][j].on_target);
+				level[a][b].setOn_target(!level[a][b].on_target);
+			}
+		}
+
         setElem(i, j,level[a][b]);
         setElem(a, b, tmp);
 
