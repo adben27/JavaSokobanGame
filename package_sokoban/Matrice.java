@@ -207,10 +207,8 @@ public class Matrice extends Element{
         }
 
 		if (level[i][j].on_target != level[a][b].on_target) {
-			if (level[i][j].getClass() == Player.class || level[a][b].getClass() == Player.class) {
-				level[i][j].setOn_target(!level[i][j].on_target);
-				level[a][b].setOn_target(!level[a][b].on_target);
-			}
+			level[i][j].setOn_target(!level[i][j].on_target);
+			level[a][b].setOn_target(!level[a][b].on_target);
 		}
 
         setElem(i, j,level[a][b]);
