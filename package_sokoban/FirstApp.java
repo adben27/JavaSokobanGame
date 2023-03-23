@@ -14,21 +14,24 @@ public class FirstApp extends JFrame implements KeyListener{
     private JButton haut, bas, gauche, droite, information, commande, reset;
     private DrawLevel niveau;//le conteneur ou il y aura le niveau 
     private Image icone;//icone de la fenetre
-    private JFrame info_image;//fenetre qui donne certaines info_imagermations
-    private JFrame info_commande;//fenetre qui donne les touche à utiliser
+    private JDialog info_image;//fenetre qui donne certaines info_imagermations
+    private JDialog info_commande;//fenetre qui donne les touche à utiliser
 
     public FirstApp(){
         super("Sokoban");//on creer une fenetre nommée "Sokoban"
 
         //creation de la fenetre "info_image" et "info_commande"
-        info_commande = new JFrame("Information sur les commandes");
-        info_image = new JFrame("Information sur les images");
+        info_commande = new JDialog(this, "Commande");
+        info_image = new JDialog(this, "Description image");
 
-        info_image = createFrame(info_image, 400, 450);
+        info_image.setSize(400, 400);
+        info_commande.setSize(425, 130);
+
         info_image.add(information_image());
-
-        info_commande = createFrame(info_commande, 425, 155);
         info_commande.add(information_commande());
+
+        info_commande.setLocationRelativeTo(null);
+        info_image.setLocationRelativeTo(null);
 
         //pour qu'on puisse utiliser les bouttons de déplacement et les fleches directionelles
         setFocusable(true);
@@ -38,8 +41,8 @@ public class FirstApp extends JFrame implements KeyListener{
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //on ferme le processus de la fenetre quand on clique sur la croix rouge
         
-        Dimension size=getToolkit().getScreenSize();
-        setSize((int) size.getWidth(),(int) size.getHeight()-40); //la fenetre fera la taille de l'écran
+        Dimension size = getToolkit().getScreenSize();
+        setSize((int)size.getWidth(), (int)size.getHeight()-40);
         
         setLocationRelativeTo(null); //On centre la fenetre par rapport à l'écran ici le "bureau de travail"
 
@@ -129,10 +132,6 @@ public class FirstApp extends JFrame implements KeyListener{
         if (keyCode == KeyEvent.VK_RIGHT) {
             niveau.setDroite(true);
         }
-        if(keyCode == KeyEvent.VK_ESCAPE || keyCode == KeyEvent.VK_ENTER){
-            info_image.dispose();
-            info_commande.dispose();
-        }
         if (keyCode == KeyEvent.VK_I) {
             information.doClick();
             info_image.toFront();
@@ -214,10 +213,6 @@ public class FirstApp extends JFrame implements KeyListener{
     public JPanel information_commande() {
         JPanel info = new JPanel(new BorderLayout());
 
-        JTextField quittez = new JTextField("Pour quittez la fenetre vous pouvez appuiez sur 'echap' ou sur 'entrer'");
-        quittez.setEditable(false);
-        info.add(quittez, BorderLayout.NORTH);
-
         JTextArea commande = new JTextArea("Pour vous déplacez utiliser les flèches directionelles ou les boutons\nSi vous appuiez sur 'i' le boutton 'information' sera appuié\nSi vous appuiez sur 'c' le boutton 'commande' sera appuié\nSi vous vous appuiez sur 'ctrl+z' vous allez retourner d'une action en arrière\nSi vous appuiez sur 'r' vous recommencerez le niveau");
         commande.setEditable(false);
         info.add(commande);
@@ -257,23 +252,9 @@ public class FirstApp extends JFrame implements KeyListener{
         info_image.add(text_mur); //on met le texte a gauche du panel
         info_image.add(new Img("package_sokoban/Image/mur.png"));//on ajoute l'image au panel
 
-        JTextField quittez = new JTextField("Pour quittez la fenetre vous pouvez appuiez sur 'echap' ou sur 'entrer'");
-        quittez.setEditable(false);
-
-        information.add(quittez, BorderLayout.NORTH);
         information.add(info_image);
 
         return information;
-    }
-
-    public JFrame createFrame(JFrame frame, int width, int height) {
-        frame.dispose();
-        frame.setSize(width,height);
-        frame.setLocationRelativeTo(null);
-        frame.setFocusable(true);
-        frame.addKeyListener(this);
-
-        return frame;
     }
 
     public static void main(String[] args) throws Exception{
