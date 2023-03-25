@@ -58,9 +58,9 @@ public class DrawLevel extends JPanel implements Runnable{
         Element[][] tab_b={{m,m,m,m,v,m},
                            {m,v,v,v,v,m},
                            {m,v,v,v,v,m},
-                           {m,v,v,b,v,v},
-                           {v,v,v,v,v,m},
-                           {m,m,m,v,m,m}};
+                           {m,v,v,v,v,v},
+                           {m,v,v,v,v,m},
+                           {m,m,m,b,m,m}};
 
         Element[][] tab_c={{m,v,m,m,m,m,m},
                            {m,v,v,c,v,v,v},
@@ -85,14 +85,14 @@ public class DrawLevel extends JPanel implements Runnable{
                            {m,v,v,v,m},
                            {m,m,v,m,m}};
 
-        Element[][] tab_g={{m,v,m,m,m,m,v,m,m},
+        Element[][] tab_g={{m,m,m,m,m,m,v,m,m},
                            {m,v,v,v,v,v,v,v,m},
+                           {m,v,v,v,v,v,h,v,m},
+                           {m,v,v,b,v,v,v,v,m},
+                           {v,v,v,v,b,v,v,v,v},
+                           {m,v,v,v,v,v,j,v,m},
                            {m,v,v,v,v,v,v,v,m},
-                           {m,v,v,v,v,v,v,v,m},
-                           {v,v,v,v,g,v,v,v,v},
-                           {m,v,v,v,v,v,v,v,m},
-                           {m,v,v,v,v,v,v,v,m},
-                           {m,v,v,v,v,v,v,v,m},
+                           {m,v,v,c,v,v,v,v,m},
                            {m,m,m,m,v,m,m,m,m}};
 
         Element[][] tab_h={{m,v,m},
@@ -118,7 +118,8 @@ public class DrawLevel extends JPanel implements Runnable{
         matriceJ=new Matrice("J", 'j', false, tab_j.length, tab_j, 0, 0, false, false,-1,-1);
 
         tab_b[1][2]=matriceD;
-        tab_d[0][1]=matriceJ;
+        tab_b[3][2]=matriceG;
+        tab_d[1][1]=matriceJ;
         tab_j[3][3]=matriceC;
         tab_c[4][4]=matriceE;
 
@@ -128,10 +129,10 @@ public class DrawLevel extends JPanel implements Runnable{
         matriceJ.setlevel(tab_j);
 
         Element[][] tab_lvl={{m,m,m,m,m,m},
-                             {m,v,p,v,v,v},
+                             {m,matriceB,p,v,v,v},
+                             {m,f,v,v,v,m},
+                             {m,h,v,v,v,m},
                              {m,v,v,v,v,m},
-                             {m,v,matriceB,v,v,m},
-                             {m,v,m,v,v,m},
                              {m,m,m,m,m,m}};
         
         lvl=new Matrice("lvl", 'l', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
@@ -218,12 +219,12 @@ public class DrawLevel extends JPanel implements Runnable{
         setPrincipale();
 
         if (bas) {
-            if(lvl.getPos_y()==lvl.getSize()-1){
-                sort_bas();
+            if(!lvl.can_move_down(x, y) && peut_sortir_bas(x, y)){
+                sort_bas(x, y);
                 bas=false;
                 return;
             }
-            if (lvl.getElem(y+1, x).getClass() == Matrice.class)
+            if (y+1<lvl.getSize() && lvl.getElem(y+1, x).getClass() == Matrice.class)
                 if(lvl.can_enter_up((Matrice) lvl.getElem(y+1, x)) && !lvl.can_move_down(x, y))
                     m.push(lvl);
             lvl.move_down(x, y);
@@ -233,12 +234,12 @@ public class DrawLevel extends JPanel implements Runnable{
             /*on verifie si le joueur est en y=0 si oui on le fait sotir de la matrice courante sinon on move normalement
              *meme raisonement pour les autres mouvement
              */
-            if(lvl.getPos_y()==0){
-                sort_haut();
+            if(!lvl.can_move_up(x, y) && peut_sortir_haut(x, y)){
+                sort_haut(x, y);
                 haut=false;
                 return;
             }
-            if (lvl.getElem(y-1, x).getClass() == Matrice.class)
+            if (y-1>=0 && lvl.getElem(y-1, x).getClass() == Matrice.class)
                 if(lvl.can_enter_down((Matrice) lvl.getElem(y-1, x)) && !lvl.can_move_up(x, y))
                     m.push(lvl);
 
@@ -246,24 +247,24 @@ public class DrawLevel extends JPanel implements Runnable{
             haut=false;
         }
         if (gauche) {
-            if(lvl.getPos_x()==0){
-                sort_gauche();
+            if(!lvl.can_move_left(x, y) && peut_sortir_gauche(x, y)){
+                sort_gauche(x, y);
                 gauche=false;
                 return;
             }
-            if (lvl.getElem(y, x-1).getClass() == Matrice.class)
+            if (x-1>=0 && lvl.getElem(y, x-1).getClass() == Matrice.class)
                 if(lvl.can_enter_right((Matrice) lvl.getElem(y, x-1)) && !lvl.can_move_left(x, y))
                     m.push(lvl);
             lvl.move_left(x, y);
             gauche=false;
         }
-        if (droite) { 
-            if(lvl.getPos_x()==lvl.getSize()-1){
-                sort_droite();
+        if (droite) {
+            if(!lvl.can_move_right(x, y) && peut_sortir_droite(x, y)){
+                sort_droite(x, y);
                 droite=false;
                 return;
             }
-            if (lvl.getElem(y, x+1).getClass() == Matrice.class)
+            if(x+1<lvl.getSize() && lvl.getElem(y, x+1).getClass() == Matrice.class)
                 if(lvl.can_enter_left((Matrice) lvl.getElem(y, x+1)) && !lvl.can_move_right(x, y))
                     m.push(lvl);
             lvl.move_right(x, y);
@@ -355,7 +356,10 @@ public class DrawLevel extends JPanel implements Runnable{
         Element e;
 
         //on dessine du vide qui fera la taille du monde
-        g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, m.getColor(), this);
+        if(m.getSize()==1)
+            g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, this);
+        else
+            g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, m.getColor(), this);
         
         for (int y = 0; y < m.getSize(); y++){
             for (int x = 0; x < m.getSize(); x++){
@@ -505,65 +509,95 @@ public class DrawLevel extends JPanel implements Runnable{
      * Les methodes peut_sortir_(dir) seront utilise sur les methodes sort_(dir)
      */
 
-    public boolean peut_sortir_haut(){
-        if(m.isEmpty())
+    public boolean peut_sortir_haut(int x, int y){
+        if(m.isEmpty() || lvl.getElem(0, x).getClass() == Wall.class)
             return false;
+        
+        if(!lvl.can_move_up(x, y) && y-1>0)
+            return peut_sortir_haut(x, y-1);
 
-        Matrice pere=m.peek();//on recupère la matrice pere
-        int x=pere.getWrldX(), y=pere.getWrldY();//on recupère les coordonnées (x, y) du monde ou se trouve le joueur
+        Matrice pere=m.peek();
+        int xp=pere.getWrldX(), yp=pere.getWrldY();
 
-       if (y-1<0 || pere.getElem(y-1, x).getClass() == Wall.class)
-        //si il y a un mur au dessus du monde ou est le joueur on renvoie false
+        if (yp-1<0 || pere.getElem(yp-1, xp).getClass() == Wall.class)
             return false;
-        else if(pere.getElem(y-1, x).getClass() == Box.class || pere.getElem(y-1, x).getClass() == Matrice.class)
-        //si il y a une matrice ou une box on verifie si elle peuvent bouger pour laisser du vide pour que le joueur sorte si oui on renvoie true sinon false
-            return pere.can_move_up(x, y-1);
+        else if(pere.getElem(yp-1, xp).getClass() == Box.class || pere.getElem(yp-1, xp).getClass() == Matrice.class){
+            if(pere.can_move_up(xp, yp-1)){
+                pere.move_up(xp, yp-1);
+                return true;
+            }
+            return false;
+        }
         else
-            return true; //si il y a du vide au dessus du monde ou est le joueur on renvoie true
+            return true;
     }
 
     //Meme raisonnemnt pour les 3 autres methodes mais avec des coordonnées differente
-    public boolean peut_sortir_bas(){
-        if(m.isEmpty())
+    public boolean peut_sortir_bas(int x, int y){
+        if(m.isEmpty() || lvl.getElem(lvl.getSize()-1, x).getClass() == Wall.class)
             return false;
+        
+        if(!lvl.can_move_down(x, y) && y+1<lvl.getSize())
+            return peut_sortir_bas(x, y+1);
 
         Matrice pere=m.peek();
-        int x=pere.getWrldX(), y=pere.getWrldY();
+        int xp=pere.getWrldX(), yp=pere.getWrldY();
 
-        if (y+1>pere.getSize() || pere.getElem(y+1, x).getClass() == Wall.class)
+        if (yp+1>pere.getSize() || pere.getElem(yp+1, xp).getClass() == Wall.class)
             return false;
-        else if(pere.getElem(y+1, x).getClass() == Box.class || pere.getElem(y+1, x).getClass() == Matrice.class)
-            return pere.can_move_down(x, y+1);
+        else if(pere.getElem(yp+1, xp).getClass() == Box.class || pere.getElem(yp+1, xp).getClass() == Matrice.class){
+            if(pere.can_move_down(xp, yp+1)){
+                pere.move_down(xp, yp+1);
+                return true;
+            }
+            return false;
+        }
         else
             return true;
     }
 
-    public boolean peut_sortir_gauche(){
-        if(m.isEmpty())
+    public boolean peut_sortir_gauche(int x, int y){
+        if(m.isEmpty() || lvl.getElem(y, 0).getClass() == Wall.class)
             return false;
+        
+        if(x-1>=0 && !lvl.can_move_left(x, y))
+            return peut_sortir_gauche(x-1, y);
 
         Matrice pere=m.peek();
-        int x=pere.getWrldX(), y=pere.getWrldY();
+        int xp=pere.getWrldX(), yp=pere.getWrldY();
 
-        if (x-1<0 || pere.getElem(y, x-1).getClass() == Wall.class)
+        if (xp-1<0 || pere.getElem(yp, xp-1).getClass() == Wall.class)
             return false;
-        else if(pere.getElem(y, x-1).getClass() == Box.class || pere.getElem(y, x-1).getClass() == Matrice.class)
-            return pere.can_move_left(x-1, y);
+        else if(pere.getElem(yp, xp-1).getClass() == Box.class || pere.getElem(yp, xp-1).getClass() == Matrice.class){
+            if(pere.can_move_left(xp-1, yp)){
+                pere.move_left(xp-1, yp);
+                return true;
+            }
+            return false;
+        }
         else
             return true;
     }
 
-    public boolean peut_sortir_droite(){
-        if(m.isEmpty())
+    public boolean peut_sortir_droite(int x ,int y){
+        if(m.isEmpty() || lvl.getElem(y, lvl.getSize()-1).getClass() == Wall.class)
             return false;
+        
+        if(x+1<lvl.getSize() && !lvl.can_move_right(x, y))
+            return peut_sortir_droite(x+1, y);
 
         Matrice pere=m.peek();
-        int x=pere.getWrldX(), y=pere.getWrldY();
+        int xp=pere.getWrldX(), yp=pere.getWrldY();
 
-        if (x+1>=pere.getSize() || pere.getElem(y, x+1).getClass() == Wall.class)
+        if (xp+1>=pere.getSize() || pere.getElem(yp, xp+1).getClass() == Wall.class)
             return false;
-        else if(pere.getElem(y, x+1).getClass() == Box.class || pere.getElem(y, x+1).getClass() == Matrice.class)
-            return pere.can_move_right(x+1, y);
+        else if(pere.getElem(yp, xp+1).getClass() == Box.class || pere.getElem(yp, xp+1).getClass() == Matrice.class){
+            if(pere.can_move_right(xp+1, yp)){
+                pere.move_right(xp+1, yp);
+                return true;
+            }
+            return false;
+        }
         else
             return true;
     }
@@ -575,121 +609,120 @@ public class DrawLevel extends JPanel implements Runnable{
      * ATTENTION LES METHODES peut_sortir_(dir) renvoie true
      */
 
-    public void sort_haut() {
-    	if(!peut_sortir_haut()) {
+    public void sort_haut(int x, int y) {
+    	if(!peut_sortir_haut(x, y)) {
             System.out.print("can't move there\n");
     		return;
     	}
+        if(y>0){
+            sort_haut(x, y-1);
+            lvl.move_up(x, y);
+            return;
+        }
+
+    	Matrice pere = m.peek();
+    	int xp = pere.getWrldX(), yp = pere.getWrldY();
     	
-    	Matrice pere = m.pop();
-    	int x = pere.getWrldX(), y = pere.getWrldY();
-    	
-        Matrice fils = (Matrice) pere.getElem(y, x);
-    	int pos_x = fils.getPos_x(); int pos_y = fils.getPos_y();
-    	    	
-    	if(pere.getElem(y-1, x).getClass() == Box.class || pere.getElem(y-1, x).getClass() == Matrice.class) {
-    		pere.move_up(y-1, x); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
-    	}					      // si le move_up marche et dans ce cas on sais qu'il marche prsq on a fait peut_sortir_haut
-    	
-    	// ici c'est juste un échange avec le vide qu'il y'a dans (y,x+1)
-    	Vide temp = (Vide) pere.getElem(y-1, x);
-		fils.setElem(pos_y,pos_x,temp);
-        pere.setElem(y-1, x, p);
-        
-		fils.setPos_x(-1); fils.setPos_y(-1);
-		pere.setPos_x(x);pere.setPos_y(y-1);
-		pere.setWrldX(-1);pere.setWrldY(-1);
-		
-        fils.setIsHere(false);
-		pere.setIsHere(true);
+        Vide temp = (Vide) pere.getElem(yp-1, xp);		
+        pere.setElem(yp-1, xp, lvl.getElem(y, x));
+		lvl.setElem(y,x,temp);
+
+        if(x==lvl.getPos_x() && y==lvl.getPos_y()){
+            lvl.setPos_x(-1); lvl.setPos_y(-1);
+    		pere.setPos_x(xp); pere.setPos_y(yp-1);
+	    	pere.setWrldX(-1); pere.setWrldY(-1);
+
+            pere.setIsHere(true);
+            lvl.setIsHere(false);
+            m.pop();
+        }
     }
 
-    public void sort_bas() {
-        if(!peut_sortir_bas()) {
+    public void sort_bas(int x, int y) {
+        if(!peut_sortir_bas(x, y)) {
             System.out.print("can't move there\n");
     		return;
     	}
+        if(y<lvl.getSize()-1){
+            sort_bas(x, y+1);
+            lvl.move_down(x, y);
+            return;
+        }
+
+    	Matrice pere = m.peek();
+    	int xp = pere.getWrldX(), yp = pere.getWrldY();
     	
-    	Matrice pere = m.pop();
-    	int x = pere.getWrldX(), y = pere.getWrldY();
-    	
-        Matrice fils = (Matrice) pere.getElem(y, x);
-    	int pos_x = fils.getPos_x(); int pos_y = fils.getPos_y();
-    	    	
-    	if(pere.getElem(y+1, x).getClass() == Box.class || pere.getElem(y+1, x).getClass() == Matrice.class) {
-    		pere.move_up(y+1, x); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
-    	}					      // si le move_up marche et dans ce cas on sais qu'il marche prsq on a fait peut_sortir_haut
-    	
-    	// ici c'est juste un échange avec le vide qu'il y'a dans (y,x+1)
-    	Vide temp = (Vide) pere.getElem(y+1, x);
-		fils.setElem(pos_y,pos_x,temp);
-        pere.setElem(y+1, x, p);
-        
-		fils.setPos_x(-1); fils.setPos_y(-1);
-		pere.setPos_x(x);pere.setPos_y(y+1);
-		pere.setWrldX(-1);pere.setWrldY(-1);
-		
-        fils.setIsHere(false);
-		pere.setIsHere(true);
+        Vide temp = (Vide) pere.getElem(yp+1, xp);		
+        pere.setElem(yp+1, xp, lvl.getElem(y, x));
+		lvl.setElem(y,x,temp);
+
+        if(x==lvl.getPos_x() && y==lvl.getPos_y()){
+            lvl.setPos_x(-1); lvl.setPos_y(-1);
+    		pere.setPos_x(xp); pere.setPos_y(yp+1);
+	    	pere.setWrldX(-1); pere.setWrldY(-1);
+
+            pere.setIsHere(true);
+            lvl.setIsHere(false);
+            m.pop();
+        }
     }
 
-    public void sort_gauche() {
-        if(!peut_sortir_gauche()) {
+    public void sort_gauche(int x, int y) {
+        if(!peut_sortir_gauche(x, y)) {
             System.out.print("can't move there\n");
     		return;
     	}
+        if(x>0){
+            sort_gauche(x-1, y);
+            lvl.move_left(x, y);
+            return;
+        }
+
+    	Matrice pere = m.peek();
+    	int xp = pere.getWrldX(), yp = pere.getWrldY();
     	
-    	Matrice pere = m.pop();
-    	int x = pere.getWrldX(), y = pere.getWrldY();
-    	
-        Matrice fils = (Matrice) pere.getElem(y, x);
-    	int pos_x = fils.getPos_x(); int pos_y = fils.getPos_y();
-    	    	
-    	if(pere.getElem(y, x-1).getClass() == Box.class || pere.getElem(y, x-1).getClass() == Matrice.class) {
-    		pere.move_right(y, x-1); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
-    	}					      // si le move_up marche et dans ce cas on sais qu'il marche prsq on a fait peut_sortir_haut
-    	
-    	// ici c'est juste un échange avec le vide qu'il y'a dans (y,x+1)
-    	Vide temp = (Vide) pere.getElem(y, x-1);
-		fils.setElem(pos_y,pos_x,temp);
-        pere.setElem(y, x-1, p);
-        
-		fils.setPos_x(-1); fils.setPos_y(-1);
-		pere.setPos_x(x-1);pere.setPos_y(y);
-		pere.setWrldX(-1);pere.setWrldY(-1);
-		
-        fils.setIsHere(false);
-		pere.setIsHere(true);
+        Vide temp = (Vide) pere.getElem(yp, xp-1);		
+        pere.setElem(yp, xp-1, lvl.getElem(y, x));
+		lvl.setElem(y,x,temp);
+
+        if(x==lvl.getPos_x() && y==lvl.getPos_y()){
+            lvl.setPos_x(-1); lvl.setPos_y(-1);
+    		pere.setPos_x(xp-1); pere.setPos_y(yp);
+	    	pere.setWrldX(-1); pere.setWrldY(-1);
+
+            pere.setIsHere(true);
+            lvl.setIsHere(false);
+            m.pop();
+        }
     }
 
-    public void sort_droite() {
-        if(!peut_sortir_droite()) {
+    public void sort_droite(int x ,int y) {
+        if(!peut_sortir_droite(x, y)) {
             System.out.print("can't move there\n");
     		return;
     	}
-    	
-    	Matrice pere = m.pop();
-    	int x = pere.getWrldX(), y = pere.getWrldY();
-    	
-        Matrice fils = (Matrice) pere.getElem(y, x);
-    	int pos_x = fils.getPos_x(); int pos_y = fils.getPos_y();
-    	    	
-    	if(pere.getElem(y, x+1).getClass() == Box.class || pere.getElem(y, x+1).getClass() == Matrice.class) {
-    		pere.move_right(y, x+1); // dans ce cas la y'a juste ca parceque a la fin d'un move_up il y'aura un vide a la coordonée donné en arguement
-    	}					      // si le move_up marche et dans ce cas on sais qu'il marche prsq on a fait peut_sortir_haut
-    	
-    	// ici c'est juste un échange avec le vide qu'il y'a dans (y,x+1)
-    	Vide temp = (Vide) pere.getElem(y, x+1);
-		
-		fils.setElem(pos_y,pos_x,temp);
-        pere.setElem(y, x+1, p);
+        if(x<lvl.getSize()-1){
+            sort_droite(x+1, y);
+            lvl.move_right(x, y);
+            return;
+        }
 
-		fils.setPos_x(-1); fils.setPos_y(-1);
-		pere.setPos_x(x+1);pere.setPos_y(y);
-		pere.setWrldX(-1);pere.setWrldY(-1);
-		
-        fils.setIsHere(false);
-		pere.setIsHere(true);
+    	Matrice pere = m.peek();
+    	int xp = pere.getWrldX(), yp = pere.getWrldY();
+    	
+        Vide temp = (Vide) pere.getElem(yp, xp+1);		
+        pere.setElem(yp, xp+1, lvl.getElem(y, x));
+		lvl.setElem(y,x,temp);
+
+        if(x==lvl.getPos_x() && y==lvl.getPos_y()){
+            lvl.setPos_x(-1); lvl.setPos_y(-1);
+    		pere.setPos_x(xp+1); pere.setPos_y(yp);
+	    	pere.setWrldX(-1); pere.setWrldY(-1);
+
+            pere.setIsHere(true);
+            lvl.setIsHere(false);
+            m.pop();
+        }
     }
 
     //on reinitialise toute les matrices et on dit que la matrice lvl est la matrice a afficher
