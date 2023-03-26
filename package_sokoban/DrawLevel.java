@@ -21,11 +21,16 @@ public class DrawLevel extends JPanel implements Runnable{
     private boolean haut, bas, gauche, droite, ctrlZ;//pour faire bouger le joueur
 
     /* Matrice que l'on va utiliser pour la version recursive
-     * lvl sera la matrice que l'on va afficher (changera a chaque appel des methodes d'entrer et de sorie de monde)
+     * lvl sera la matrice que l'on va afficher (changera a chaque appel des methodes d'entrer et de sortie de monde)
      * matriceP sera la matrice qui contient le 1er monde lors du démarage du jeu
      */
-    public Matrice lvl, matriceP, matriceB, matriceC, matriceD, matriceE,
-                    matriceF, matriceG, matriceH, matriceI, matriceJ;
+    private Matrice lvl, matriceP;
+
+    /*matrice[0]=matriceB
+     *matrice[1]=matriceC
+     *etc...
+    */
+    private Matrice[] matrice;         
 
     private Player p;//Le joueur
     private Vide v;
@@ -36,6 +41,7 @@ public class DrawLevel extends JPanel implements Runnable{
         setLayout(null);
 
         m=new Stack<Matrice>();
+        matrice=new Matrice[9];
 
         Box b= new Box(false, 'B');
         Box c= new Box(false, 'C');        
@@ -89,7 +95,7 @@ public class DrawLevel extends JPanel implements Runnable{
                            {m,v,v,v,v,v,v,v,m},
                            {m,v,v,v,v,v,h,v,m},
                            {m,v,v,b,v,v,v,v,m},
-                           {m,v,v,v,b,v,v,v,v},
+                           {v,v,v,v,b,v,v,v,v},
                            {m,v,v,v,v,v,j,v,m},
                            {m,v,v,v,v,v,v,v,m},
                            {m,v,v,c,v,v,v,v,m},
@@ -107,31 +113,31 @@ public class DrawLevel extends JPanel implements Runnable{
                            {m,v,v,m,m},
                            {m,m,v,m,m}};
 
-        matriceB=new Matrice("B", 'b', false, tab_b.length, tab_b, 0, 0, false, false,-1,-1);
-        matriceC=new Matrice("C", 'c', false, tab_c.length, tab_c, 0, 0, false, false,-1,-1);
-        matriceD=new Matrice("D", 'd', false, tab_d.length, tab_d, 0, 0, false, false,-1,-1);
-        matriceE=new Matrice("E", 'e', false, tab_e.length, tab_e, 0, 0, false, false,-1,-1);
-        matriceF=new Matrice("F", 'f', false, tab_f.length, tab_f, 0, 0, false, false,-1,-1);
-        matriceG=new Matrice("G", 'g', false, tab_g.length, tab_g, 0, 0, false, false,-1,-1);
-        matriceH=new Matrice("H", 'h', false, tab_h.length, tab_h, 0, 0, false, false,-1,-1);
-        matriceI=new Matrice("I", 'i', false, tab_i.length, tab_i, 0, 0, false, false,-1,-1);
-        matriceJ=new Matrice("J", 'j', false, tab_j.length, tab_j, 0, 0, false, false,-1,-1);
+        matrice[0/*B*/]=new Matrice("B", 'b', false, tab_b.length, tab_b, 0, 0, false, false,-1,-1);
+        matrice[1/*C*/]=new Matrice("C", 'c', false, tab_c.length, tab_c, 0, 0, false, false,-1,-1);
+        matrice[2/*D*/]=new Matrice("D", 'd', false, tab_d.length, tab_d, 0, 0, false, false,-1,-1);
+        matrice[3/*E*/]=new Matrice("E", 'e', false, tab_e.length, tab_e, 0, 0, false, false,-1,-1);
+        matrice[4/*F*/]=new Matrice("F", 'f', false, tab_f.length, tab_f, 0, 0, false, false,-1,-1);
+        matrice[5/*G*/]=new Matrice("G", 'g', false, tab_g.length, tab_g, 0, 0, false, false,-1,-1);
+        matrice[6/*H*/]=new Matrice("H", 'h', false, tab_h.length, tab_h, 0, 0, false, false,-1,-1);
+        matrice[7/*I*/]=new Matrice("I", 'i', false, tab_i.length, tab_i, 0, 0, false, false,-1,-1);
+        matrice[8/*J*/]=new Matrice("J", 'j', false, tab_j.length, tab_j, 0, 0, false, false,-1,-1);
 
-        tab_b[1][2]=matriceD;
-        tab_b[3][2]=matriceG;
-        tab_d[1][1]=matriceJ;
-        tab_j[3][3]=matriceC;
-        tab_c[4][4]=matriceE;
+        tab_b[1][2]=matrice[2];
+        tab_b[3][2]=matrice[5];
+        tab_d[1][1]=matrice[8];
+        tab_j[3][3]=matrice[1];
+        tab_c[4][4]=matrice[3];
 
-        matriceB.setlevel(tab_b);
-        matriceC.setlevel(tab_c);
-        matriceD.setlevel(tab_d);
-        matriceJ.setlevel(tab_j);
+        matrice[0].setlevel(tab_b);
+        matrice[1].setlevel(tab_c);
+        matrice[2].setlevel(tab_d);
+        matrice[8].setlevel(tab_j);
 
         Element[][] tab_lvl={{m,m,m,m,m,m},
-                             {m,matriceB,p,v,v,v},
+                             {m,v,p,v,v,v},
+                             {m,matrice[0],matrice[3],matrice[7],v,m},
                              {m,v,v,v,v,m},
-                             {m,matriceH,v,v,v,m},
                              {m,v,v,v,v,m},
                              {m,m,m,m,m,m}};
         
@@ -173,9 +179,8 @@ public class DrawLevel extends JPanel implements Runnable{
         haut=bas=gauche=droite=ctrlZ=false;
     }
 
-    /*METHODE A MODIFIER POUR LIRE UN FICHIER QUI CONTIENT UN NIVEAU (PRIORITE AU SOKOBAN CLASSIQUE) */
-    public void loadLvl() {
-        System.out.println("lvl charger");
+    public void loadLvl(Matrice[] monde) {
+
     }
 
     //debut du thread qui s'occupe de la boucle de jeu
@@ -244,7 +249,7 @@ public class DrawLevel extends JPanel implements Runnable{
                 return;
             }
             if (y-1>=0 && lvl.getElem(y-1, x).getClass() == Matrice.class)
-                if(!lvl.can_move_up(x, y) && lvl.can_enter_down((Matrice) lvl.getElem(y-1, x))){
+                if(!lvl.can_move_up(x, y) && lvl.can_enter_down(x, y)){
                     m.push(lvl);
                     lvl.enter_down((Matrice) lvl.getElem(y-1, x), x, y);
                     haut=false;
@@ -261,9 +266,14 @@ public class DrawLevel extends JPanel implements Runnable{
                 return;
             }
             if (x-1>=0 && lvl.getElem(y, x-1).getClass() == Matrice.class)
-                if(!lvl.can_move_left(x, y) && lvl.can_enter_right((Matrice) lvl.getElem(y, x-1))){
-                    m.push(lvl);
-                    lvl.enter_right((Matrice) lvl.getElem(y, x-1), x, y);
+                if(!lvl.can_move_left(x, y) && lvl.can_enter_right(x, y/*(Matrice) lvl.getElem(y, x-1)*/)){
+                    if (x-2>=0 && lvl.getElem(y, x-2).getClass() == Matrice.class && lvl.can_enter_right(x, y/*(Matrice) lvl.getElem(y, x-2)*/)) {
+                        lvl.enter_right((Matrice) lvl.getElem(y, x-2), x-1, y);
+                        lvl.move_left(x, y);
+                    }else{
+                        m.push(lvl);
+                        lvl.enter_right((Matrice) lvl.getElem(y, x-1), x, y);
+                    }
                     gauche=false;
                     return;
                 }
@@ -277,7 +287,7 @@ public class DrawLevel extends JPanel implements Runnable{
                 return;
             }
             if(x+1<lvl.getSize() && lvl.getElem(y, x+1).getClass() == Matrice.class)
-                if(lvl.can_enter_left((Matrice) lvl.getElem(y, x+1))){
+                if(!lvl.can_move_right(x, y) &&lvl.can_enter_left(x, y/*(Matrice) lvl.getElem(y, x+1)*/)){
                     m.push(lvl);
                     lvl.enter_left((Matrice) lvl.getElem(y, x+1), x, y);
                     droite=false;
@@ -292,9 +302,9 @@ public class DrawLevel extends JPanel implements Runnable{
         }
         if (matriceP.estFini()) {
             next=JOptionPane.showConfirmDialog(this, "Félicitation vous avez terminer le niveau.\nVoulez-vous passez au niveau suivant ?");
-            if(next==0)
-                loadLvl();
-            else if(next==1)
+            if(next==0){
+                //on charge le prochain niveau
+            }else if(next==1)
                 lvl.ctrl_z();
             else
                 resetAll();
@@ -743,17 +753,12 @@ public class DrawLevel extends JPanel implements Runnable{
 
     //on reinitialise toute les matrices et on dit que la matrice lvl est la matrice a afficher
     public void resetAll() {
-        lvl.reset();       
+        lvl.reset();    
         matriceP.reset();
-        matriceB.reset();
-        matriceC.reset();
-        matriceD.reset();
-        matriceE.reset();
-        matriceF.reset();
-        matriceG.reset();
-        matriceH.reset();
-        matriceI.reset();
-        matriceJ.reset();
+ 
+        for (int i = 0; i < matrice.length; i++)
+            matrice[i].reset();
+
         m.clear();
         setPrincipale();
     }
@@ -783,30 +788,13 @@ public class DrawLevel extends JPanel implements Runnable{
         return lvl;
     }
 
-    /*
-     * Methode qui permet de savoir quelle est la matrice ou ce trouve le joueur et met l'ancienne matrice
-     * dans la pile 'm'. Cette methode permet aussi de mettre a jour la taille des images 
-     */
+    //Methode qui permet de savoir quelle est la matrice ou ce trouve le joueur.
     public void setPrincipale() {
-        if(matriceB.isHere())
-            lvl=matriceB;
-        if(matriceC.isHere())
-            lvl=matriceC;
-        if(matriceD.isHere())
-            lvl=matriceD;
-        if(matriceE.isHere())
-            lvl=matriceE;
-        if(matriceF.isHere())
-            lvl=matriceF;
-        if(matriceG.isHere())
-            lvl=matriceG;
-        if(matriceH.isHere())
-            lvl=matriceH;
-        if(matriceI.isHere())
-            lvl=matriceI;
-        if(matriceJ.isHere())
-            lvl=matriceJ;
         if(matriceP.isHere())
             lvl=matriceP;
+        for (int i = 0; i < matrice.length; i++) {
+            if(matrice[i].isHere())
+                lvl=matrice[i];
+        }
     }
 }
