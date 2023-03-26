@@ -489,35 +489,45 @@ public class Matrice extends Element{
     	return false;
     }
 
-    public boolean can_enter_down(Matrice m) {
+    public boolean can_enter_down(int x, int y) {
+		Matrice m=((Matrice) getElem(y-1, x));
+
 		for(int z = 0; z < m.size; z++){
-    		if (m.getElem(m.size-1, z) instanceof Vide)
+    		if (getElem(m.size-1, z) instanceof Vide)
     			return true;
-			else if(m.getElem(m.size-1, z) instanceof Box || m.getElem(m.size-1, z) instanceof Matrice){
-				return m.can_move_up(z, m.size-1);
-			}
+			else if(getElem(m.size-1, z) instanceof Box)
+				return can_move_up(z, m.size-1);
+			else if(m.getElem(m.size-1, z) instanceof Matrice)
+				return can_enter_down(x, y-1);
 		}
 		return false;
     }
     
-    public boolean can_enter_left(Matrice m) {
+    public boolean can_enter_left(int x, int y) {
+		Matrice m=((Matrice) getElem(y, x+1));
+
     	for(int z = 0; z < m.size; z++)
     		if (m.getElem(z, 0) instanceof Vide)
     			return true;
-			else if(m.getElem(z, 0) instanceof Box || m.getElem(z, 0) instanceof Matrice){
+			else if(m.getElem(z, 0) instanceof Box)
 				return m.can_move_right(0, z);
-			}
+			else if(m.getElem(z, 0) instanceof Matrice)
+				return can_enter_down(x+1, y);
 
     	return false;
     }
     
-    public boolean can_enter_right(Matrice m) {
+    public boolean can_enter_right(int x, int y) {
+		Matrice m=((Matrice) getElem(y, x-1));
+
     	for(int z = 0; z < m.size;z++)
     		if (m.getElem(z, m.size-1) instanceof Vide)
     			return true;
-			else if(m.getElem(z, m.size-1) instanceof Box || m.getElem(z, m.size-1) instanceof Matrice){
+			else if(getElem(y, x-1) instanceof Matrice)
+				return can_enter_right(x-1, y);
+			else if(m.getElem(z, m.size-1) instanceof Box || m.getElem(z, m.size-1) instanceof Matrice)
 				return m.can_move_left(m.size-1, z);
-			}
+
     	return false;
     }
     
@@ -643,7 +653,7 @@ public class Matrice extends Element{
     public void enter_down(Matrice m, int x, int y) {
 		int z=get_entry_down(m);
 
-		if(!can_enter_down(m) || z==-1)
+		if(!can_enter_down(x, y) || z==-1)
 			return;
     	
     	//pour échanger l'attribut on_target si a l'entré du sous-monde il y'a une cible
@@ -669,7 +679,7 @@ public class Matrice extends Element{
     public void enter_left(Matrice m, int x, int y) {
 		int z=get_entry_left(m);
 
-		if(!can_enter_left(m) || z==-1)
+		if(!can_enter_left(x, y) || z==-1)
 			return;
     	
     	//pour échanger l'attribut on_target si a l'entré du sous-monde il y'a une cible
@@ -695,7 +705,7 @@ public class Matrice extends Element{
     public void enter_right(Matrice m, int x, int y) {
 		int z=get_entry_right(m);
 
-		if(!can_enter_right(m) || z==-1)
+		if(!can_enter_right(x, y) || z==-1)
 			return;
     	
     	//pour échanger l'attribut on_target si a l'entré du sous-monde il y'a une cible
