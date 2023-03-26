@@ -60,7 +60,7 @@ public class DrawLevel extends JPanel implements Runnable{
                            {m,v,v,v,v,m},
                            {m,v,v,v,v,v},
                            {m,v,v,v,v,m},
-                           {m,m,m,b,m,m}};
+                           {m,m,m,v,m,m}};
 
         Element[][] tab_c={{m,v,m,m,m,m,m},
                            {m,v,v,c,v,v,v},
@@ -89,7 +89,7 @@ public class DrawLevel extends JPanel implements Runnable{
                            {m,v,v,v,v,v,v,v,m},
                            {m,v,v,v,v,v,h,v,m},
                            {m,v,v,b,v,v,v,v,m},
-                           {v,v,v,v,b,v,v,v,v},
+                           {m,v,v,v,b,v,v,v,v},
                            {m,v,v,v,v,v,j,v,m},
                            {m,v,v,v,v,v,v,v,m},
                            {m,v,v,c,v,v,v,v,m},
@@ -130,8 +130,8 @@ public class DrawLevel extends JPanel implements Runnable{
 
         Element[][] tab_lvl={{m,m,m,m,m,m},
                              {m,matriceB,p,v,v,v},
-                             {m,f,v,v,v,m},
-                             {m,h,v,v,v,m},
+                             {m,v,v,v,v,m},
+                             {m,matriceH,v,v,v,m},
                              {m,v,v,v,v,m},
                              {m,m,m,m,m,m}};
         
@@ -225,8 +225,12 @@ public class DrawLevel extends JPanel implements Runnable{
                 return;
             }
             if (y+1<lvl.getSize() && lvl.getElem(y+1, x).getClass() == Matrice.class)
-                if(lvl.can_enter_up((Matrice) lvl.getElem(y+1, x)) && !lvl.can_move_down(x, y))
+                if(!lvl.can_move_down(x, y) && lvl.can_enter_up((Matrice) lvl.getElem(y+1, x))){
                     m.push(lvl);
+                    lvl.enter_up((Matrice) lvl.getElem(y+1, x), x, y);
+                    bas=false;
+                    return;
+                }
             lvl.move_down(x, y);
             bas=false;
         }
@@ -240,8 +244,12 @@ public class DrawLevel extends JPanel implements Runnable{
                 return;
             }
             if (y-1>=0 && lvl.getElem(y-1, x).getClass() == Matrice.class)
-                if(lvl.can_enter_down((Matrice) lvl.getElem(y-1, x)) && !lvl.can_move_up(x, y))
+                if(!lvl.can_move_up(x, y) && lvl.can_enter_down((Matrice) lvl.getElem(y-1, x))){
                     m.push(lvl);
+                    lvl.enter_down((Matrice) lvl.getElem(y-1, x), x, y);
+                    haut=false;
+                    return;
+                }
 
             lvl.move_up(x, y);
             haut=false;
@@ -253,8 +261,12 @@ public class DrawLevel extends JPanel implements Runnable{
                 return;
             }
             if (x-1>=0 && lvl.getElem(y, x-1).getClass() == Matrice.class)
-                if(lvl.can_enter_right((Matrice) lvl.getElem(y, x-1)) && !lvl.can_move_left(x, y))
+                if(!lvl.can_move_left(x, y) && lvl.can_enter_right((Matrice) lvl.getElem(y, x-1))){
                     m.push(lvl);
+                    lvl.enter_right((Matrice) lvl.getElem(y, x-1), x, y);
+                    gauche=false;
+                    return;
+                }
             lvl.move_left(x, y);
             gauche=false;
         }
@@ -265,8 +277,12 @@ public class DrawLevel extends JPanel implements Runnable{
                 return;
             }
             if(x+1<lvl.getSize() && lvl.getElem(y, x+1).getClass() == Matrice.class)
-                if(lvl.can_enter_left((Matrice) lvl.getElem(y, x+1)) && !lvl.can_move_right(x, y))
+                if(lvl.can_enter_left((Matrice) lvl.getElem(y, x+1))){
                     m.push(lvl);
+                    lvl.enter_left((Matrice) lvl.getElem(y, x+1), x, y);
+                    droite=false;
+                    return;
+                }
             lvl.move_right(x, y);
             droite=false;
         }
@@ -543,7 +559,7 @@ public class DrawLevel extends JPanel implements Runnable{
         Matrice pere=m.peek();
         int xp=pere.getWrldX(), yp=pere.getWrldY();
 
-        if (yp+1>pere.getSize() || pere.getElem(yp+1, xp).getClass() == Wall.class)
+        if (yp+1>=pere.getSize() || pere.getElem(yp+1, xp).getClass() == Wall.class)
             return false;
         else if(pere.getElem(yp+1, xp).getClass() == Box.class || pere.getElem(yp+1, xp).getClass() == Matrice.class){
             if(pere.can_move_down(xp, yp+1)){
@@ -640,7 +656,7 @@ public class DrawLevel extends JPanel implements Runnable{
 
     public void sort_bas(int x, int y) {
         if(!peut_sortir_bas(x, y)) {
-            System.out.print("can't move there\n");
+            System.out.print("can't move there bas\n");
     		return;
     	}
         if(y<lvl.getSize()-1){
