@@ -20,6 +20,6 @@ Tandis qu'Adel a aidé à été l'interlocuteur principal lorsqu'il y avait un s
 
 
 ## Difficultés principales
-*A COMPLETER*
+Faire entrer des sous mondes dans des sous mondes
 
 
