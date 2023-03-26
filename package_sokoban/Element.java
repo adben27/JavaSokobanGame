@@ -95,8 +95,8 @@ public class Element{
             for(int j=0;j<size;j++){
                 grille[i][j]=elements[z++];
                 if(grille[i][j].getSign() == 'A'){
-                    mondes.get(nom).setPos_x(i);
-                    mondes.get(nom).setPos_y(j);
+                    mondes.get(nom).setPos_x(j);
+                    mondes.get(nom).setPos_y(i);
                 }
             }
         }
