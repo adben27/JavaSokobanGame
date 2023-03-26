@@ -17,7 +17,7 @@ Tandis qu'Adel a aidé à été l'interlocuteur principal lorsqu'il y avait un s
 - Interface graphique et modèle mémoire réalisés rapidement
 
 ### Faibles
-- Interface textuelle et chargement de niveau réalisés sur le tard
+
 
 ## Difficultés principales
 *A COMPLETER*
