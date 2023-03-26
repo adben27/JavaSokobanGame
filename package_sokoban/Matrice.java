@@ -315,24 +315,14 @@ public class Matrice extends Element{
         if(this.getElem(y-1, x) instanceof Vide){
             swap(y, x, y-1, x);
         }else{
-            if(this.getElem(y-1, x) instanceof Box){
+            if(this.getElem(y-1, x) instanceof Box || this.getElem(y-1, x) instanceof Matrice){
 				/*
-				 * Si c'est une boite on la fait bouger, une fois qu'on a bouger la boite le joueur va se retrouver
+				 * Si c'est une boite ou une matrice on la fait bouger, une fois qu'on a bouger la boite le joueur va se retrouver
 				 * en face du vide puis on swap le l'element et le vide
 				 */
 				move_up(x, y-1);
 				swap(y, x, y-1, x);
             }
-            else if(this.getElem(y-1, x) instanceof Matrice) {
-				/*
-				 * meme chose que pour les boites mais cette fois, si on ne peut pas bouger la matrice mais 
-				 * qu'on peut rentrer dans celle ci alors on rentre et on modifie wrld_x et wrld_y et is_here
-				 */
-				if (can_move_up(x, y-1)){
-					move_up(x, y-1);
-					swap(y, x, y-1, x);
-				}
-			}
         }
     }
    
@@ -350,15 +340,9 @@ public class Matrice extends Element{
         if(this.getElem(y+1, x) instanceof Vide){
             swap(y, x, y+1, x);
         }else{
-            if(this.getElem(y+1, x) instanceof Box){
+            if(this.getElem(y+1, x) instanceof Box || this.getElem(y+1, x) instanceof Matrice){
 				move_down(x, y+1);
 				swap(y, x, y+1, x);
-            }
-            else if(this.getElem(y+1, x) instanceof Matrice) {
-				if (can_move_down(x, y+1)){
-					move_down(x, y+1);
-					swap(y, x, y+1, x);
-				}
             }
 		}
     }
@@ -376,16 +360,10 @@ public class Matrice extends Element{
         if(this.getElem(y, x+1) instanceof Vide){
             swap(y, x, y, x+1);
         }else{
-            if(this.getElem(y, x+1) instanceof Box){
+            if(this.getElem(y, x+1) instanceof Box || this.getElem(y, x+1) instanceof Matrice){
 				move_right(x+1, y);
 				swap(y, x, y, x+1);   
             }
-            else if(this.getElem(y, x+1) instanceof Matrice) {
-            	if (can_move_right(x+1, y)){
-					move_right(x+1, y);
-					swap(y, x, y, x+1);
-				}
-			}
         }
     }
 
@@ -402,15 +380,9 @@ public class Matrice extends Element{
         if(this.getElem(y, x-1) instanceof Vide){
             swap(y, x, y, x-1);
         }else{
-            if(this.getElem(y, x-1) instanceof Box){
+            if(this.getElem(y, x-1) instanceof Box || this.getElem(y, x-1) instanceof Matrice){
 				move_left(x-1, y);
                 swap(y, x, y, x-1);
-            }
-            else if(this.getElem(y, x-1) instanceof Matrice) {
-            	if (can_move_left(x-1, y)){
-					move_left(x-1, y);
-					swap(y, x, y, x-1);
-				}
             }
         }
     }
