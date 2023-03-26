@@ -2,9 +2,6 @@ package package_sokoban;
 
 import java.util.Arrays;
 import java.util.Stack;
-
-import javax.lang.model.util.ElementScanner14;
-
 import java.util.Scanner;
 import java.util.Objects;
 import java.util.Random;
@@ -253,7 +250,7 @@ public class Matrice extends Element{
 	public boolean can_move_down(int x, int y) {
 		if (y+1>size-1 || getElem(y+1, x).getClass() == Wall.class)
 			return false;
-		else if(getElem(y+1, x).getClass() == Matrice.class || getElem(y+1, x).getClass() == Box.class)
+		else if(getElem(y+1, x).getClass() == Box.class || getElem(y+1, x).getClass() == Matrice.class)
 			return can_move_down(x, y+1);
 		else
 			return true;
@@ -305,15 +302,8 @@ public class Matrice extends Element{
 	 */
     public void move_up(int x, int y){
 		if(!can_move_up(x, y)){
-			if(y-1>=0 && getElem(y-1, x).getClass() == Matrice.class){
-				if (!can_enter_down((Matrice) getElem(y-1, x))) {
-					System.out.print("can't move there\n");
-					return;
-				}
-			}if(y==0){
-				System.out.print("can't move there\n");
-				return;
-			}
+			System.out.print("can't move there\n");
+			return;
 		}
     	
 		//on met l'ancienne pos (x,y) du joueur dans des piles et on met l'ancienne matrice dans une pile
@@ -341,8 +331,6 @@ public class Matrice extends Element{
 				if (can_move_up(x, y-1)){
 					move_up(x, y-1);
 					swap(y, x, y-1, x);
-				}else{
-					enter_down((Matrice)getElem(y-1, x), x, y);
 				}
 			}
         }
@@ -350,16 +338,10 @@ public class Matrice extends Element{
    
 	//meme raisonement que move up mais avec des directions differentes
     public void move_down(int x, int y){
-		if(!can_move_down(x, y))
-			if(y+1<size && getElem(y+1, x).getClass() == Matrice.class){
-				if (!can_enter_up((Matrice) getElem(y+1, x))){
-					System.out.print("can't move there\n");
-					return;
-				}
-			}else if(y==size-1){
-				System.out.print("can't move there\n");
-				return;
-			}
+		if(!can_move_down(x, y)){
+			System.out.print("can't move there\n");
+			return;
+		}
 
 		last_move.push(lvlCopie());
 		stack_x.push(pos_x);
@@ -376,24 +358,16 @@ public class Matrice extends Element{
 				if (can_move_down(x, y+1)){
 					move_down(x, y+1);
 					swap(y, x, y+1, x);
-				}else{
-					enter_up((Matrice)getElem(y+1, x), x, y);
 				}
             }
 		}
     }
 
     public void move_right(int x, int y){
-		if(!can_move_right(x, y))
-			if(x+1<size && getElem(y, x+1).getClass() == Matrice.class){
-				if (!can_enter_left((Matrice) getElem(y, x+1))) {
-					System.out.print("can't move there\n");
-					return;
-				}
-			}else if(x==size-1){
-				System.out.print("can't move there\n");
-				return;
-			}
+		if(!can_move_right(x, y)){
+			System.out.print("can't move there\n");
+			return;
+		}
 
 		last_move.push(lvlCopie());
 		stack_x.push(pos_x);
@@ -410,24 +384,16 @@ public class Matrice extends Element{
             	if (can_move_right(x+1, y)){
 					move_right(x+1, y);
 					swap(y, x, y, x+1);
-				}else{
-					enter_left((Matrice)getElem(y, x+1), x, y);
 				}
 			}
         }
     }
 
     public void move_left(int x, int y){
-		if(!can_move_left(x, y))
-			if(x-1>=0 && getElem(y, x-1).getClass() == Matrice.class){
-				if (!can_enter_right((Matrice) getElem(y, x-1))){
-					System.out.print("can't move there\n");
-					return;
-				}
-			}else if(x==0){
-				System.out.print("can't move there\n");
-				return;
-			}
+		if(!can_move_left(x, y)){
+			System.out.print("can't move there\n");
+			return;
+		}
 
     	last_move.push(lvlCopie());
 		stack_x.push(pos_x);
@@ -444,8 +410,6 @@ public class Matrice extends Element{
             	if (can_move_left(x-1, y)){
 					move_left(x-1, y);
 					swap(y, x, y, x-1);
-				}else{
-					enter_right((Matrice)getElem(y, x-1), x, y);
 				}
             }
         }
@@ -547,20 +511,20 @@ public class Matrice extends Element{
     		if (m.getElem(0,z) instanceof Vide)
     			return true;
 			else if(m.getElem(0, z) instanceof Box || m.getElem(0, z) instanceof Matrice)
-				return m.can_move_up(z, 0);
+				return m.can_move_down(z, 0);
 		}
     		
     	return false;
     }
 
     public boolean can_enter_down(Matrice m) {
-		for(int z = 0; z < m.size; z++)
+		for(int z = 0; z < m.size; z++){
     		if (m.getElem(m.size-1, z) instanceof Vide)
     			return true;
 			else if(m.getElem(m.size-1, z) instanceof Box || m.getElem(m.size-1, z) instanceof Matrice){
 				return m.can_move_up(z, m.size-1);
 			}
- 		
+		}
 		return false;
     }
     
