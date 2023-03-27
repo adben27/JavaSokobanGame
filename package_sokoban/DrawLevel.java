@@ -1,889 +1,804 @@
 package package_sokoban;
 
-import java.util.Arrays;
+import java.awt.*;
 import java.util.Stack;
 
-import java.util.Scanner;
-import java.util.Random;
-import java.awt.Color;
-import java.lang.Character;
+import javax.swing.*;
 
+public class DrawLevel extends JPanel implements Runnable{
 
-/**
- * pour l'instant la grille de la matrice sera un tableau de tableau puis après je crée un autre classe grille qui va implémenter la classe matrix de java
- * pos_x et pos_y sont la position du player je vais voir aprés si ya une meilleur facons de le faire
- */
+    private Thread game; //creer un thread qui sera la boucle de jeu
+    private static final int FPS=60;//nombre de FPS du jeu
+    private int sizeImg, next;//taille des images et pour savoir si on lance le prochain niveau 
 
-public class Matrice extends Element{
-    private String name;
-    private int size;
-    private int pos_x, pos_x_copie;
-    private int pos_y, pos_y_copie;
-	private Element[][] level, copie;
-	private int[] pos_x_cible, pos_y_cible;
-	private int nb_cible;
-	private int r,g,b;
-	private Color color; //la couleur du niveau
-	
-	//pour savoir si c'est le premier monde (matrice principale) (matrice qui contient les autres)
-	private boolean is_main, is_main_copie;
-	
-	// pour savoir si le joueur est dans cette matrice
-	private boolean is_here, is_here_copie;
-	
-	// pour savoir dans quelle monde est le joueur pos_x du monde pos_y du monde
-	// si le joueur est dans ce monde alors wrld_x = -1 et wrld_y = -1
-	// sinon si 
-	private int wrld_x, wrld_x_copie;
-	private int wrld_y, wrld_y_copie;
-	
-	// les attributs ci-dessous sont utilisé pour stocker les ancien mouvement ainsi que la disposition de base de la matrice afin de permettre de refaire le niveau en cas de bloquage
-	private Stack<Element[][]> last_move;// pile qui contient l'ancien matrice
-
-    private Stack<Integer> stack_x;
-	private Stack<Integer> stack_y;
-
-	public Matrice(){
-    	super('M',true,false,'m');
-        this.name="";
-        this.size=0;
-        this.level=new Element[0][0];
-		pos_x_cible=new int[0];
-		pos_y_cible=new int[0];
-
-		nb_cible=0;
-		copie=lvlCopie();
-        this.pos_x=pos_x_copie=0;
-        this.pos_y=pos_y_copie=0;
-        this.last_move=new Stack<Element[][]>();
-		stack_x=new Stack<Integer>();
-		stack_y=new Stack<Integer>();
-        this.is_here=true;
-        this.wrld_x= wrld_x_copie=-1;
-        this.wrld_y= wrld_y_copie=-1;
-
-		//on genere 3 nombres aleatoires qui feront la couleur du niveau
-        Random random = new Random();
-        r=random.nextInt(256);
-        g=random.nextInt(256);
-        b=random.nextInt(256);
-        color = new Color(r, g, b);
-    }
+    //image que l'on va afficher, "monde" est un tableau d'images qui contient toute les images
+    private Image mur, vide, cible, joueur;
+    private Image[] monde;
     
-    //  constructeur qui initialise pos_x et pos_y a 0 utilisé par nandan pour la lecture de niveau
-    public Matrice(String name, char sign , boolean on_target, int size){
-        super(Character.toUpperCase(sign),true,on_target,sign);// On donne au constructeur un signe en majuscule mais l'affichage de base sera en minuscule et sur la cible sera en majuscule
-    	this.name=name;
-        this.size=size;
-        this.pos_x=pos_x_copie=0;
-        this.pos_y=pos_y_copie=0;
-        this.last_move=new Stack<Element[][]>();
-		stack_x=new Stack<Integer>();
-		stack_y=new Stack<Integer>();
-        this.is_here= is_here_copie=true;
-        this.wrld_x=wrld_x_copie= -1;
-        this.wrld_y=wrld_y_copie= -1;
-		pos_x_cible=new int[11];
-		pos_y_cible=new int[11];
-		nb_cible=0;
+    //pour les explications voir ligne 146
+    private char[] nomC; //nom d'un monde dans le tableau
 
-		//on genere 3 nombres aleatoires qui feront la couleur du niveau
-        Random random = new Random();
-        r=random.nextInt(256);
-        g=random.nextInt(256);
-        b=random.nextInt(256);
-        color = (new Color(r, g, b));
-    }
-    
-    public Matrice(String name,char sign , boolean on_target, int size, Element[][] level, int x, int y, boolean is_here, boolean is_main, int wrld_x, int wrld_y){
-        super(Character.toUpperCase(sign),true,on_target,sign);// On donne au constructeur un signe en majuscule mais l'affichage de base sera en minuscule et sur la cible sera en majuscule
-    	this.name=name;
-        this.size=size;
-        this.level=level;
-		pos_x_cible=new int[11];
-		pos_y_cible=new int[11];
-		copie=lvlCopie();
+    private boolean haut, bas, gauche, droite, ctrlZ;//pour faire bouger le joueur
 
-		nb_cible=0;
-		for (int i = 0; i < level.length; i++) {
-			for (int j = 0; j < level.length; j++) {
-				if(level[i][j] instanceof Vide && level[i][j].on_target){			
-					pos_x_cible[nb_cible]=j;
-					pos_y_cible[nb_cible]=i;
-					nb_cible++;
-				}else{
-					pos_x_cible[nb_cible]=-1;
-					pos_y_cible[nb_cible]=-1;
-				}
-			}
-		}
-
-        this.pos_x=pos_x_copie=x;
-        this.pos_y=pos_y_copie=y;
-        this.last_move=new Stack<Element[][]>();
-		stack_x=new Stack<Integer>();
-		stack_y=new Stack<Integer>();
-        this.is_main=is_main_copie= is_main;
-        this.is_here=is_here_copie=is_here;
-        this.wrld_x=wrld_x_copie= wrld_x;
-        this.wrld_y=wrld_y_copie= wrld_y;
-
-		//on genere 3 nombres aleatoires qui feront la couleur du niveau
-        Random random = new Random();
-        r=random.nextInt(256);
-        g=random.nextInt(256);
-        b=random.nextInt(256);
-        color = new Color(r, g, b);
-    }
-    
-	// première version des fonctions de fin de niveau pas opti mais bon on verra aprés pour ca
-	public boolean estFini() {
-		boolean res=all_ontarget();
-
-		for (int i = 0; i < size; i++)
-			for (int j = 0; j < copie.length; j++)
-				if(level[i][j].getClass() == Matrice.class)
-					if(!((Matrice) level[i][j]).all_ontarget())
-						return false;
-
-
-		return res;
-	}
-	/*
-	* 
-	* ('estFini' fait la meme chose que 'all_ontarget' autant la supprimer)
-	* pas au point, bug des fois en fonction de ou le joueur va dans une cible et en sort (meme bug qu'avant mais en moins grave)
-	* (rentre par la droite (de la cible) et sort par la gauche (de la cible))
-	*/
-	public boolean all_ontarget() {
-		if(nb_cible==0)
-			return false;//true; // normalement on met ca true comme ca dès qu'il y'a un niveau sans cible ca affiche WIN mais nous on l'avait mis a false avant juste pour faire des tests
-
-		boolean res=true;
-
-		for (int i = 0; i < nb_cible; i++) {
-			//Si il y a une/plusieurs case vide avec on_target a true alors en va renvoier false sinon true
-			if(level[pos_y_cible[i]][pos_x_cible[i]].on_target && (level[pos_y_cible[i]][pos_x_cible[i]] instanceof Vide))
-				res=false;
-		}
-		
-		return res;
-	}
-
-    public Element[][] lvlCopie(){
-		Element[][] res = new Element[size][size];
-
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				res[i][j]=level[i][j];
-			}
-		}
-
-		return res;
-	}
-    
-    /*
-     * permet d'échanger les elements de deux cellules
-     * si l'un des elements est le player actualise les parametres pos_x et pos_y de la matrice
-     * @param i pos_y de la cellule 1
-     * @param j pos_x de la cellule 1
-     * @param a pos_y de la cellule 2
-     * @param b pos_x de la cellule 2
+    /* Matrice que l'on va utiliser pour la version recursive
+     * lvl sera la matrice que l'on va afficher (changera a chaque appel des methodes d'entrer et de sortie de monde)
+     * matriceP sera la matrice qui contient le 1er monde lors du démarage du jeu
      */
-    public void swap(int i, int j, int a, int b){
-        Element tmp = level[i][j];
+    private Matrice lvl, matriceP;
 
-        if(!tmp.isMoveable()||!level[a][b].isMoveable()) {
-        	return;
-        }
-        if(tmp instanceof Player){/*il ne peut pas y avoir deux joueurs normalement faudrait ajouter un test peut être apres*/
-            pos_x=b;
-            pos_y=a;
-        }
-        if(level[a][b] instanceof Player){
-            pos_x=j;
-            pos_y=i;
-        }
+    /*matrice[0]=matriceB
+     *matrice[1]=matriceC
+     *etc...
+     *jusqu'a matriceJ
+    */
+    private Matrice[] matrice;         
 
-		if (level[i][j].on_target != level[a][b].on_target) {
-			level[i][j].setOn_target(!level[i][j].on_target);
-			level[a][b].setOn_target(!level[a][b].on_target);
-		}
+    private Player p;//Le joueur
+    private Vide v;
+    private Stack<Matrice> m;//pile qui contient les matrices peres
 
-        setElem(i, j,level[a][b]);
-        setElem(a, b, tmp);
+    public DrawLevel() {
+        super();
+        setLayout(null);
 
-        return;
-    }
-    /*fonction qui prend comme argument un char qui représente la direction du mouvement z : haut, q : gauche, s : bas, d : droite, autre que ceux la il
-     *return false d'ailleurs j'en profite pour modifier les autres fonctions move_direction pour qu'elles utilisent celle-ci pour check le mouvement
-     */
-	public boolean can_move(char c) {
-		if (Character.compare(c, 'z') == 0) {
-			return can_move_up(pos_x, pos_y);
-		}
-		if (Character.compare(c, 's') == 0) {
-			return can_move_down(pos_x, pos_y);
-		}
-		if (Character.compare(c, 'q') == 0) {
-			return can_move_left(pos_x, pos_y);
-		}
-		if (Character.compare(c, 'd') == 0) {
-			return can_move_right(pos_x, pos_y);
-		}
-		return false;
-	}
-	/*
-	 * Série de fonctions qui vérifient si le mouvement est possible dans les 4 directions cardinales 
-	 */
-	public boolean can_move_up(int x, int y) {
-		if(y-1<0 || getElem(y-1, x).getClass() == Wall.class) //si c'est un mur ou qu'on depasse les indices de la matrice renvoie false 
-			return false;
-		//si c'est une boite ou une matrice on verifie si elle peuvent bouger, si oui renvoie true sinon false 
-		else if(getElem(y-1, x).getClass() == Box.class || getElem(y-1, x).getClass() == Matrice.class)
-			return can_move_up(x, y-1);
-		else //si c'est du vide on renvoie true
-			return true;
-	}
-	/*
-	 * meme raisonnement que can_move_up mais dans des directions differentes
-	 */
-	public boolean can_move_down(int x, int y) {
-		if (y+1>size-1 || getElem(y+1, x).getClass() == Wall.class)
-			return false;
-		else if(getElem(y+1, x).getClass() == Matrice.class || getElem(y+1, x).getClass() == Box.class)
-			return can_move_down(x, y+1);
-		else
-			return true;
-	}
-    
-	public boolean can_move_right(int x, int y) {
-		if (x+1>size-1 || this.getElem(y, x+1).getClass() == Wall.class)
-			return false;
-		else if(getElem(y, x+1).getClass() == Box.class || getElem(y, x+1).getClass() == Matrice.class)
-			return can_move_right(x+1, y);
-		else
-			return true;
-	}
-	
-	public boolean can_move_left(int x, int y) {
-		if (x-1<0 || getElem(y, x-1).getClass() == Wall.class)
-			return false;
-		else if(getElem(y, x-1).getClass() == Box.class || getElem(y, x-1).getClass() == Matrice.class)
-			return can_move_left(x-1, y);
-		else
-			return true;
-    }
-    /*
-     * fonction qui regroupe les quatre fonctions de mouvement ainsi qu'un scanner pour effectuer le mouvement en fonction de l'input du joueur
-     */
-    public void move(){
-    		System.out.println("Enter a move (z/q/s/d): ");
-            Scanner console = new Scanner(System.in);
-            char c = console.nextLine().charAt(0);
-            if(Character.compare(c,'z')==0){
-                move_up(pos_x, pos_y);
-                return;
-            }
-            if(Character.compare(c,'s')==0){
-                move_down(pos_x, pos_y);
-                return;
-            }
-            if(Character.compare(c,'q')==0){
-                move_left(pos_x, pos_y);
-                return;
-            }
-            if(Character.compare(c,'d')==0){
-                move_right(pos_x, pos_y);
-                return;
-            }
-        }
-    /*
-	 * Série de fonctions qui  effectuent le mouvement dans les 4 directions cardinales, sont utilisé dans le fonction move()
-	 */
-    public void move_up(int x, int y){
-		if(y<=0)
-			return;
-		//on met l'ancienne pos (x,y) du joueur dans des piles et on met l'ancienne matrice dans une pile
-    	last_move.push(lvlCopie());
-		stack_x.push(pos_x);
-		stack_y.push(pos_y);
-    	
-		//si c'est du vide on swap
-        if(this.getElem(y-1, x) instanceof Vide){
-            swap(y, x, y-1, x);
-        }else{
-            if(this.getElem(y-1, x) instanceof Box){
-				/*
-				 * Si c'est une boite on la fait bouger, une fois qu'on a bouger la boite le joueur va se retrouver
-				 * en face du vide puis on swap le l'element et le vide
-				 */
-				move_up(x, y-1);
-				swap(y, x, y-1, x);
-            }
-            else if(this.getElem(y-1, x) instanceof Matrice) {
-				/*
-				 * meme chose que pour les boites mais cette fois, si on ne peut pas bouger la matrice mais 
-				 * qu'on peut rentrer dans celle ci alors on rentre et on modifie wrld_x et wrld_y et is_here
-				 */
-				if (can_move_up(x, y-1)){
-					move_up(x, y-1);
-					swap(y, x, y-1, x);
-				}else{
-					enter_down((Matrice)getElem(y-1, x), x, y);
-					move_up(x, y-1);
-				}
-			}
-        }
-    }
-   
-	//meme raisonement que move up mais avec des directions differentes
-    public void move_down(int x, int y){
-		if(y>=size-1)
-			return;
+        m=new Stack<Matrice>();
+        matrice=new Matrice[9];
 
-		last_move.push(lvlCopie());
-		stack_x.push(pos_x);
-		stack_y.push(pos_y);
+        Box b= new Box(false, 'B');
+        Box c= new Box(false, 'C');        
+        Box d= new Box(false, 'D');        
+        Box e= new Box(false, 'E');        
+        Box f= new Box(false, 'F');        
+        Box g= new Box(false, 'G');        
+        Box h= new Box(false, 'H');        
+        Box i= new Box(false, 'I');
+        Box j= new Box(false, 'J');
+        Wall m= new Wall();
 
-        if(this.getElem(y+1, x) instanceof Vide){
-            swap(y, x, y+1, x);
-        }else{
-            if(this.getElem(y+1, x) instanceof Box){
-				move_down(x, y+1);
-				swap(y, x, y+1, x);
-            }
-            else if(this.getElem(y+1, x) instanceof Matrice) {
-				if (can_move_down(x, y+1)){
-					move_down(x, y+1);
-					swap(y, x, y+1, x);
-				}else{
-					enter_up((Matrice)getElem(y+1, x), x, y);
-					move_down(x, y+1);
-				}
-            }
-		}
+        p = new Player(false);
+        
+        v = new Vide(false);
+        Vide y = new Vide(true);
+        Vide x = new Vide(true);
+        Vide z = new Vide(true);
+
+        Element[][] tab_b={{m,m,m,m,v,m},//matrice[0]
+                           {m,v,v,v,v,m},
+                           {m,v,v,v,v,m},
+                           {v,v,v,v,v,v},
+                           {m,v,v,v,v,m},
+                           {m,m,m,v,m,m}};
+
+        Element[][] tab_c={{m,v,m,m,m,m,m},//matrice[1]
+                           {m,v,v,c,v,v,v},
+                           {v,v,v,v,v,m,m},
+                           {m,m,v,v,v,m,m},
+                           {m,v,v,v,v,v,m},
+                           {m,v,v,v,v,v,m},
+                           {m,m,m,v,m,m,m}};
+
+        Element[][] tab_d={{m,v,m,m,m},//matrice[2]
+                           {m,v,v,m,m},
+                           {v,d,v,v,v},
+                           {m,v,v,v,m},
+                           {m,m,v,m,m}};
+
+        Element[][] tab_e={{e,v},//matrice[3]
+                           {v,m}};
+
+        Element[][] tab_f={{m,m,m,v,m},//matrice[4]
+                           {m,f,v,v,m},
+                           {v,v,v,v,v},
+                           {m,v,v,v,m},
+                           {m,m,v,m,m}};
+
+        Element[][] tab_g={{m,m,m,m,m,m,v,m,m},//matrice[5]
+                           {m,v,v,v,v,v,v,v,m},
+                           {m,v,v,v,v,v,h,v,m},
+                           {m,v,v,b,v,v,v,v,m},
+                           {v,v,v,v,b,v,v,v,v},
+                           {m,v,v,v,v,v,j,v,m},
+                           {m,v,v,v,v,v,v,v,m},
+                           {m,v,v,c,v,v,v,v,m},
+                           {m,m,m,m,m,m,m,m,m}};
+
+        Element[][] tab_h={{m,v,m},//matrice[6]
+                           {v,h,v},
+                           {m,v,m}};
+
+        Element[][] tab_i={{i}};//matrice[7]
+
+        Element[][] tab_j={{m,v,m,m,m},//matrice[8]
+                           {v,v,v,m,m},
+                           {m,v,j,v,v},
+                           {m,v,v,m,m},
+                           {m,m,v,m,m}};
+
+        matrice[0/*B*/]=new Matrice("B", 'b', false, tab_b.length, tab_b, 0, 0, false, false,-1,-1);
+        matrice[1/*C*/]=new Matrice("C", 'c', false, tab_c.length, tab_c, 0, 0, false, false,-1,-1);
+        matrice[2/*D*/]=new Matrice("D", 'd', false, tab_d.length, tab_d, 0, 0, false, false,-1,-1);
+        matrice[3/*E*/]=new Matrice("E", 'e', false, tab_e.length, tab_e, 0, 0, false, false,-1,-1);
+        matrice[4/*F*/]=new Matrice("F", 'f', false, tab_f.length, tab_f, 0, 0, false, false,-1,-1);
+        matrice[5/*G*/]=new Matrice("G", 'g', false, tab_g.length, tab_g, 0, 0, false, false,-1,-1);
+        matrice[6/*H*/]=new Matrice("H", 'h', false, tab_h.length, tab_h, 0, 0, false, false,-1,-1);
+        matrice[7/*I*/]=new Matrice("I", 'i', false, tab_i.length, tab_i, 0, 0, false, false,-1,-1);
+        matrice[8/*J*/]=new Matrice("J", 'j', false, tab_j.length, tab_j, 0, 0, false, false,-1,-1);
+
+        tab_b[1][2]=matrice[2];
+        tab_b[3][2]=matrice[5];
+        tab_d[1][1]=matrice[8];
+        tab_j[3][3]=matrice[1];
+        tab_c[4][4]=matrice[3];
+
+        matrice[0].setlevel(tab_b);
+        matrice[1].setlevel(tab_c);
+        matrice[2].setlevel(tab_d);
+        matrice[8].setlevel(tab_j);
+
+        Element[][] tab_lvl={{m,m,m,m,m,m},
+                             {m,v,p,v,v,v},
+                             {m,v,matrice[7],matrice[3],matrice[0],m},
+                             {m,v,v,v,v,m},
+                             {m,v,v,v,v,m},
+                             {m,m,m,m,m,m}};
+        
+        lvl=new Matrice("lvl", 'l', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
+        matriceP=new Matrice("P", 'p', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
+
+        //taille des images
+        sizeImg=(int)getToolkit().getScreenSize().getHeight()/(2*lvl.getSize());
+
+        /*on recupère les images qu'on va utiliser
+         * nomC[0]='B' et monde[0]=l'image du mondeB
+         * nomC[1]='C' et monde[1]=l'image du mondeC
+         * etc...
+         * 
+         * nomC -> char du monde[i] (i=nomI)
+        */
+        monde = new Image[9];
+        nomC = new char[9];
+
+        for (int l=0, k=66 ; l < 9; l++, k++)
+            nomC[l]=(char) k;
+
+        monde[0] = getToolkit().getImage("package_sokoban/Image/mondeB.png");
+        monde[1] = getToolkit().getImage("package_sokoban/Image/mondeC.png");
+        monde[2] = getToolkit().getImage("package_sokoban/Image/mondeD.png");
+        monde[3] = getToolkit().getImage("package_sokoban/Image/mondeE.png");
+        monde[4] = getToolkit().getImage("package_sokoban/Image/mondeF.png");
+        monde[5] = getToolkit().getImage("package_sokoban/Image/mondeG.png");
+        monde[6] = getToolkit().getImage("package_sokoban/Image/mondeH.png");
+        monde[7] = getToolkit().getImage("package_sokoban/Image/mondeI.png");
+        monde[8] = getToolkit().getImage("package_sokoban/Image/mondeJ.png");
+
+        joueur = getToolkit().getImage("package_sokoban/Image/joueur.png");
+        mur = getToolkit().getImage("package_sokoban/Image/mur.png");
+        vide = getToolkit().getImage("package_sokoban/Image/vide.png");
+        cible = getToolkit().getImage("package_sokoban/Image/cible.png");
+
+        //on met tout a false pour pas bouger le joueur
+        haut=bas=gauche=droite=ctrlZ=false;
     }
 
-    public void move_right(int x, int y){
-		if(x>=size-1)
-			return;
+    public void loadLvl(Matrice[] monde) {
 
-		last_move.push(lvlCopie());
-		stack_x.push(pos_x);
-		stack_y.push(pos_y);
-
-        if(this.getElem(y, x+1) instanceof Vide){
-            swap(y, x, y, x+1);
-        }else{
-            if(this.getElem(y, x+1) instanceof Box){
-				move_right(x+1, y);
-				swap(y, x, y, x+1);   
-            }
-            else if(this.getElem(y, x+1) instanceof Matrice) {
-            	if (can_move_right(x+1, y)){
-					move_right(x+1, y);
-					swap(y, x, y, x+1);
-				}else{
-					enter_left((Matrice)getElem(y, x+1), x, y);
-					move_right(x+1, y);
-				}
-			}
-        }
     }
 
-    public void move_left(int x, int y){
-		if(x<=0)
-			return;
-
-		last_move.push(lvlCopie());
-		stack_x.push(pos_x);
-		stack_y.push(pos_y);
-
-        if(this.getElem(y, x-1) instanceof Vide){
-            swap(y, x, y, x-1);
-        }else{
-            if(this.getElem(y, x-1) instanceof Box){
-				move_left(x-1, y);
-                swap(y, x, y, x-1);
-            }
-            else if(this.getElem(y, x-1) instanceof Matrice) {
-            	if (can_move_left(x-1, y)){
-					move_left(x-1, y);
-					swap(y, x, y, x-1);
-				}else{
-					enter_right((Matrice)getElem(y, x-1), x, y);
-					move_left(x-1, y);
-				}
-            }
-        }
-    }
-    
-    public void ctrl_z() {
-    	// ici ctrl_z récrusif pas encore au point
-    	if(!this.is_here) {
-			Matrice m =(Matrice) this.getElem(wrld_y, wrld_x);
-			m.ctrl_z();
-			return;
-		}
-    	
-    	if(last_move.empty()) //si last_move est vide aucun mouvement n'a été fait donc on return
-    		return;
-
-		for (int i = 0; i < nb_cible; i++)
-			/*
-			 * si l'element en (pos_x_cible[i], pos_y_cible[i]) n'est pas du vide et a 'on_target' 
-			 * en true alors on change 'on_target' 
-			 */
-			if(level[pos_y_cible[i]][pos_x_cible[i]].on_target && !(level[pos_y_cible[i]][pos_x_cible[i]] instanceof Vide))
-				level[pos_y_cible[i]][pos_x_cible[i]].setOn_target(false);
-
-    	level=last_move.pop(); //on recupère l'ancienne matrice
-
-		//on remet les cases vide qui on étaient mis a false (1er for) a true
-		for (int i = 0; i < nb_cible; i++)
-			level[pos_y_cible[i]][pos_x_cible[i]].setOn_target(true);
-		
-		//on recupère l'ancienne pos (x, y) du joueur
-		pos_x=stack_x.pop();
-		pos_y=stack_y.pop();
-    }
-    
-	//Comme sont nom l'indique ca reset la matrice
-    public void reset() {
-		int m=0;
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				level[i][j]=copie[i][j];
-
-				if(level[i][j].getSign()=='b'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='c'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='d'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='e'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='f'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='g'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='h'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='i'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='j'){
-					level[i][j].setOn_target(false);
-				}
-				if(level[i][j].getSign()=='a'){
-					level[i][j].setOn_target(false);
-				}
-				if(i==pos_y_cible[m] && j==pos_x_cible[m]){
-					level[i][j].setOn_target(true);
-					m++;
-				}
-			}
-		}
-
-		pos_x=pos_x_copie;
-		pos_y=pos_y_copie;
-		wrld_x=wrld_x_copie;
-		wrld_y=wrld_y_copie;
-		is_here=is_here_copie;
-		is_main=is_main_copie;
-		last_move.clear();
-		stack_x.clear();
-		stack_y.clear();
-    }
-    
-    /*
-     * Serie de fonctions can_enter_dir qui verifient si l'on peut rentrer dans ce monde par la direction indiqué 
-     * ex : can_enter_up() verifie si on peut rentrer par le bas, car si le joueur veut monter dans un monde qui est au-dessus de lui
-     * on vérifie si il y'a des mur en bas du monde
-     * j'ai pas fait le cas ou on rentre directement dans un autre monde
-     */
-    public boolean can_enter_up(Matrice m) {
-		boolean res=false;
-    	for(int z = 0; z < m.size; z++){
-    		if (m.getElem(0,z) instanceof Vide){
-    			return true;
-			}
-			else if(m.getElem(0, z) instanceof Box || m.getElem(0, z) instanceof Matrice){
-				res=m.can_move_up(z, 0);
-				if(res)
-					return res;
-			}
-		}
-    		
-    	return res;
+    //debut du thread qui s'occupe de la boucle de jeu
+    public void startGame() {
+        game = new Thread(this);
+        game.start();
     }
 
-    public boolean can_enter_down(Matrice m) {
-		boolean res=false;
-
-		for(int z = 0; z < m.size; z++)
-    		if (m.getElem(m.size-1, z) instanceof Vide)
-    			return true;
-			else if(m.getElem(m.size-1, z) instanceof Box || m.getElem(m.size-1, z) instanceof Matrice){
-				res=m.can_move_up(z, m.size-1);
-				if(res)
-					return res;
-			}
- 		
-		return false;
-    }
-    
-    public boolean can_enter_left(Matrice m) {
-		boolean res=false;
-    	for(int z = 0; z < m.size; z++)
-    		if (m.getElem(z, 0) instanceof Vide)
-    			return true;
-			else if(m.getElem(z, 0) instanceof Box || m.getElem(z, 0) instanceof Matrice){
-				res=m.can_move_right(0, z);
-				if(res)
-					return res;
-			}
-
-    	return res;
-    }
-    
-    public boolean can_enter_right(Matrice m) {
-		boolean res=false;
-    	for(int z = 0; z < m.size;z++)
-    		if (m.getElem(z, m.size-1) instanceof Vide)
-    			return true;
-			else if(m.getElem(z, m.size-1) instanceof Box || m.getElem(z, m.size-1) instanceof Matrice){
-				res=m.can_move_left(m.size-1, z);
-				if(res)
-					return res;
-			}
-    	return res;
-    }
-    
-    /*
-     * fonctions qui donnent la coordonee du point d'entrée en fonction de la direction
-     * utilisé dans les fonctions enter_dir uniquement
-     * on connait deja l'autre coordonee car elle depend de la direction (voir fonctions enter_dir)
-     * c'est la meme chose que les fonction can_enter_dir mais il retourne le vide par ou le joueur peut rentrer
-     *
-	 *retourne -1 si il n'y a pas de vide ou be box/matrice qui peuvent bouger
-	 */
-    public int get_entry_up(Matrice m) {
-		if(m.size==1)
-			return -1;
-    	
-    	for(int z = 0; z < m.size; z++) {
-    		if ((m.getElem(0, z) instanceof Vide))
-    			return z;
-			else if(m.getElem(0, z) instanceof Box || m.getElem(0, z) instanceof Matrice){
-				if(m.can_move_down(z, 0)){
-					m.move_down(z, 0);
-					return z;
-				}else
-					return -1;
-			}
-    	}
-    	return -1;
-    }
-    
-    public int get_entry_down(Matrice m) {
-		if(m.size==1)
-			return -1;
-    	
-    	for(int z = 0; z < m.size; z++) {
-    		if((m.getElem(m.size-1, z) instanceof Vide))
-    			return z;
-			else if(m.getElem(m.size-1, z) instanceof Box || m.getElem(m.size-1, z) instanceof Matrice){
-				if(m.can_move_up(z, m.size-1)){
-					m.move_up(z, m.size-1);
-					return z;
-				}else
-					return -1;
-			}
-    	}
-    	return -1;
-    }
-
-    public int get_entry_left(Matrice m) {
-		if(m.size==1)
-			return -1;
-    	
-    	for(int z = 0; z < m.size;z++) {
-    		if((m.getElem(z, 0) instanceof Vide))
-    			return z;
-			else if(m.getElem(z, 0) instanceof Box || m.getElem(z, 0) instanceof Matrice){
-				if(m.can_move_right(0, z)){
-					m.move_right(0, z);
-					return z;
-				}else
-					return -1;
-			}
-    	}
-
-    	return -1;
-    }
-    
-    public int get_entry_right(Matrice m) {
-    	if(m.size==1)
-			return -1;
-    	
-    	for(int z = 0; z < m.size;z++) {
-    		if((m.getElem(z, m.size-1) instanceof Vide))
-    			return z;
-			else if(m.getElem(z, m.size-1) instanceof Box || m.getElem(z, m.size-1) instanceof Matrice){
-				if(m.can_move_left(m.size-1, z)){
-					m.move_left(m.size-1, z);
-					return z;
-				}else
-					return -1;
-			}
-    	}
-
-    	return -1;
-    }
-    
-    /*
-     * serie de fonctions pour rentrer dans un monde
-     * est utilise dans les fonctions de type move_dir uniquement
-     * si il ya une boite en dans le monde a l'entree alors on la pousse
-     * sinon on echange le vide et le joueur
-     *
-     *la matrice 'm' est la matrice ou le joueur va rentrer
-	 */
-    public void enter_up(Matrice m, int x, int y) {
-		//on set la pos (x, y) du joueur dans la matrice m et on set wrld_x et wrld_y dans la matrice courante
-		int z=get_entry_up(m);
-
-		if(!can_enter_up(m) || z==-1)
-			return;
-		
-    	//pour échanger l'attribut on_target si a l'entré du sous-monde il y'a une cible
-    	if(m.getElem(0, z).isOn_target() || getElem(y, x).isOn_target()) {
-    		m.getElem(0, z).setOn_target(!m.getElem(0, z).isOn_target());
-    		getElem(y, x).setOn_target(!getElem(y, x).isOn_target());
-        }
-    	
-    	Element temp = m.getElem(0, z);
-    	m.setElem(0, z, this.getElem(y, x));
-    	this.setElem(y, x, temp);
-
-		//is_here de 'm' devient true et is_here de this devient false
-		if (x==pos_x && y==pos_y) {
-			m.setPos_y(0);
-			m.setPos_x(z);
-			wrld_x=pos_x;
-			wrld_y=pos_y+1;
-			m.is_here=true;
-			is_here=false;
-		}
-    }
-    
-	//meme raisonement que enter down mais avec des direcrtions differentes
-    public void enter_down(Matrice m, int x, int y) {
-		int z=get_entry_down(m);
-
-		if(!can_enter_down(m) || z==-1)
-			return;
-    	
-    	//pour échanger l'attribut on_target si a l'entré du sous-monde il y'a une cible
-    	if(m.getElem(m.size-1, z).isOn_target() || getElem(y, x).isOn_target()) {
-    		m.getElem(m.size-1, z).setOn_target(!m.getElem(m.size-1, z).isOn_target());
-    		getElem(y, x).setOn_target(!getElem(y, x).isOn_target());
-        }
-    	
-    	Element temp = m.getElem(m.size-1, z);
-    	m.setElem(m.size-1, z, this.getElem(y, x));
-    	setElem(y, x, temp);
-
-		if(x==pos_x && y==pos_y){
-			m.setPos_y(m.size-1);
-			m.setPos_x(z);
-			wrld_x=pos_x;
-			wrld_y=pos_y-1;
-			m.is_here=true;
-			is_here=false;
-		}
-    }
-    
-    public void enter_left(Matrice m, int x, int y) {
-		int z=get_entry_left(m);
-
-		if(!can_enter_left(m) || z==-1)
-			return;
-    	
-    	//pour échanger l'attribut on_target si a l'entré du sous-monde il y'a une cible
-    	if(m.getElem(z,0).isOn_target()||getElem(y, x).isOn_target()) {
-    		m.getElem(z,0).setOn_target(!m.getElem(z,0).isOn_target());
-    		getElem(y, x).setOn_target(!getElem(y, x).isOn_target());
-        }
-    	
-    	Element temp = m.getElem(z,0);
-    	m.setElem(z,0,this.getElem(y, x));
-    	this.setElem(y, x, temp);
-
-		if (x==pos_x && y==pos_y) {
-			m.setPos_y(z);
-			m.setPos_x(0);
-			wrld_x=pos_x+1;
-			wrld_y=pos_y;
-			m.is_here=true;
-			is_here=false;
-		}
-    }
-    
-    public void enter_right(Matrice m, int x, int y) {
-		int z=get_entry_right(m);
-
-		if(!can_enter_right(m) || z==-1)
-			return;
-    	
-    	//pour échanger l'attribut on_target si a l'entré du sous-monde il y'a une cible
-    	if(m.getElem(z, m.size-1).isOn_target()||getElem(pos_y, x).isOn_target()) {
-    		m.getElem(z, m.size-1).setOn_target(!m.getElem(z, m.size-1).isOn_target());
-    		getElem(pos_y, x).setOn_target(!getElem(pos_y, x).isOn_target());
-        }
-    	
-    	Element temp = m.getElem(z, m.size-1);
-    	m.setElem(z, m.size-1, getElem(pos_y, x));
-    	setElem(pos_y, x, temp);
-
-		if (x==pos_x && y==pos_y) {
-			m.setPos_y(z);
-			m.setPos_x(m.size-1);
-			wrld_x=pos_x-1;
-			wrld_y=pos_y;
-			m.is_here=true;
-			is_here=false;
-		}
-    }
-    
-    
+    //methode qui permet de mettre a jour l'affichage du jeu
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + size;
-        result = prime * result + Arrays.deepHashCode(level);
-        return result;
+    public void run() {
+        //System.nanoTime() donne l'heure en nano secondes
+        double interval_dessin=1000000000/FPS;
+        double dessin_suivant=System.nanoTime()+interval_dessin;
+        
+        while (game!=null) {
+            repaint();//repeint le niveau dans le panel
+            update();//met à jour le niveau en memoire
+            
+            try {
+                double tps_restant = dessin_suivant - System.nanoTime();
+                //Thread.sleep() prend en argument des millis secondes donc on divise par un million le temps restant pour l'avoir en millis secondes
+                tps_restant/=1000000;
+
+                if (tps_restant<0)
+                    tps_restant= 0;
+
+                Thread.sleep((long) tps_restant);
+
+                dessin_suivant+=interval_dessin;
+                
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
-    
+
+    //permet de mettre a jour le niveau
+    public void update() {
+        setPrincipale();//lvl=la matrice ou il y a le joueur
+        int x=lvl.getPos_x(), y=lvl.getPos_y();
+
+        if (bas) {
+            //si le joueur ne peut pas bouger mais peut sortir on le fait sortir
+            if(!lvl.can_move_down(x, y) && peut_sortir_bas(x, y)){
+                sort_bas(x, y);
+                bas=false;
+                return;
+            }
+            /*y+1<lvl.getSize() pour ne pas avoir d'execption du type on depasse le tableau 
+             *si on ne paut pas bouger mais que l'on peut rentrer dans la matrice en bas du joueur alors on fait rentrer le joueur
+            */ 
+            if (y+1<lvl.getSize() && lvl.getElem(y+1, x).getClass() == Matrice.class)
+                if(!lvl.can_move_down(x, y) && lvl.can_enter_up((Matrice) lvl.getElem(y+1, x))){
+                    m.push(lvl);//on met la matrice pere dans une pile
+                    lvl.enter_up((Matrice) lvl.getElem(y+1, x), x, y);
+                    bas=false;
+                    return;
+                }
+            //on bouge le joueur en bas si aucune condition des 'if' n'est vérifié
+            lvl.move_down(x, y);
+            bas=false;
+        }
+        //meme commentaire que pour 'if(bas)' mais avec des directions différentes
+        if (haut) {
+            if(!lvl.can_move_up(x, y) && peut_sortir_haut(x, y)){
+                sort_haut(x, y);
+                haut=false;
+                return;
+            }
+            if (y-1>=0 && lvl.getElem(y-1, x).getClass() == Matrice.class)
+                if(!lvl.can_move_up(x, y) && lvl.can_enter_down((Matrice) lvl.getElem(y-1, x))){
+                    m.push(lvl);
+                    lvl.enter_down((Matrice) lvl.getElem(y-1, x), x, y);
+                    haut=false;
+                    return;
+                }
+            lvl.move_up(x, y);
+            haut=false;
+        }
+        if (gauche) {
+            if(!lvl.can_move_left(x, y) && peut_sortir_gauche(x, y)){
+                sort_gauche(x, y);
+                gauche=false;
+                return;
+            }
+            if (x-1>=0 && lvl.getElem(y, x-1).getClass() == Matrice.class){
+                if(!lvl.can_move_left(x, y) && lvl.can_enter_right((Matrice) lvl.getElem(y, x-1))){
+                    m.push(lvl);
+                    lvl.enter_right((Matrice) lvl.getElem(y, x-1), x, y);
+                    gauche=false;
+                    return;
+                }
+            }
+
+            lvl.move_left(x, y);
+            gauche=false;
+        }
+        if (droite) {
+            if(!lvl.can_move_right(x, y) && peut_sortir_droite(x, y)){
+                sort_droite(x, y);
+                droite=false;
+                return;
+            }
+            if(x+1<lvl.getSize() && lvl.getElem(y, x+1).getClass() == Matrice.class)
+                if(!lvl.can_move_right(x, y) &&lvl.can_enter_left((Matrice) lvl.getElem(y, x+1))){
+                    m.push(lvl);
+                    lvl.enter_left((Matrice) lvl.getElem(y, x+1), x, y);
+                    droite=false;
+                    return;
+                }
+            lvl.move_right(x, y);
+            droite=false;
+        }
+        //si 'ctrl+z' est appuié alors on revient d'une action en arrière
+        if (ctrlZ) {
+            lvl.ctrl_z();
+            ctrlZ=false;
+        }
+        /*si toute les matrices on leurs box/matrice ou le joueur sur une cible alors on affiche un message qui dit
+         *que le niveau est terminé et on demande si l'utilisateur veut passez au niveau suivant
+        */ 
+        if (matriceP.estFini()) {
+            next=JOptionPane.showConfirmDialog(this, "Félicitation vous avez terminer le niveau.\nVoulez-vous passez au niveau suivant ?");
+            if(next==0){
+                //on charge le prochain niveau
+            }else if(next==1)
+                lvl.ctrl_z();
+            else
+                resetAll();
+        }
+    }
+
+    //on peint le niveau dans le panel
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        Element e;
+        Graphics2D g2 = (Graphics2D) g;
+
+        //on calcule la pos x et y où dessiner le 1er element du tableau
+        int pos_x=((getWidth() - sizeImg)/2)-sizeImg*(lvl.getSize()/2),
+            pos_y=((getHeight() - sizeImg)/2)-sizeImg*(lvl.getSize()/2);
+
+        paintBordure(g2, pos_x, pos_y);//on dessine le monde pere si il existe
+
+        //on dessine du vide qui fera la taille de la matrice 
+        g2.drawImage(vide, pos_x, pos_y, sizeImg*lvl.getSize(), sizeImg*lvl.getSize(), lvl.getColor(), this); 
+
+        for (int i = 0; i < lvl.getSize(); i++) {
+            for (int j = 0; j < lvl.getSize(); j++) {
+
+                //on calcule la pos x et y de chaque image et on recupere l'element en pos (j, i)
+                pos_x=((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2);
+                pos_y=((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2);
+                e=lvl.getElem(i, j);
+
+                //si c'est du vide on passe a la prochaine interation de la boucle 
+                if(e.getSign()==' '){
+                    continue;
+                }
+                //si c'est un mur on dessine le mur et on passe a la prochaine interation de la boucle
+                if(e.getSign()=='#'){
+                    g2.drawImage(mur, pos_x, pos_y, sizeImg, sizeImg, this);
+                    continue;
+                }
+                //si c'est une cible on la dessine et on passe a la prochaine interation de la boucle
+                if(e.getSign()=='@'){
+                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
+                    continue;
+                }
+                //si c'est un joueur on le dessine et on passe a la prochaine interation de la boucle
+                if(e.getSign()=='A'){
+                    g2.drawImage(joueur, pos_x, pos_y, sizeImg, sizeImg, this);
+                    continue;
+                }
+                //si c'est un joueur dans une cible on le dessine et on passe a la prochaine interation de la boucle
+                if(e.getSign()=='a'){
+                    g2.drawImage(joueur, pos_x, pos_y, sizeImg, sizeImg, this);
+                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
+                    continue;
+                }
+                //si c'est un monde/box on la dessine et on passe a la prochaine interation de la boucle
+                if(Character.isUpperCase(e.getSign())){
+                    m_OU_b(g2, e, i, j);
+                }else{
+                //si c'est un monde/box dans une cible on la dessine et on passe a la prochaine interation de la boucle
+                    m_OU_b(g2, e, i, j);
+                    g2.drawImage(cible, pos_x, pos_y, sizeImg, sizeImg, this);
+                }
+            }
+        }
+    }
+
+    /* "m" est la matrice a afficher
+     * "pos_x" et "pos_y" sont les coordonnées (pos_x, pos_y) de la localisation où il faut dessiner  
+     */
+    public void paintMonde(Graphics2D g2, Matrice m, int pos_x, int pos_y) {
+        //on calcule la taille des images à dessiner et on sauvegarde la pos x et y du monde a dessiner
+        int size = sizeImg/m.getSize(), i=pos_y, j=pos_x, a=0;
+        Element e;
+
+        //on dessine du vide qui fera la taille du monde
+        if(m.getSize()==1)
+            g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, this);
+        else
+            g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, m.getColor(), this);
+        
+        for (int y = 0; y < m.getSize(); y++){
+            for (int x = 0; x < m.getSize(); x++){
+                //on calcule la pos x et y de la case a dessine et on recupere l'element a dessiner
+                pos_x = j + size*x;
+                pos_y = i + size*y;
+                e=m.getElem(y,x);
+
+                //meme commentaire que dans paintCompponante
+                if(e.getSign()==' '){
+                    continue;
+                }
+                if (e.getSign()=='#'){
+                    g2.drawImage(mur, pos_x,  pos_y , size, size, this);
+                    continue;
+                }
+                if(e.getSign()=='A'){
+                    g2.drawImage(joueur, pos_x, pos_y, size, size, this);
+                    continue;
+                }
+                if(e.getSign()=='a'){
+                    g2.drawImage(joueur, pos_x, pos_y , size, size, this);
+                    g2.drawImage(cible, pos_x, pos_y , size, size, this);
+                    continue;
+                }
+                if(e.getSign()=='@'){
+                    g2.drawImage(cible, pos_x, pos_y, size, size, this);
+                    continue;
+                }
+
+                if(Character.isUpperCase(e.getSign())){
+                    for (int k = 0; k < 9; k++) {
+                        if(e.getSign()==nomC[k]){
+                            a=k;
+                            break;
+                        }
+                    }
+                    g2.drawImage(monde[a], pos_x, pos_y, size, size, this);
+                }else{
+                    for (int k = 0; k < 9; k++) {
+                        if(e.getSign()==nomC[k]){
+                            a=k;
+                            break;
+                        }
+                    }
+                    g2.drawImage(monde[a], pos_x, pos_y, size, size, this);
+                    g2.drawImage(cible, pos_x , pos_y, size, size, this);
+                }
+            }
+        }
+    }
+
+    public void m_OU_b(Graphics2D g2, Element e, int i, int j) {
+        //meme commentaire que paintComponent
+        int pos_y=((getHeight() - sizeImg)/2)+sizeImg*(i-lvl.getSize()/2),
+            pos_x=((getWidth() - sizeImg)/2)+sizeImg*(j-lvl.getSize()/2);
+
+        g2.drawImage(vide, pos_x, pos_y, sizeImg, sizeImg, lvl.getColor(), this);
+
+        //si c'est une box on la dessine sinon on dessine un monde
+        if(e.getClass() == Box.class){
+            int a=0;
+            if(Character.isUpperCase(e.getSign())){
+                for (int k = 0; k < 9; k++) {
+                    if(e.getSign()==nomC[k]){
+                        a=k;
+                        break;
+                    }
+                }
+                g2.drawImage(monde[a], pos_x, pos_y, sizeImg, sizeImg, this);
+            }else{
+                for (int k = 0; k < 9; k++) {
+                    if(e.getSign()==nomC[k]){
+                        a=k;
+                        break;
+                    }
+                }
+                g2.drawImage(monde[a], pos_x, pos_y, sizeImg, sizeImg, this);
+                g2.drawImage(cible, pos_x , pos_y, sizeImg, sizeImg, this);
+            }
+        }else{
+            paintMonde(g2, (Matrice) e, pos_x, pos_y);
+        }
+    }
+
+    public void paintBordure(Graphics2D g2, int lvl_x, int lvl_y){
+        if(m.isEmpty())
+            return;
+
+        //on recupere la matrice pere, la couleur du pere, on calcule la taille des images et la pos x et y des images a dessiner
+        Matrice pere = m.peek();
+        Element e;
+        Color c = pere.getColor();
+        int ecart=sizeImg*lvl.getSize();
+        int pos_y=((getHeight() - sizeImg)/2)-sizeImg*(lvl.getSize()/2), 
+            pos_x=((getWidth() - sizeImg)/2)-sizeImg*(lvl.getSize()/2), a=0;
+
+        for (int i=0; i<pere.getSize(); i++) {
+            for (int j=0; j<pere.getSize(); j++) {
+                //meme commentaire que paintComponent
+                pos_x = lvl_x + ecart*(j-pere.getWrldX());
+                pos_y = lvl_y + ecart*(i-pere.getWrldY());
+                e=pere.getElem(i,j);
+
+                if(pos_x == pere.getWrldX() && pos_y == pere.getWrldY()){
+                    continue;
+                }
+                if (e.getSign()=='#'){
+                    g2.drawImage(mur, pos_x, pos_y , ecart, ecart, this);
+                    continue;
+                }
+                if (e.getSign()==' ') {
+                    g2.drawImage(vide, pos_x, pos_y , ecart, ecart, c, this);
+                    continue;
+                }
+                if(e.getSign()=='@'){
+                    g2.drawImage(cible, pos_x, pos_y, ecart, ecart, this);
+                    continue;
+                }
+                if(Character.isUpperCase(e.getSign())){
+                    for (int k = 0; k < 9; k++) {
+                        if(e.getSign()==nomC[k]){
+                            a=k;
+                            break;
+                        }
+                    }
+                    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
+                    g2.drawImage(monde[a], pos_x, pos_y, ecart, ecart, this);
+                }else{
+                    for (int k = 0; k < 9; k++) {
+                        if(e.getSign()==nomC[k]){
+                            a=k;
+                            break;
+                        }
+                    }
+                    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
+                    g2.drawImage(monde[a], pos_x, pos_y, ecart, ecart, this);
+                    g2.drawImage(cible, pos_x , pos_y, ecart, ecart, this);
+                }
+            }
+        }
+    }
+
+    /*
+     * Les methodes peut_sortir_(dir) renvoie true si le joueur qui est la matrice principale peut aller dans
+     * la matrice pere qui est dans la pile 'm' sinon les methodes renvoie false
+     * Les methodes peut_sortir_(dir) seront utilise sur les methodes sort_(dir)
+     */
+
+    public boolean peut_sortir_haut(int x, int y){
+        if(m.isEmpty() || lvl.getElem(0, x).getClass() == Wall.class)
+            return false;
+        
+        if(!lvl.can_move_up(x, y) && y-1>0)
+            return peut_sortir_haut(x, y-1);
+
+        Matrice pere=m.peek();
+        int xp=pere.getWrldX(), yp=pere.getWrldY();
+
+        if (yp-1<0 || pere.getElem(yp-1, xp).getClass() == Wall.class)
+            return false;
+        else if(pere.getElem(yp-1, xp).getClass() == Box.class || pere.getElem(yp-1, xp).getClass() == Matrice.class){
+            if(pere.can_move_up(xp, yp-1)){
+                pere.move_up(xp, yp-1);
+                return true;
+            }
+            return false;
+        }
+        else
             return true;
-        if (obj == null)
+    }
+
+    //Meme raisonnemnt pour les 3 autres methodes mais avec des coordonnées differente
+    public boolean peut_sortir_bas(int x, int y){
+        if(m.isEmpty() || lvl.getElem(lvl.getSize()-1, x).getClass() == Wall.class)
             return false;
-        if (getClass() != obj.getClass())
+        
+        if(!lvl.can_move_down(x, y) && y+1<lvl.getSize())
+            return peut_sortir_bas(x, y+1);
+
+        Matrice pere=m.peek();
+        int xp=pere.getWrldX(), yp=pere.getWrldY();
+
+        if (yp+1>=pere.getSize() || pere.getElem(yp+1, xp).getClass() == Wall.class)
             return false;
-        Matrice other = (Matrice) obj;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
+        else if(pere.getElem(yp+1, xp).getClass() == Box.class || pere.getElem(yp+1, xp).getClass() == Matrice.class){
+            if(pere.can_move_down(xp, yp+1)){
+                pere.move_down(xp, yp+1);
+                return true;
+            }
             return false;
-        if (size != other.size)
+        }
+        else
+            return true;
+    }
+
+    public boolean peut_sortir_gauche(int x, int y){
+        if(m.isEmpty() || lvl.getElem(y, 0).getClass() == Wall.class)
             return false;
-        if (!Arrays.deepEquals(level, other.level))
+        
+        if(x-1>=0 && !lvl.can_move_left(x, y))
+            return peut_sortir_gauche(x-1, y);
+
+        Matrice pere=m.peek();
+        int xp=pere.getWrldX(), yp=pere.getWrldY();
+
+        if (xp-1<0 || pere.getElem(yp, xp-1).getClass() == Wall.class)
             return false;
-        return true;
+        else if(pere.getElem(yp, xp-1).getClass() == Box.class || pere.getElem(yp, xp-1).getClass() == Matrice.class){
+            if(pere.can_move_left(xp-1, yp)){
+                pere.move_left(xp-1, yp);
+                return true;
+            }
+            return false;
+        }
+        else
+            return true;
     }
 
-    @Override
-    public String toString() {
-        return "Matrice [name=" + name + "]";
+    public boolean peut_sortir_droite(int x ,int y){
+        if(m.isEmpty() || lvl.getElem(y, lvl.getSize()-1).getClass() == Wall.class)
+            return false;
+        
+        if(x+1<lvl.getSize() && !lvl.can_move_right(x, y))
+            return peut_sortir_droite(x+1, y);
+
+        Matrice pere=m.peek();
+        int xp=pere.getWrldX(), yp=pere.getWrldY();
+
+        if (xp+1>=pere.getSize() || pere.getElem(yp, xp+1).getClass() == Wall.class)
+            return false;
+        else if(pere.getElem(yp, xp+1).getClass() == Box.class || pere.getElem(yp, xp+1).getClass() == Matrice.class){
+            if(pere.can_move_right(xp+1, yp)){
+                pere.move_right(xp+1, yp);
+                return true;
+            }
+            return false;
+        }
+        else
+            return true;
     }
 
-    public String getName() {
-        return name;
+    /*
+     * Les méthodes sort_(dir) change la pile 'm' (utiliser la methode pop) et mettent le joueur dans la matrice pere
+     * grace a setElem (le joueur et le vide est une instance de DrawLevel)
+     * Il faut verifier si il y a un obstacle si oui le deplacer puis faire les setElem
+     * ATTENTION LES METHODES peut_sortir_(dir) renvoie true
+     */
+
+    public void sort_haut(int x, int y) {
+    	if(!peut_sortir_haut(x, y)) {
+            System.out.print("can't move there\n");
+    		return;
+    	}
+        if(y>0){
+            sort_haut(x, y-1);
+            lvl.move_up(x, y);
+            return;
+        }
+
+    	Matrice pere = m.peek();
+    	int xp = pere.getWrldX(), yp = pere.getWrldY();
+    	
+        Vide temp = (Vide) pere.getElem(yp-1, xp);		
+        pere.setElem(yp-1, xp, lvl.getElem(y, x));
+		lvl.setElem(y,x,temp);
+
+        if(x==lvl.getPos_x() && y==lvl.getPos_y()){
+            lvl.setPos_x(-1); lvl.setPos_y(-1);
+    		pere.setPos_x(xp); pere.setPos_y(yp-1);
+	    	pere.setWrldX(-1); pere.setWrldY(-1);
+
+            pere.setIsHere(true);
+            lvl.setIsHere(false);
+            m.pop();
+        }
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void sort_bas(int x, int y) {
+        if(!peut_sortir_bas(x, y)) {
+            System.out.print("can't move there bas\n");
+    		return;
+    	}
+        if(y<lvl.getSize()-1){
+            sort_bas(x, y+1);
+            lvl.move_down(x, y);
+            return;
+        }
+
+    	Matrice pere = m.peek();
+    	int xp = pere.getWrldX(), yp = pere.getWrldY();
+    	
+        Vide temp = (Vide) pere.getElem(yp+1, xp);		
+        pere.setElem(yp+1, xp, lvl.getElem(y, x));
+		lvl.setElem(y,x,temp);
+
+        if(x==lvl.getPos_x() && y==lvl.getPos_y()){
+            lvl.setPos_x(-1); lvl.setPos_y(-1);
+    		pere.setPos_x(xp); pere.setPos_y(yp+1);
+	    	pere.setWrldX(-1); pere.setWrldY(-1);
+
+            pere.setIsHere(true);
+            lvl.setIsHere(false);
+            m.pop();
+        }
     }
 
-    public int getSize() {
-        return size;
+    public void sort_gauche(int x, int y) {
+        if(!peut_sortir_gauche(x, y)) {
+            System.out.print("can't move there\n");
+    		return;
+    	}
+        if(x>0){
+            sort_gauche(x-1, y);
+            lvl.move_left(x, y);
+            return;
+        }
+
+    	Matrice pere = m.peek();
+    	int xp = pere.getWrldX(), yp = pere.getWrldY();
+    	
+        Vide temp = (Vide) pere.getElem(yp, xp-1);		
+        pere.setElem(yp, xp-1, lvl.getElem(y, x));
+		lvl.setElem(y,x,temp);
+
+        if(x==lvl.getPos_x() && y==lvl.getPos_y()){
+            lvl.setPos_x(-1); lvl.setPos_y(-1);
+    		pere.setPos_x(xp-1); pere.setPos_y(yp);
+	    	pere.setWrldX(-1); pere.setWrldY(-1);
+
+            pere.setIsHere(true);
+            lvl.setIsHere(false);
+            m.pop();
+        }
     }
 
-    public void setSize(int size) {
-        this.size = size;
+    public void sort_droite(int x ,int y) {
+        if(!peut_sortir_droite(x, y)) {
+            System.out.print("can't move there\n");
+    		return;
+    	}
+        if(x<lvl.getSize()-1){
+            sort_droite(x+1, y);
+            lvl.move_right(x, y);
+            return;
+        }
+
+    	Matrice pere = m.peek();
+    	int xp = pere.getWrldX(), yp = pere.getWrldY();
+    	
+        Vide temp = (Vide) pere.getElem(yp, xp+1);		
+        pere.setElem(yp, xp+1, lvl.getElem(y, x));
+		lvl.setElem(y,x,temp);
+
+        if(x==lvl.getPos_x() && y==lvl.getPos_y()){
+            lvl.setPos_x(-1); lvl.setPos_y(-1);
+    		pere.setPos_x(xp+1); pere.setPos_y(yp);
+	    	pere.setWrldX(-1); pere.setWrldY(-1);
+
+            pere.setIsHere(true);
+            lvl.setIsHere(false);
+            m.pop();
+        }
     }
 
-    public Element[][] getLevel(){
-        return this.level;
+    //on reinitialise toute les matrices et on dit que la matrice lvl est la matrice a afficher
+    public void resetAll() {
+        lvl.reset();    
+        matriceP.reset();
+ 
+        for (int i = 0; i < matrice.length; i++)
+            matrice[i].reset();
+
+        m.clear();
+        setPrincipale();
     }
 
-    public void setlevel(Element[][] level){
-        this.level=level;
-		copie=lvlCopie();
+    //permet les mouvements (dit si on a appuiez sur les fleches ou les bouttons)
+    public void setHaut(boolean b) {
+        haut=b;
+    }
+    public void setBas(boolean b) {
+        bas=b;
+    }
+    public void setGauche(boolean b) {
+        gauche=b;
+    }
+    public void setDroite(boolean b) {
+        droite=b;
+    }
+    public void setCtrlZ(boolean b) {
+        ctrlZ=b;
     }
 
-    public Element getElem(int y, int x) {
-        return level[y][x];
+    public int getSizeImg() {
+        return sizeImg;
     }
 
-    public void setElem(int y, int x, Element elem) {
-        this.level[y][x] = elem;
-    }
-    
-    public void setIs_main(){
-    	is_main=true;
-    }
-    
-    public int getPos_x(){
-        return pos_x;
+    public Matrice getLvl(){
+        return lvl;
     }
 
-    public void setPos_x(int pos_x){
-        this.pos_x=pos_x;
+    //Methode qui permet de savoir quelle est la matrice ou ce trouve le joueur.
+    public void setPrincipale() {
+        if(matriceP.isHere())
+            lvl=matriceP;
+        for (int i = 0; i < matrice.length; i++) {
+            if(matrice[i].isHere())
+                lvl=matrice[i];
+        }
     }
-
-    public int getPos_y(){
-        return pos_y;
-    }
-
-    public void setPos_y(int pos_y){
-        this.pos_y=pos_y;
-    }
-
-	public void setIs_main(Boolean main) {
-		is_main=main;
-	}
-
-	public Color getColor() {
-		return color;
-	}
-
-	public int getWrldX(){
-		return wrld_x;
-	}
-
-	public int getWrldY(){
-		return wrld_y;
-	}
-
-	public void setWrldX(int x){
-		wrld_x=x;
-	}
-
-	public void setWrldY(int y){
-		wrld_y=y;
-	}
-
-	public boolean isHere(){
-		return is_here;
-	}
-
-	public void setIsHere(boolean a){
-		is_here=a;
-	}
 }
