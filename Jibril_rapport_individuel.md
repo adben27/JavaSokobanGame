@@ -1,4 +1,5 @@
-Rapport individuel - DOUZI Jirbil
+Rapport individuel - DOUZI Jibril
+
 Contribution
 
 Je me suis occupé de l'interface graphique (les classes 'Img', 'DrawLevel' et 'FirstApp') et j'ai aidé Mounir a 
