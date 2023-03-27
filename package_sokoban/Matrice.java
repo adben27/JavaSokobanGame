@@ -2,8 +2,8 @@ package package_sokoban;
 
 import java.util.Arrays;
 import java.util.Stack;
+
 import java.util.Scanner;
-import java.util.Objects;
 import java.util.Random;
 import java.awt.Color;
 import java.lang.Character;
@@ -100,14 +100,14 @@ public class Matrice extends Element{
     	this.name=name;
         this.size=size;
         this.level=level;
-		pos_x_cible=new int[100];
-		pos_y_cible=new int[100];
+		pos_x_cible=new int[11];
+		pos_y_cible=new int[11];
 		copie=lvlCopie();
 
 		nb_cible=0;
 		for (int i = 0; i < level.length; i++) {
 			for (int j = 0; j < level.length; j++) {
-				if(level[i][j].isOn_target()){			
+				if(level[i][j] instanceof Vide && level[i][j].on_target){			
 					pos_x_cible[nb_cible]=j;
 					pos_y_cible[nb_cible]=i;
 					nb_cible++;
@@ -136,8 +136,8 @@ public class Matrice extends Element{
         color = new Color(r, g, b);
     }
     
-    // première version des fonctions de fin de niveau pas opti mais bon on verra aprés pour ca
-    public boolean estFini() {
+	// première version des fonctions de fin de niveau pas opti mais bon on verra aprés pour ca
+	public boolean estFini() {
 		boolean res=all_ontarget();
 
 		for (int i = 0; i < size; i++)
@@ -148,18 +148,18 @@ public class Matrice extends Element{
 
 
 		return res;
-    }
-    /*
-     * 
-	 * ('estFini' fait la meme chose que 'all_ontarget' autant la supprimer)
-	 * pas au point, bug des fois en fonction de ou le joueur va dans une cible et en sort (meme bug qu'avant mais en moins grave)
-	 * (rentre par la droite (de la cible) et sort par la gauche (de la cible))
-	 */
-    public boolean all_ontarget() {
-    	if(nb_cible==0)
-			return true; // normalement on met ca true comme ca dès qu'il y'a un niveau sans cible ca affiche WIN mais nous on l'avait mis a false avant juste pour faire des tests
+	}
+	/*
+	* 
+	* ('estFini' fait la meme chose que 'all_ontarget' autant la supprimer)
+	* pas au point, bug des fois en fonction de ou le joueur va dans une cible et en sort (meme bug qu'avant mais en moins grave)
+	* (rentre par la droite (de la cible) et sort par la gauche (de la cible))
+	*/
+	public boolean all_ontarget() {
+		if(nb_cible==0)
+			return false;//true; // normalement on met ca true comme ca dès qu'il y'a un niveau sans cible ca affiche WIN mais nous on l'avait mis a false avant juste pour faire des tests
 
-    	boolean res=true;
+		boolean res=true;
 
 		for (int i = 0; i < nb_cible; i++) {
 			//Si il y a une/plusieurs case vide avec on_target a true alors en va renvoier false sinon true
@@ -167,9 +167,8 @@ public class Matrice extends Element{
 				res=false;
 		}
 		
-    	return res;
-    }
-    
+		return res;
+	}
 
     public Element[][] lvlCopie(){
 		Element[][] res = new Element[size][size];
@@ -252,7 +251,7 @@ public class Matrice extends Element{
 	public boolean can_move_down(int x, int y) {
 		if (y+1>size-1 || getElem(y+1, x).getClass() == Wall.class)
 			return false;
-		else if(getElem(y+1, x).getClass() == Box.class || getElem(y+1, x).getClass() == Matrice.class)
+		else if(getElem(y+1, x).getClass() == Matrice.class || getElem(y+1, x).getClass() == Box.class)
 			return can_move_down(x, y+1);
 		else
 			return true;
@@ -304,8 +303,15 @@ public class Matrice extends Element{
 	 */
     public void move_up(int x, int y){
 		if(!can_move_up(x, y)){
-			System.out.print("can't move there\n");
-			return;
+			if(y-1>=0 && getElem(y-1, x).getClass() == Matrice.class){
+				if (!can_enter_down((Matrice) getElem(y-1, x))) {
+					System.out.print("can't move there\n");
+					return;
+				}
+			}if(y==0){
+				System.out.print("can't move there\n");
+				return;
+			}
 		}
     	
 		//on met l'ancienne pos (x,y) du joueur dans des piles et on met l'ancienne matrice dans une pile
@@ -317,23 +323,42 @@ public class Matrice extends Element{
         if(this.getElem(y-1, x) instanceof Vide){
             swap(y, x, y-1, x);
         }else{
-            if(this.getElem(y-1, x) instanceof Box || this.getElem(y-1, x) instanceof Matrice){
+            if(this.getElem(y-1, x) instanceof Box){
 				/*
-				 * Si c'est une boite ou une matrice on la fait bouger, une fois qu'on a bouger la boite le joueur va se retrouver
+				 * Si c'est une boite on la fait bouger, une fois qu'on a bouger la boite le joueur va se retrouver
 				 * en face du vide puis on swap le l'element et le vide
 				 */
 				move_up(x, y-1);
 				swap(y, x, y-1, x);
             }
+            else if(this.getElem(y-1, x) instanceof Matrice) {
+				/*
+				 * meme chose que pour les boites mais cette fois, si on ne peut pas bouger la matrice mais 
+				 * qu'on peut rentrer dans celle ci alors on rentre et on modifie wrld_x et wrld_y et is_here
+				 */
+				if (can_move_up(x, y-1)){
+					move_up(x, y-1);
+					swap(y, x, y-1, x);
+				}else{
+					enter_down((Matrice)getElem(y-1, x), x, y);
+					move_up(x, y-1);
+				}
+			}
         }
     }
    
 	//meme raisonement que move up mais avec des directions differentes
     public void move_down(int x, int y){
-		if(!can_move_down(x, y)){
-			System.out.print("can't move there\n");
-			return;
-		}
+		if(!can_move_down(x, y))
+			if(y+1<size && getElem(y+1, x).getClass() == Matrice.class){
+				if (!can_enter_up((Matrice) getElem(y+1, x))){
+					System.out.print("can't move there\n");
+					return;
+				}
+			}else if(y==size-1){
+				System.out.print("can't move there\n");
+				return;
+			}
 
 		last_move.push(lvlCopie());
 		stack_x.push(pos_x);
@@ -342,18 +367,33 @@ public class Matrice extends Element{
         if(this.getElem(y+1, x) instanceof Vide){
             swap(y, x, y+1, x);
         }else{
-            if(this.getElem(y+1, x) instanceof Box || this.getElem(y+1, x) instanceof Matrice){
+            if(this.getElem(y+1, x) instanceof Box){
 				move_down(x, y+1);
 				swap(y, x, y+1, x);
+            }
+            else if(this.getElem(y+1, x) instanceof Matrice) {
+				if (can_move_down(x, y+1)){
+					move_down(x, y+1);
+					swap(y, x, y+1, x);
+				}else{
+					enter_up((Matrice)getElem(y+1, x), x, y);
+					move_down(x, y+1);
+				}
             }
 		}
     }
 
     public void move_right(int x, int y){
-		if(!can_move_right(x, y)){
-			System.out.print("can't move there\n");
-			return;
-		}
+		if(!can_move_right(x, y))
+			if(x+1<size && getElem(y, x+1).getClass() == Matrice.class){
+				if (!can_enter_left((Matrice) getElem(y, x+1))) {
+					System.out.print("can't move there\n");
+					return;
+				}
+			}else if(x==size-1){
+				System.out.print("can't move there\n");
+				return;
+			}
 
 		last_move.push(lvlCopie());
 		stack_x.push(pos_x);
@@ -362,18 +402,34 @@ public class Matrice extends Element{
         if(this.getElem(y, x+1) instanceof Vide){
             swap(y, x, y, x+1);
         }else{
-            if(this.getElem(y, x+1) instanceof Box || this.getElem(y, x+1) instanceof Matrice){
+            if(this.getElem(y, x+1) instanceof Box){
 				move_right(x+1, y);
 				swap(y, x, y, x+1);   
             }
+            else if(this.getElem(y, x+1) instanceof Matrice) {
+            	if (can_move_right(x+1, y)){
+					move_right(x+1, y);
+					swap(y, x, y, x+1);
+				}else{
+					enter_left((Matrice)getElem(y, x+1), x, y);
+					move_right(x+1, y);
+				}
+			}
         }
     }
 
     public void move_left(int x, int y){
-		if(!can_move_left(x, y)){
-			System.out.print("can't move there\n");
-			return;
-		}
+		/*if(!can_move_left(x, y)){
+			if(x-1>=0 && getElem(y, x-1).getClass() == Matrice.class){
+				if (!can_enter_right((Matrice) getElem(y, x-1))){
+					System.out.print("can't move there\n");
+					return;
+				}
+			}else if(x==0){
+				System.out.print("can't move there\n");
+				return;
+			}
+		}*/
 
     	last_move.push(lvlCopie());
 		stack_x.push(pos_x);
@@ -382,9 +438,18 @@ public class Matrice extends Element{
         if(this.getElem(y, x-1) instanceof Vide){
             swap(y, x, y, x-1);
         }else{
-            if(this.getElem(y, x-1) instanceof Box || this.getElem(y, x-1) instanceof Matrice){
+            if(this.getElem(y, x-1) instanceof Box){
 				move_left(x-1, y);
                 swap(y, x, y, x-1);
+            }
+            else if(this.getElem(y, x-1) instanceof Matrice) {
+            	if (can_move_left(x-1, y)){
+					move_left(x-1, y);
+					swap(y, x, y, x-1);
+				}else{
+					enter_right((Matrice)getElem(y, x-1), x, y);
+					move_left(x-1, y);
+				}
             }
         }
     }
@@ -480,59 +545,46 @@ public class Matrice extends Element{
      * on vérifie si il y'a des mur en bas du monde
      * j'ai pas fait le cas ou on rentre directement dans un autre monde
      */
-    public boolean can_enter_up(int x, int y) {
-    	Matrice m=((Matrice) getElem(y+1, x));
-    	
+    public boolean can_enter_up(Matrice m) {
     	for(int z = 0; z < m.size; z++){
     		if (m.getElem(0,z) instanceof Vide)
     			return true;
-			else if(m.getElem(0, z) instanceof Box)
-				return can_move_down(z, 0);
-			else if(m.getElem(0, z) instanceof Matrice)
-				return can_move_down(z, 0);
+			else if(m.getElem(0, z) instanceof Box || m.getElem(0, z) instanceof Matrice)
+				return m.can_move_up(z, 0);
 		}
+    		
     	return false;
     }
 
-    public boolean can_enter_down(int x, int y) {
-		Matrice m=((Matrice) getElem(y-1, x));
-
-		for(int z = 0; z < m.size; z++){
+    public boolean can_enter_down(Matrice m) {
+		for(int z = 0; z < m.size; z++)
     		if (m.getElem(m.size-1, z) instanceof Vide)
     			return true;
-			else if(m.getElem(m.size-1, z) instanceof Box)
-				return can_move_up(z, m.size-1);
-			else if(m.getElem(m.size-1, z) instanceof Matrice)
-				return can_move_up(z, m.size-1);
-		}
+			else if(m.getElem(m.size-1, z) instanceof Box || m.getElem(m.size-1, z) instanceof Matrice){
+				return m.can_move_up(z, m.size-1);
+			}
+ 		
 		return false;
     }
     
-    public boolean can_enter_left(int x, int y) {
-		Matrice m=((Matrice) getElem(y, x+1));
-
+    public boolean can_enter_left(Matrice m) {
     	for(int z = 0; z < m.size; z++)
     		if (m.getElem(z, 0) instanceof Vide)
     			return true;
-			else if(m.getElem(z, 0) instanceof Box)
+			else if(m.getElem(z, 0) instanceof Box || m.getElem(z, 0) instanceof Matrice){
 				return m.can_move_right(0, z);
-			else if(m.getElem(z, 0) instanceof Matrice)
-				return m.can_move_right(0, z);
+			}
 
     	return false;
     }
     
-    public boolean can_enter_right(int x, int y) {
-		Matrice m =((Matrice) getElem(y, x-1));
-
+    public boolean can_enter_right(Matrice m) {
     	for(int z = 0; z < m.size;z++)
     		if (m.getElem(z, m.size-1) instanceof Vide)
     			return true;
-    		else if(m.getElem(z, m.size-1) instanceof Box)
+			else if(m.getElem(z, m.size-1) instanceof Box || m.getElem(z, m.size-1) instanceof Matrice){
 				return m.can_move_left(m.size-1, z);
-			else if(m.getElem(z, m.size-1) instanceof Matrice)
-				return m.can_move_left(m.size-1, z);
-
+			}
     	return false;
     }
     
@@ -621,7 +673,7 @@ public class Matrice extends Element{
     /*
      * serie de fonctions pour rentrer dans un monde
      * est utilise dans les fonctions de type move_dir uniquement
-     * si il ya une boite dans le monde a l'entree alors on la pousse
+     * si il ya une boite en dans le monde a l'entree alors on la pousse
      * sinon on echange le vide et le joueur
      *
      *la matrice 'm' est la matrice ou le joueur va rentrer
@@ -630,7 +682,7 @@ public class Matrice extends Element{
 		//on set la pos (x, y) du joueur dans la matrice m et on set wrld_x et wrld_y dans la matrice courante
 		int z=get_entry_up(m);
 
-		if(!can_enter_up(x, y) || z==-1)
+		if(!can_enter_up(m) || z==-1)
 			return;
 		
     	//pour échanger l'attribut on_target si a l'entré du sous-monde il y'a une cible
@@ -658,7 +710,7 @@ public class Matrice extends Element{
     public void enter_down(Matrice m, int x, int y) {
 		int z=get_entry_down(m);
 
-		if(!can_enter_down(x, y) || z==-1)
+		if(!can_enter_down(m) || z==-1)
 			return;
     	
     	//pour échanger l'attribut on_target si a l'entré du sous-monde il y'a une cible
@@ -684,7 +736,7 @@ public class Matrice extends Element{
     public void enter_left(Matrice m, int x, int y) {
 		int z=get_entry_left(m);
 
-		if(!can_enter_left(x, y) || z==-1)
+		if(!can_enter_left(m) || z==-1)
 			return;
     	
     	//pour échanger l'attribut on_target si a l'entré du sous-monde il y'a une cible
@@ -710,7 +762,7 @@ public class Matrice extends Element{
     public void enter_right(Matrice m, int x, int y) {
 		int z=get_entry_right(m);
 
-		if(!can_enter_right(x, y) || z==-1)
+		if(!can_enter_right(m) || z==-1)
 			return;
     	
     	//pour échanger l'attribut on_target si a l'entré du sous-monde il y'a une cible
