@@ -302,18 +302,8 @@ public class Matrice extends Element{
 	 * Série de fonctions qui  effectuent le mouvement dans les 4 directions cardinales, sont utilisé dans le fonction move()
 	 */
     public void move_up(int x, int y){
-		if(!can_move_up(x, y)){
-			if(y-1>=0 && getElem(y-1, x).getClass() == Matrice.class){
-				if (!can_enter_down((Matrice) getElem(y-1, x))) {
-					System.out.print("can't move there\n");
-					return;
-				}
-			}if(y==0){
-				System.out.print("can't move there\n");
-				return;
-			}
-		}
-    	
+		if(y<=0)
+			return;
 		//on met l'ancienne pos (x,y) du joueur dans des piles et on met l'ancienne matrice dans une pile
     	last_move.push(lvlCopie());
 		stack_x.push(pos_x);
@@ -349,16 +339,8 @@ public class Matrice extends Element{
    
 	//meme raisonement que move up mais avec des directions differentes
     public void move_down(int x, int y){
-		if(!can_move_down(x, y))
-			if(y+1<size && getElem(y+1, x).getClass() == Matrice.class){
-				if (!can_enter_up((Matrice) getElem(y+1, x))){
-					System.out.print("can't move there\n");
-					return;
-				}
-			}else if(y==size-1){
-				System.out.print("can't move there\n");
-				return;
-			}
+		if(y>=size-1)
+			return;
 
 		last_move.push(lvlCopie());
 		stack_x.push(pos_x);
@@ -384,16 +366,8 @@ public class Matrice extends Element{
     }
 
     public void move_right(int x, int y){
-		if(!can_move_right(x, y))
-			if(x+1<size && getElem(y, x+1).getClass() == Matrice.class){
-				if (!can_enter_left((Matrice) getElem(y, x+1))) {
-					System.out.print("can't move there\n");
-					return;
-				}
-			}else if(x==size-1){
-				System.out.print("can't move there\n");
-				return;
-			}
+		if(x>=size-1)
+			return;
 
 		last_move.push(lvlCopie());
 		stack_x.push(pos_x);
@@ -419,19 +393,10 @@ public class Matrice extends Element{
     }
 
     public void move_left(int x, int y){
-		/*if(!can_move_left(x, y)){
-			if(x-1>=0 && getElem(y, x-1).getClass() == Matrice.class){
-				if (!can_enter_right((Matrice) getElem(y, x-1))){
-					System.out.print("can't move there\n");
-					return;
-				}
-			}else if(x==0){
-				System.out.print("can't move there\n");
-				return;
-			}
-		}*/
+		if(x<=0)
+			return;
 
-    	last_move.push(lvlCopie());
+		last_move.push(lvlCopie());
 		stack_x.push(pos_x);
 		stack_y.push(pos_y);
 
