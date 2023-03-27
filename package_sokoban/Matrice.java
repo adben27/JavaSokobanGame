@@ -100,14 +100,14 @@ public class Matrice extends Element{
     	this.name=name;
         this.size=size;
         this.level=level;
-		pos_x_cible=new int[11];
-		pos_y_cible=new int[11];
+		pos_x_cible=new int[100];
+		pos_y_cible=new int[100];
 		copie=lvlCopie();
 
 		nb_cible=0;
 		for (int i = 0; i < level.length; i++) {
 			for (int j = 0; j < level.length; j++) {
-				if(level[i][j] instanceof Vide && level[i][j].on_target){			
+				if(level[i][j].isOn_target()){			
 					pos_x_cible[nb_cible]=j;
 					pos_y_cible[nb_cible]=i;
 					nb_cible++;
@@ -140,24 +140,26 @@ public class Matrice extends Element{
     public boolean estFini() {
 		boolean res=all_ontarget();
 
-    	for (int i = 0; i < size; i++)
+		for (int i = 0; i < size; i++)
 			for (int j = 0; j < copie.length; j++)
 				if(level[i][j].getClass() == Matrice.class)
-					res=((Matrice) level[i][j]).all_ontarget();
+					if(!((Matrice) level[i][j]).all_ontarget())
+						return false;
 
 
 		return res;
     }
     /*
+     * 
 	 * ('estFini' fait la meme chose que 'all_ontarget' autant la supprimer)
 	 * pas au point, bug des fois en fonction de ou le joueur va dans une cible et en sort (meme bug qu'avant mais en moins grave)
 	 * (rentre par la droite (de la cible) et sort par la gauche (de la cible))
 	 */
     public boolean all_ontarget() {
     	if(nb_cible==0)
-			return false;
+			return true; // normalement on met ca true comme ca dès qu'il y'a un niveau sans cible ca affiche WIN mais nous on l'avait mis a false avant juste pour faire des tests
 
-		boolean res=true;
+    	boolean res=true;
 
 		for (int i = 0; i < nb_cible; i++) {
 			//Si il y a une/plusieurs case vide avec on_target a true alors en va renvoier false sinon true
@@ -478,14 +480,17 @@ public class Matrice extends Element{
      * on vérifie si il y'a des mur en bas du monde
      * j'ai pas fait le cas ou on rentre directement dans un autre monde
      */
-    public boolean can_enter_up(Matrice m) {
+    public boolean can_enter_up(int x, int y) {
+    	Matrice m=((Matrice) getElem(y+1, x));
+    	
     	for(int z = 0; z < m.size; z++){
     		if (m.getElem(0,z) instanceof Vide)
     			return true;
-			else if(m.getElem(0, z) instanceof Box || m.getElem(0, z) instanceof Matrice)
-				return m.can_move_down(z, 0);
+			else if(m.getElem(0, z) instanceof Box)
+				return can_move_down(z, 0);
+			else if(m.getElem(0, z) instanceof Matrice)
+				return can_move_down(z, 0);
 		}
-    		
     	return false;
     }
 
@@ -493,12 +498,12 @@ public class Matrice extends Element{
 		Matrice m=((Matrice) getElem(y-1, x));
 
 		for(int z = 0; z < m.size; z++){
-    		if (getElem(m.size-1, z) instanceof Vide)
+    		if (m.getElem(m.size-1, z) instanceof Vide)
     			return true;
-			else if(getElem(m.size-1, z) instanceof Box)
+			else if(m.getElem(m.size-1, z) instanceof Box)
 				return can_move_up(z, m.size-1);
 			else if(m.getElem(m.size-1, z) instanceof Matrice)
-				return can_enter_down(x, y-1);
+				return can_move_up(z, m.size-1);
 		}
 		return false;
     }
@@ -512,20 +517,20 @@ public class Matrice extends Element{
 			else if(m.getElem(z, 0) instanceof Box)
 				return m.can_move_right(0, z);
 			else if(m.getElem(z, 0) instanceof Matrice)
-				return can_enter_down(x+1, y);
+				return m.can_move_right(0, z);
 
     	return false;
     }
     
     public boolean can_enter_right(int x, int y) {
-		Matrice m=((Matrice) getElem(y, x-1));
+		Matrice m =((Matrice) getElem(y, x-1));
 
     	for(int z = 0; z < m.size;z++)
     		if (m.getElem(z, m.size-1) instanceof Vide)
     			return true;
-			else if(getElem(y, x-1) instanceof Matrice)
-				return can_enter_right(x-1, y);
-			else if(m.getElem(z, m.size-1) instanceof Box || m.getElem(z, m.size-1) instanceof Matrice)
+    		else if(m.getElem(z, m.size-1) instanceof Box)
+				return m.can_move_left(m.size-1, z);
+			else if(m.getElem(z, m.size-1) instanceof Matrice)
 				return m.can_move_left(m.size-1, z);
 
     	return false;
@@ -616,7 +621,7 @@ public class Matrice extends Element{
     /*
      * serie de fonctions pour rentrer dans un monde
      * est utilise dans les fonctions de type move_dir uniquement
-     * si il ya une boite en dans le monde a l'entree alors on la pousse
+     * si il ya une boite dans le monde a l'entree alors on la pousse
      * sinon on echange le vide et le joueur
      *
      *la matrice 'm' est la matrice ou le joueur va rentrer
@@ -625,7 +630,7 @@ public class Matrice extends Element{
 		//on set la pos (x, y) du joueur dans la matrice m et on set wrld_x et wrld_y dans la matrice courante
 		int z=get_entry_up(m);
 
-		if(!can_enter_up(m) || z==-1)
+		if(!can_enter_up(x, y) || z==-1)
 			return;
 		
     	//pour échanger l'attribut on_target si a l'entré du sous-monde il y'a une cible
