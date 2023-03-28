@@ -5,6 +5,8 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 //classe FirstApp qui est une JFrame et qui implement l'interface KeyListener
 public class FirstApp extends JFrame implements KeyListener{
@@ -17,7 +19,7 @@ public class FirstApp extends JFrame implements KeyListener{
     private JDialog info_image;//fenetre qui donne certaines info_imagermations
     private JDialog info_commande;//fenetre qui donne les touche à utiliser
 
-    public FirstApp(){
+    public FirstApp() throws IOException, FileNotFoundException{
         super("Sokoban");//on creer une fenetre nommée "Sokoban"
 
         //creation de la fenetre "info_image" et "info_commande"

@@ -1,6 +1,10 @@
 package package_sokoban;
 
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Stack;
 
 import javax.swing.*;
@@ -37,7 +41,18 @@ public class DrawLevel extends JPanel implements Runnable{
     private Vide v;
     private Stack<Matrice> m;//pile qui contient les matrices peres
 
-    public DrawLevel() {
+    public static void main(String[] args) throws IOException, FileNotFoundException{
+	    DrawLevel dl= new DrawLevel();
+	    dl.loadLvl(null, "package_sokoban/outlevels/1.txt");
+	    /*for(int i=0; i<el.length; i++){
+		for(int j=0; j<el[i].length; j++){
+			System.out.println(el[i][j].toString());
+		}
+		System.out.print("\n");
+	    }*/
+    }
+
+    public DrawLevel() throws IOException, FileNotFoundException {
         super();
         setLayout(null);
 
@@ -112,8 +127,8 @@ public class DrawLevel extends JPanel implements Runnable{
                            {v,v,v,m,m},
                            {m,v,j,v,v},
                            {m,v,v,m,m},
-                           {m,m,v,m,m}};
-
+                           {m,m,v,m,m}};	
+	
         matrice[0/*B*/]=new Matrice("B", 'b', false, tab_b.length, tab_b, 0, 0, false, false,-1,-1);
         matrice[1/*C*/]=new Matrice("C", 'c', false, tab_c.length, tab_c, 0, 0, false, false,-1,-1);
         matrice[2/*D*/]=new Matrice("D", 'd', false, tab_d.length, tab_d, 0, 0, false, false,-1,-1);
@@ -142,12 +157,14 @@ public class DrawLevel extends JPanel implements Runnable{
                              {m,v,v,v,v,m},
                              {m,m,m,m,m,m}};
         
-        lvl=new Matrice("lvl", 'l', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
-        matriceP=new Matrice("P", 'p', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
+        //lvl=new Matrice("lvl", 'l', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
+        //matriceP=new Matrice("P", 'p', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
+
+	lvl=loadLvl(null, "package_sokoban/outlevels/puzzlescript.txt");
+	matriceP=lvl;
 
         //taille des images
         sizeImg=(int)getToolkit().getScreenSize().getHeight()/(2*lvl.getSize());
-
         /*on recupère les images qu'on va utiliser
          * nomC[0]='B' et monde[0]=l'image du mondeB
          * nomC[1]='C' et monde[1]=l'image du mondeC
@@ -180,8 +197,44 @@ public class DrawLevel extends JPanel implements Runnable{
         haut=bas=gauche=droite=ctrlZ=false;
     }
 
-    public void loadLvl(Matrice[] monde) {
-
+    public Matrice loadLvl(Matrice[] monde, String fileName) throws IOException, FileNotFoundException {
+	FileReader filereader=new FileReader(fileName);
+	BufferedReader br = new BufferedReader(filereader);
+        String line = br.readLine();
+        String[] parts = line.split(" ");
+	String name = parts[0];
+        int size = Integer.parseInt(parts[1]);
+        char[][] level = new char[size][size];
+	Element[][] el=new Element[size][size];
+        int row = 0;
+        while ((line = br.readLine()) != null) {
+            for (int col = 0; col < size; col++) {
+            	level[row][col] = line.charAt(col);
+		switch(level[row][col]){
+			case '#':   el[row][col]=new Wall();
+				    break;
+			case '@':   el[row][col]=new Vide(true);    
+				    break;                       
+			case 'A':   el[row][col]=new Player(false);
+				    break;                          
+			case 'a':   el[row][col]=new Player(true);
+				    break;                           
+			case ' ':   el[row][col]=new Vide(false);
+				    break;
+			case 'B':   el[row][col]=new Box(false);
+				    break;
+			case 'b':   el[row][col]=new Box(true);
+				    break;
+			default :   System.out.println("WTF BRO");
+				    //elements[i]=mondes.get(String.valueOf(caracteres[i]));  
+		    }
+            }
+            row++;
+        }
+	matriceP=new Matrice(name,'c', false, size, el, 2, 1, true, true, -1, -1);
+	lvl=matriceP;
+        br.close();
+	return lvl;
     }
 
     //debut du thread qui s'occupe de la boucle de jeu
