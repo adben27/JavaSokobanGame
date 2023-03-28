@@ -22,15 +22,6 @@ public class Reader {
 		int[] size = sizeSousMap(entete);
 		String[] nom = nomSousMap(entete);
 
-		for (int data : size) {
-			System.out.println(data);
-		}
-
-		for (String ent : nom) {
-			System.out.println(ent);
-		}
-
-
 		System.out.println("\n 		¤ Bienvenue dans l'interface textuelle du Sokoban. ¤ 	\n");
 		System.out.println("			§°°¨ EN AVANT SPARTAN JOUEZ ¨°°§  \n\n");
 		Map niv0 = new Map(size, nom, map);
@@ -134,10 +125,10 @@ public class Reader {
 		if(getMap_actuel().mapFini()){
 			System.out.println("Niveau "+ niv_actuel + "	: " + getLesNiv().getListeniv()[niv_actuel].replaceFirst("[.][^.]+$", "") + " >> Monde "+ getMatrice_actuel().getName() + " [" + getMatrice_actuel().getSize() + " x " + getMatrice_actuel().getSize() + "]");
 			Element.afficherElements(tab_actuel);
-			System.out.println("\n\t*************************************************************************	");  
-			System.out.println("****	    Vous avez validé ce niveau. Passage au niveau prochain Sensei !!!        ****");
-			System.out.println("\t*************************************************************************	\n");
 			if(niv_actuel + 1 < lesniv.getNiv_memoire().size()){
+				System.out.println("\n\t*************************************************************************	");  
+				System.out.println("****	    Vous avez validé ce niveau. Passage au niveau prochain Sensei !!!        ****");
+				System.out.println("\t*************************************************************************	\n");
 				niv_actuel++;
 				String[] map = sousMap(envoyerLaMapEntiere());
 				String[] entete = enteteSousMap(envoyerLaMapEntiere(), map);
@@ -147,6 +138,10 @@ public class Reader {
 				setMap_actuel(niv_prochain);
 				setMatrice_actuel(niv_prochain.getMap().get(nom[0]));
 				setTab_actuel(niv_prochain.getMap().get(nom[0]).getLevel());
+			}else{
+				System.out.println("\n\t*************************************************************************************************   ");  
+				System.out.println("****	    Vous avez validé le dernier niveau. A la prochaine pour de nouvelles aventures Senpai !!!        ****");
+				System.out.println("\t************************************************************************************************* \n");
 			}
 		}
 	}

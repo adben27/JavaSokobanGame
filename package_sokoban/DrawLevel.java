@@ -33,6 +33,7 @@ public class DrawLevel extends JPanel implements Runnable{
     /*matrice[0]=matriceB
      *matrice[1]=matriceC
      *etc...
+     *jusqu'a matriceJ
     */
     private Matrice[] matrice;         
 
@@ -76,14 +77,14 @@ public class DrawLevel extends JPanel implements Runnable{
         Vide x = new Vide(true);
         Vide z = new Vide(true);
 
-        Element[][] tab_b={{m,m,m,m,v,m},
+        Element[][] tab_b={{m,m,m,m,v,m},//matrice[0]
                            {m,v,v,v,v,m},
                            {m,v,v,v,v,m},
-                           {m,v,v,v,v,v},
+                           {v,v,v,v,v,v},
                            {m,v,v,v,v,m},
                            {m,m,m,v,m,m}};
 
-        Element[][] tab_c={{m,v,m,m,m,m,m},
+        Element[][] tab_c={{m,v,m,m,m,m,m},//matrice[1]
                            {m,v,v,c,v,v,v},
                            {v,v,v,v,v,m,m},
                            {m,m,v,v,v,m,m},
@@ -91,22 +92,22 @@ public class DrawLevel extends JPanel implements Runnable{
                            {m,v,v,v,v,v,m},
                            {m,m,m,v,m,m,m}};
 
-        Element[][] tab_d={{m,v,m,m,m},
+        Element[][] tab_d={{m,v,m,m,m},//matrice[2]
                            {m,v,v,m,m},
                            {v,d,v,v,v},
                            {m,v,v,v,m},
                            {m,m,v,m,m}};
 
-        Element[][] tab_e={{e,v},
+        Element[][] tab_e={{e,v},//matrice[3]
                            {v,m}};
 
-        Element[][] tab_f={{m,m,m,v,m},
+        Element[][] tab_f={{m,m,m,v,m},//matrice[4]
                            {m,f,v,v,m},
                            {v,v,v,v,v},
                            {m,v,v,v,m},
                            {m,m,v,m,m}};
 
-        Element[][] tab_g={{m,m,m,m,m,m,v,m,m},
+        Element[][] tab_g={{m,m,m,m,m,m,v,m,m},//matrice[5]
                            {m,v,v,v,v,v,v,v,m},
                            {m,v,v,v,v,v,h,v,m},
                            {m,v,v,b,v,v,v,v,m},
@@ -114,15 +115,15 @@ public class DrawLevel extends JPanel implements Runnable{
                            {m,v,v,v,v,v,j,v,m},
                            {m,v,v,v,v,v,v,v,m},
                            {m,v,v,c,v,v,v,v,m},
-                           {m,m,m,m,v,m,m,m,m}};
+                           {m,m,m,m,m,m,m,m,m}};
 
-        Element[][] tab_h={{m,v,m},
+        Element[][] tab_h={{m,v,m},//matrice[6]
                            {v,h,v},
                            {m,v,m}};
 
-        Element[][] tab_i={{i}};
+        Element[][] tab_i={{i}};//matrice[7]
 
-        Element[][] tab_j={{m,v,m,m,m},
+        Element[][] tab_j={{m,v,m,m,m},//matrice[8]
                            {v,v,v,m,m},
                            {m,v,j,v,v},
                            {m,v,v,m,m},
@@ -151,7 +152,7 @@ public class DrawLevel extends JPanel implements Runnable{
 
         Element[][] tab_lvl={{m,m,m,m,m,m},
                              {m,v,p,v,v,v},
-                             {m,matrice[0],matrice[3],matrice[7],v,m},
+                             {m,v,matrice[7],matrice[3],matrice[0],m},
                              {m,v,v,v,v,m},
                              {m,v,v,v,v,m},
                              {m,m,m,m,m,m}};
@@ -273,42 +274,44 @@ public class DrawLevel extends JPanel implements Runnable{
 
     //permet de mettre a jour le niveau
     public void update() {
+        setPrincipale();//lvl=la matrice ou il y a le joueur
         int x=lvl.getPos_x(), y=lvl.getPos_y();
-        setPrincipale();
 
         if (bas) {
+            //si le joueur ne peut pas bouger mais peut sortir on le fait sortir
             if(!lvl.can_move_down(x, y) && peut_sortir_bas(x, y)){
                 sort_bas(x, y);
                 bas=false;
                 return;
             }
+            /*y+1<lvl.getSize() pour ne pas avoir d'execption du type on depasse le tableau 
+             *si on ne paut pas bouger mais que l'on peut rentrer dans la matrice en bas du joueur alors on fait rentrer le joueur
+            */ 
             if (y+1<lvl.getSize() && lvl.getElem(y+1, x).getClass() == Matrice.class)
                 if(!lvl.can_move_down(x, y) && lvl.can_enter_up((Matrice) lvl.getElem(y+1, x))){
-                    m.push(lvl);
+                    m.push(lvl);//on met la matrice pere dans une pile
                     lvl.enter_up((Matrice) lvl.getElem(y+1, x), x, y);
                     bas=false;
                     return;
                 }
+            //on bouge le joueur en bas si aucune condition des 'if' n'est vérifié
             lvl.move_down(x, y);
             bas=false;
         }
+        //meme commentaire que pour 'if(bas)' mais avec des directions différentes
         if (haut) {
-            /*on verifie si le joueur est en y=0 si oui on le fait sotir de la matrice courante sinon on move normalement
-             *meme raisonement pour les autres mouvement
-             */
             if(!lvl.can_move_up(x, y) && peut_sortir_haut(x, y)){
                 sort_haut(x, y);
                 haut=false;
                 return;
             }
             if (y-1>=0 && lvl.getElem(y-1, x).getClass() == Matrice.class)
-                if(!lvl.can_move_up(x, y) && lvl.can_enter_down(x, y)){
+                if(!lvl.can_move_up(x, y) && lvl.can_enter_down((Matrice) lvl.getElem(y-1, x))){
                     m.push(lvl);
                     lvl.enter_down((Matrice) lvl.getElem(y-1, x), x, y);
                     haut=false;
                     return;
                 }
-
             lvl.move_up(x, y);
             haut=false;
         }
@@ -318,18 +321,15 @@ public class DrawLevel extends JPanel implements Runnable{
                 gauche=false;
                 return;
             }
-            if (x-1>=0 && lvl.getElem(y, x-1).getClass() == Matrice.class)
-                if(!lvl.can_move_left(x, y) && lvl.can_enter_right(x, y/*(Matrice) lvl.getElem(y, x-1)*/)){
-                    if (x-2>=0 && lvl.getElem(y, x-2).getClass() == Matrice.class && lvl.can_enter_right(x, y/*(Matrice) lvl.getElem(y, x-2)*/)) {
-                        lvl.enter_right((Matrice) lvl.getElem(y, x-2), x-1, y);
-                        lvl.move_left(x, y);
-                    }else{
-                        m.push(lvl);
-                        lvl.enter_right((Matrice) lvl.getElem(y, x-1), x, y);
-                    }
+            if (x-1>=0 && lvl.getElem(y, x-1).getClass() == Matrice.class){
+                if(!lvl.can_move_left(x, y) && lvl.can_enter_right((Matrice) lvl.getElem(y, x-1))){
+                    m.push(lvl);
+                    lvl.enter_right((Matrice) lvl.getElem(y, x-1), x, y);
                     gauche=false;
                     return;
                 }
+            }
+
             lvl.move_left(x, y);
             gauche=false;
         }
@@ -340,7 +340,7 @@ public class DrawLevel extends JPanel implements Runnable{
                 return;
             }
             if(x+1<lvl.getSize() && lvl.getElem(y, x+1).getClass() == Matrice.class)
-                if(!lvl.can_move_right(x, y) &&lvl.can_enter_left(x, y/*(Matrice) lvl.getElem(y, x+1)*/)){
+                if(!lvl.can_move_right(x, y) &&lvl.can_enter_left((Matrice) lvl.getElem(y, x+1))){
                     m.push(lvl);
                     lvl.enter_left((Matrice) lvl.getElem(y, x+1), x, y);
                     droite=false;
@@ -349,10 +349,14 @@ public class DrawLevel extends JPanel implements Runnable{
             lvl.move_right(x, y);
             droite=false;
         }
+        //si 'ctrl+z' est appuié alors on revient d'une action en arrière
         if (ctrlZ) {
             lvl.ctrl_z();
             ctrlZ=false;
         }
+        /*si toute les matrices on leurs box/matrice ou le joueur sur une cible alors on affiche un message qui dit
+         *que le niveau est terminé et on demande si l'utilisateur veut passez au niveau suivant
+        */ 
         if (matriceP.estFini()) {
             next=JOptionPane.showConfirmDialog(this, "Félicitation vous avez terminer le niveau.\nVoulez-vous passez au niveau suivant ?");
             if(next==0){

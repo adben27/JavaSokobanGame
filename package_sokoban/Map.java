@@ -14,6 +14,7 @@ public class Map {
         mondes.get(nom[0]).setIs_main();
         for (int i = 0; i < size.length; i++) {
             mondes.get(nom[i]).setlevel(Element.remplirTableauGrille(sousmap[i + 1], size[i], mondes, nom[i]));
+            mondes.get(nom[i]).set_Cibles();
         }
     }
 
