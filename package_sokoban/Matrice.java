@@ -871,4 +871,23 @@ public class Matrice extends Element{
 	public void setIsHere(boolean a){
 		is_here=a;
 	}
+
+	public void set_Cibles(){
+		for (int i = 0; i < level.length; i++) {
+			for (int j = 0; j < level.length; j++) {
+				if(level[i][j] instanceof Vide && level[i][j].on_target){			
+					pos_x_cible[nb_cible]=j;
+					pos_y_cible[nb_cible]=i;
+					nb_cible++;
+				}else{
+					pos_x_cible[nb_cible]=-1;
+					pos_y_cible[nb_cible]=-1;
+				}
+			}
+		}
+	}
+
+
+
+
 }
