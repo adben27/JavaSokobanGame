@@ -278,7 +278,7 @@ public class Matrice extends Element{
      * fonction qui regroupe les quatre fonctions de mouvement ainsi qu'un scanner pour effectuer le mouvement en fonction de l'input du joueur
      */
     public void move(){
-    		System.out.println("Enter a move (z/q/s/d): ");
+    		System.out.println("Enter a move (z/q/s/d) then press the Enter key: ");
             Scanner console = new Scanner(System.in);
             char c = console.nextLine().charAt(0);
             if(Character.compare(c,'z')==0){
@@ -297,6 +297,9 @@ public class Matrice extends Element{
                 move_right(pos_x, pos_y);
                 return;
             }
+			else{
+				System.out.println("\nPlease enter a correct move (z/q/s/d).");
+			}
         }
     /*
 	 * Série de fonctions qui  effectuent le mouvement dans les 4 directions cardinales, sont utilisé dans le fonction move()
