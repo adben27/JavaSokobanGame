@@ -23,7 +23,7 @@ public class FirstApp extends JFrame implements KeyListener{
         //creation de la fenetre "info_image" et "info_commande"
         info_commande = new JDialog(this, "Commande");
         info_image = new JDialog(this, "Description image");
-
+        
         info_image.setSize(400, 400);
         info_commande.setSize(425, 130);
 
@@ -32,6 +32,8 @@ public class FirstApp extends JFrame implements KeyListener{
 
         info_commande.setLocationRelativeTo(null);
         info_image.setLocationRelativeTo(null);
+
+        info_commande.setVisible(true);
 
         //pour qu'on puisse utiliser les bouttons de déplacement et les fleches directionelles
         setFocusable(true);
