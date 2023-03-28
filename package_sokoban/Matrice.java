@@ -86,6 +86,7 @@ public class Matrice extends Element{
 		pos_x_cible=new int[11];
 		pos_y_cible=new int[11];
 		nb_cible=0;
+		set_Cibles();
 
 		//on genere 3 nombres aleatoires qui feront la couleur du niveau
         Random random = new Random();
@@ -104,19 +105,7 @@ public class Matrice extends Element{
 		pos_y_cible=new int[11];
 		copie=lvlCopie();
 
-		nb_cible=0;
-		for (int i = 0; i < level.length; i++) {
-			for (int j = 0; j < level.length; j++) {
-				if(level[i][j] instanceof Vide && level[i][j].on_target){			
-					pos_x_cible[nb_cible]=j;
-					pos_y_cible[nb_cible]=i;
-					nb_cible++;
-				}else{
-					pos_x_cible[nb_cible]=-1;
-					pos_y_cible[nb_cible]=-1;
-				}
-			}
-		}
+		set_Cibles();
 
         this.pos_x=pos_x_copie=x;
         this.pos_y=pos_y_copie=y;
@@ -318,11 +307,14 @@ public class Matrice extends Element{
         }else{
             if(this.getElem(y-1, x) instanceof Box){
 				/*
-				 * Si c'est une boite on la fait bouger, une fois qu'on a bouger la boite le joueur va se retrouver
+				 * Si c'est une boite on la fait bouger si possible, une fois qu'on a bouger la boite le joueur va se retrouver
 				 * en face du vide puis on swap le l'element et le vide
 				 */
-				move_up(x, y-1);
-				swap(y, x, y-1, x);
+				if (can_move_up(x, y-1)) {
+					move_up(x, y-1);
+					swap(y, x, y-1, x);
+				}else
+					move_up(x, y-1);
             }
             else if(this.getElem(y-1, x) instanceof Matrice) {
 				/*
@@ -353,8 +345,11 @@ public class Matrice extends Element{
             swap(y, x, y+1, x);
         }else{
             if(this.getElem(y+1, x) instanceof Box){
-				move_down(x, y+1);
-				swap(y, x, y+1, x);
+				if (can_move_down(x, y+1)) {
+					move_down(x, y+1);
+					swap(y, x, y+1, x);
+				}else
+					move_down(x, y+1);
             }
             else if(this.getElem(y+1, x) instanceof Matrice) {
 				if (can_move_down(x, y+1)){
@@ -380,8 +375,11 @@ public class Matrice extends Element{
             swap(y, x, y, x+1);
         }else{
             if(this.getElem(y, x+1) instanceof Box){
-				move_right(x+1, y);
-				swap(y, x, y, x+1);   
+				if (can_move_right(x+1, y)) {
+					move_right(x+1, y);
+					swap(y, x, y, x+1);  
+				}else
+					move_right(x+1, y);
             }
             else if(this.getElem(y, x+1) instanceof Matrice) {
             	if (can_move_right(x+1, y)){
@@ -407,8 +405,11 @@ public class Matrice extends Element{
             swap(y, x, y, x-1);
         }else{
             if(this.getElem(y, x-1) instanceof Box){
-				move_left(x-1, y);
-                swap(y, x, y, x-1);
+				if (can_move_left(x-1, y)) {
+					move_left(x-1, y);
+					swap(y, x, y, x-1);
+				}else
+					move_left(x-1, y);
             }
             else if(this.getElem(y, x-1) instanceof Matrice) {
             	if (can_move_left(x-1, y)){
@@ -514,44 +515,57 @@ public class Matrice extends Element{
      * j'ai pas fait le cas ou on rentre directement dans un autre monde
      */
     public boolean can_enter_up(Matrice m) {
+		boolean res;
     	for(int z = 0; z < m.size; z++){
     		if (m.getElem(0,z) instanceof Vide)
     			return true;
-			else if(m.getElem(0, z) instanceof Box || m.getElem(0, z) instanceof Matrice)
-				return m.can_move_up(z, 0);
+			else if(m.getElem(0, z) instanceof Box || m.getElem(0, z) instanceof Matrice){
+				res=m.can_move_down(z, 0);
+				if(res)
+					return res;
+			}
 		}
     		
     	return false;
     }
 
     public boolean can_enter_down(Matrice m) {
+		boolean res;
 		for(int z = 0; z < m.size; z++)
     		if (m.getElem(m.size-1, z) instanceof Vide)
     			return true;
 			else if(m.getElem(m.size-1, z) instanceof Box || m.getElem(m.size-1, z) instanceof Matrice){
-				return m.can_move_up(z, m.size-1);
+				res=m.can_move_up(z, m.size-1);
+				if (res)
+					return res;
 			}
  		
 		return false;
     }
     
     public boolean can_enter_left(Matrice m) {
+		boolean res;
     	for(int z = 0; z < m.size; z++)
     		if (m.getElem(z, 0) instanceof Vide)
     			return true;
 			else if(m.getElem(z, 0) instanceof Box || m.getElem(z, 0) instanceof Matrice){
-				return m.can_move_right(0, z);
+				res=m.can_move_right(0, z);
+				if (res)
+					return res;
 			}
 
     	return false;
     }
     
     public boolean can_enter_right(Matrice m) {
+		boolean res;
     	for(int z = 0; z < m.size;z++)
     		if (m.getElem(z, m.size-1) instanceof Vide)
     			return true;
 			else if(m.getElem(z, m.size-1) instanceof Box || m.getElem(z, m.size-1) instanceof Matrice){
-				return m.can_move_left(m.size-1, z);
+				res=m.can_move_left(m.size-1, z);
+				if(res)
+					return res;
 			}
     	return false;
     }
@@ -575,8 +589,7 @@ public class Matrice extends Element{
 				if(m.can_move_down(z, 0)){
 					m.move_down(z, 0);
 					return z;
-				}else
-					return -1;
+				}
 			}
     	}
     	return -1;
@@ -593,8 +606,7 @@ public class Matrice extends Element{
 				if(m.can_move_up(z, m.size-1)){
 					m.move_up(z, m.size-1);
 					return z;
-				}else
-					return -1;
+				}
 			}
     	}
     	return -1;
@@ -611,8 +623,7 @@ public class Matrice extends Element{
 				if(m.can_move_right(0, z)){
 					m.move_right(0, z);
 					return z;
-				}else
-					return -1;
+				}
 			}
     	}
 
@@ -623,15 +634,14 @@ public class Matrice extends Element{
     	if(m.size==1)
 			return -1;
     	
-    	for(int z = 0; z < m.size;z++) {
+    	for(int z = 0; z < m.size; z++) {
     		if((m.getElem(z, m.size-1) instanceof Vide))
     			return z;
 			else if(m.getElem(z, m.size-1) instanceof Box || m.getElem(z, m.size-1) instanceof Matrice){
 				if(m.can_move_left(m.size-1, z)){
 					m.move_left(m.size-1, z);
 					return z;
-				}else
-					return -1;
+				}
 			}
     	}
 
@@ -734,14 +744,14 @@ public class Matrice extends Element{
 			return;
     	
     	//pour échanger l'attribut on_target si a l'entré du sous-monde il y'a une cible
-    	if(m.getElem(z, m.size-1).isOn_target()||getElem(pos_y, x).isOn_target()) {
+    	if(m.getElem(z, m.size-1).isOn_target()||getElem(y, x).isOn_target()) {
     		m.getElem(z, m.size-1).setOn_target(!m.getElem(z, m.size-1).isOn_target());
-    		getElem(pos_y, x).setOn_target(!getElem(pos_y, x).isOn_target());
+    		getElem(y, x).setOn_target(!getElem(y, x).isOn_target());
         }
     	
     	Element temp = m.getElem(z, m.size-1);
-    	m.setElem(z, m.size-1, getElem(pos_y, x));
-    	setElem(pos_y, x, temp);
+    	m.setElem(z, m.size-1, getElem(y, x));
+    	setElem(y, x, temp);
 
 		if (x==pos_x && y==pos_y) {
 			m.setPos_y(z);
@@ -889,8 +899,4 @@ public class Matrice extends Element{
 			}
 		}
 	}
-
-
-
-
 }
