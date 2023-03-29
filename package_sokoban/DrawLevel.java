@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Stack;
+import java.util.Scanner;
 
 import javax.swing.*;
 
@@ -33,7 +34,7 @@ public class DrawLevel extends JPanel implements Runnable{
     /*matrice[0]=matriceB
      *matrice[1]=matriceC
      *etc...
-     *jusqu'a matriceJ
+*jusqu'a matriceJ
     */
     private Matrice[] matrice;         
 
@@ -145,13 +146,19 @@ public class DrawLevel extends JPanel implements Runnable{
                              {m,v,v,v,v,m},
                              {m,v,v,v,v,m},
                              {m,m,m,m,m,m}};
-        
-        //lvl=new Matrice("lvl", 'l', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
-        //matriceP=new Matrice("P", 'p', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
 
-        lvl=loadLvl(null, "package_sokoban/outlevels/1.txt");
-        matriceP=lvl;
-
+	Scanner filename=new Scanner(System.in);
+	System.out.print("Entrez un nom de fichier pour le load dans le jeu, sinon rien pour avoir la config par défaut : ");
+	String file=filename.next();
+	filename.close();
+      
+	if(file.length()!=0){
+		lvl=loadLvl(null, file);
+        	matriceP=lvl;
+	} else {
+        	lvl=new Matrice("lvl", 'l', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
+        	matriceP=new Matrice("P", 'p', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
+	}
         //taille des images
         sizeImg=(int)getToolkit().getScreenSize().getHeight()/(2*lvl.getSize());
         /*on recupère les images qu'on va utiliser
@@ -185,9 +192,11 @@ public class DrawLevel extends JPanel implements Runnable{
         //on met tout a false pour pas bouger le joueur
         haut=bas=gauche=droite=ctrlZ=false;
     }
+    
 
     public Matrice loadLvl(Matrice[] monde, String fileName) throws IOException, FileNotFoundException {
-        FileReader filereader=new FileReader(fileName);
+        int player_x=0, player_y=0;
+	FileReader filereader=new FileReader(fileName);
         BufferedReader br = new BufferedReader(filereader);
         String line = br.readLine();
         String[] parts = line.split(" ");
@@ -205,8 +214,12 @@ public class DrawLevel extends JPanel implements Runnable{
                     case '@':   el[row][col]=new Vide(true);    
                             break;                       
                     case 'A':   el[row][col]=new Player(false);
+				player_y=row;
+				player_x=col;
                             break;                          
                     case 'a':   el[row][col]=new Player(true);
+				player_y=row;
+				player_x=col;
                             break;                           
                     case ' ':   el[row][col]=new Vide(false);
                             break;
@@ -219,7 +232,8 @@ public class DrawLevel extends JPanel implements Runnable{
             }
             row++;
         }
-        matriceP=new Matrice(name,'c', false, size, el, 2, 1, true, true, -1, -1);
+	System.out.println("X :" + player_x + "Y :" + player_y);
+        matriceP=new Matrice(name,'c', false, size, el, player_x, player_y, true, true, -1, -1);
         lvl=matriceP;
         br.close();
         return lvl;
