@@ -573,22 +573,20 @@ public class DrawLevel extends JPanel implements Runnable{
                 if(Character.isUpperCase(e.getSign())){
                     for (int k = 0; k < 9; k++) {
                         if(e.getSign()==nomC[k]){
-                            a=k;
+                            g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
+                            g2.drawImage(monde[k], pos_x, pos_y, ecart, ecart, this);
                             break;
                         }
                     }
-                    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
-                    g2.drawImage(monde[a], pos_x, pos_y, ecart, ecart, this);
                 }else{
                     for (int k = 0; k < 9; k++) {
                         if(e.getSign()==nomC[k]){
-                            a=k;
+                            g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
+                            g2.drawImage(monde[k], pos_x, pos_y, ecart, ecart, this);
+                            g2.drawImage(cible, pos_x , pos_y, ecart, ecart, this);
                             break;
                         }
                     }
-                    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
-                    g2.drawImage(monde[a], pos_x, pos_y, ecart, ecart, this);
-                    g2.drawImage(cible, pos_x , pos_y, ecart, ecart, this);
                 }
             }
         }
