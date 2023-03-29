@@ -1,15 +1,10 @@
 package package_sokoban;
 
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Stack;
-import java.util.Scanner;
 
 import javax.swing.*;
-import javax.swing.text.StyledEditorKit;
 
 public class DrawLevel extends JPanel implements Runnable{
 
@@ -40,7 +35,6 @@ public class DrawLevel extends JPanel implements Runnable{
     private Matrice[] matrice;         
 
     private Player p;//Le joueur
-    private Vide v;
     private Stack<Matrice> m;//pile qui contient les matrices peres
     private String[] niv;
     private int lvl_courant;
@@ -51,11 +45,11 @@ public class DrawLevel extends JPanel implements Runnable{
 
         m=new Stack<Matrice>();
         matrice=new Matrice[9];
-	niv=new String[5];
-	lvl_courant=0;
+        niv=new String[5]; 
+        lvl_courant=0;
 
-	for (int i = 0; i < 5; i++)
-            niv[i]= (i+1)+".txt";
+        for (int i = 0; i < 5; i++)
+            niv[i]="package_sokoban/outlevels/"+(i+1)+".txt";
 
         Box b= new Box(false, 'B');
         Box c= new Box(false, 'C');        
@@ -70,7 +64,7 @@ public class DrawLevel extends JPanel implements Runnable{
 
         p = new Player(false);
         
-        v = new Vide(false);
+        Vide v = new Vide(false);
         Vide y = new Vide(true);
         Vide x = new Vide(true);
         Vide z = new Vide(true);
@@ -155,30 +149,14 @@ public class DrawLevel extends JPanel implements Runnable{
                              {m,v,v,v,v,m},
                              {m,m,m,m,m,m}};
 
-	/*Scanner filename=new Scanner(System.in);
-	System.out.print("Entrez un nom de fichier pour le load dans le jeu, sinon rien pour avoir la config par défaut : ");
-	String file=filename.next();
-	filename.close();
-        
-	try{
-		if(file.length()!=0){
-			lvl=loadLvl(null, file);
-			matriceP=lvl;
-		} else {
-			lvl=new Matrice("lvl", 'l', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
-			matriceP=new Matrice("P", 'p', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
-		}
-	} catch (FileNotFoundException efnd) {
-		System.out.println(efnd.getMessage());
-		System.exit(1);
-	}*/
-	lvl=loadLvl(null, niv[0]);
+        lvl=loadLvl(null, niv[0]);
         matriceP=lvl;
+
         //taille des images
         sizeImg=(int)getToolkit().getScreenSize().getHeight()/(2*lvl.getSize());
-	if(lvl.getSize()<=10)
-		sizeImg-=1;
-        
+        if(lvl.getSize()>=10)
+            sizeImg-=1;
+
         /*on recupère les images qu'on va utiliser
          * nomC[0]='B' et monde[0]=l'image du mondeB
          * nomC[1]='C' et monde[1]=l'image du mondeC
@@ -214,7 +192,7 @@ public class DrawLevel extends JPanel implements Runnable{
 
     public Matrice loadLvl(Matrice[] monde, String fileName) throws IOException, FileNotFoundException {
         int player_x=0, player_y=0;
-	FileReader filereader=new FileReader("package_sokoban/outlevels/" + fileName);
+	    FileReader filereader=new FileReader(fileName);
         BufferedReader br = new BufferedReader(filereader);
         String line = br.readLine();
         String[] parts = line.split(" ");
@@ -228,25 +206,25 @@ public class DrawLevel extends JPanel implements Runnable{
             	level[row][col] = line.charAt(col);
                 switch(level[row][col]){
                     case '#':   el[row][col]=new Wall();
-                            break;
+                                break;
                     case '@':   el[row][col]=new Vide(true);    
-                            break;                       
+                                break;                       
                     case 'A':   el[row][col]=new Player(false);
-				player_y=row;
-				player_x=col;
-                            break;                          
+                                player_y=row;
+                                player_x=col;
+                                break;                          
                     case 'a':   el[row][col]=new Player(true);
-				player_y=row;
-				player_x=col;
-                            break;                           
+                                player_y=row;
+                                player_x=col;
+                                break;                           
                     case ' ':   el[row][col]=new Vide(false);
-                            break;
+                                break;
                     case 'B':   el[row][col]=new Box(false);
-                            break;
+                                break;
                     case 'b':   el[row][col]=new Box(true);
-                            break;
-		    default :   System.out.println("Malheureusement, l'affichage des niveaux récursifs ne marche pas :/");
-				System.exit(1);
+                                break;
+                    default :   System.out.println("Malheureusement, l'affichage des niveaux récursifs ne marche pas :/");
+                                System.exit(1);
                     }
             }
             row++;
@@ -381,8 +359,16 @@ public class DrawLevel extends JPanel implements Runnable{
             next=JOptionPane.showConfirmDialog(this, "Félicitation vous avez terminer le niveau.\nVoulez-vous passez au niveau suivant ?");
             if(next==0){
                 try {
-                    lvl=loadLvl(matrice, niv[++lvl_courant]);
-		    matriceP=lvl;
+                    if(lvl_courant==5){
+                        JOptionPane.showMessageDialog(this, "Bravo vous avez terminer tout les niveaux du sokoban classique!");
+                        lvl_courant=0;
+                        lvl=loadLvl(null, niv[0]);
+                    }else{
+                        lvl=loadLvl(null, niv[++lvl_courant]);
+                    }
+                    if(lvl.getSize()>=11){
+                        sizeImg-=1*lvl.getSize();
+                    }
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -592,20 +578,22 @@ public class DrawLevel extends JPanel implements Runnable{
                 if(Character.isUpperCase(e.getSign())){
                     for (int k = 0; k < 9; k++) {
                         if(e.getSign()==nomC[k]){
-                    	    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
-                    	    g2.drawImage(monde[a], pos_x, pos_y, ecart, ecart, this);
+                            a=k;
                             break;
                         }
                     }
+                    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
+                    g2.drawImage(monde[a], pos_x, pos_y, ecart, ecart, this);
                 }else{
                     for (int k = 0; k < 9; k++) {
                         if(e.getSign()==nomC[k]){
-                    	    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
-                    	    g2.drawImage(monde[a], pos_x, pos_y, ecart, ecart, this);
-                    	    g2.drawImage(cible, pos_x , pos_y, ecart, ecart, this);
+                            a=k;
                             break;
                         }
                     }
+                    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
+                    g2.drawImage(monde[a], pos_x, pos_y, ecart, ecart, this);
+                    g2.drawImage(cible, pos_x , pos_y, ecart, ecart, this);
                 }
             }
         }
