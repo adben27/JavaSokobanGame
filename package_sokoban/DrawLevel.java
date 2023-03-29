@@ -9,6 +9,7 @@ import java.util.Stack;
 import java.util.Scanner;
 
 import javax.swing.*;
+import javax.swing.text.StyledEditorKit;
 
 public class DrawLevel extends JPanel implements Runnable{
 
@@ -151,13 +152,18 @@ public class DrawLevel extends JPanel implements Runnable{
 	System.out.print("Entrez un nom de fichier pour le load dans le jeu, sinon rien pour avoir la config par défaut : ");
 	String file=filename.next();
 	filename.close();
-      
-	if(file.length()!=0){
-		lvl=loadLvl(null, file);
-        	matriceP=lvl;
-	} else {
-        	lvl=new Matrice("lvl", 'l', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
-        	matriceP=new Matrice("P", 'p', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
+        
+	try{
+		if(file.length()!=0){
+			lvl=loadLvl(null, file);
+			matriceP=lvl;
+		} else {
+			lvl=new Matrice("lvl", 'l', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
+			matriceP=new Matrice("P", 'p', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
+		}
+	} catch (FileNotFoundException efnd) {
+		System.out.println(efnd.getMessage());
+		System.exit(1);
 	}
         //taille des images
         sizeImg=(int)getToolkit().getScreenSize().getHeight()/(2*lvl.getSize());
@@ -227,12 +233,12 @@ public class DrawLevel extends JPanel implements Runnable{
                             break;
                     case 'b':   el[row][col]=new Box(true);
                             break;
-                    default :   System.out.println("WTF BRO");
+		    default :   System.out.println("Malheureusement, l'affichage des niveaux récursifs ne marche pas :/");
+				System.exit(1);
                     }
             }
             row++;
         }
-	System.out.println("X :" + player_x + "Y :" + player_y);
         matriceP=new Matrice(name,'c', false, size, el, player_x, player_y, true, true, -1, -1);
         lvl=matriceP;
         br.close();
@@ -363,7 +369,7 @@ public class DrawLevel extends JPanel implements Runnable{
             next=JOptionPane.showConfirmDialog(this, "Félicitation vous avez terminer le niveau.\nVoulez-vous passez au niveau suivant ?");
             if(next==0){
                 try {
-                    lvl=loadLvl(matrice, "package_sokoban/outlevels/2.txt");
+                    lvl=loadLvl(null, "package_sokoban/outlevels/2.txt");
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
