@@ -42,6 +42,8 @@ public class DrawLevel extends JPanel implements Runnable{
     private Player p;//Le joueur
     private Vide v;
     private Stack<Matrice> m;//pile qui contient les matrices peres
+    private String[] niv;
+    private int lvl_courant;
 
     public DrawLevel() throws IOException, FileNotFoundException {
         super();
@@ -49,6 +51,11 @@ public class DrawLevel extends JPanel implements Runnable{
 
         m=new Stack<Matrice>();
         matrice=new Matrice[9];
+	niv=new String[5];
+	lvl_courant=0;
+
+	for (int i = 0; i < 5; i++)
+            niv[i]= (i+1)+".txt";
 
         Box b= new Box(false, 'B');
         Box c= new Box(false, 'C');        
@@ -148,8 +155,7 @@ public class DrawLevel extends JPanel implements Runnable{
                              {m,v,v,v,v,m},
                              {m,m,m,m,m,m}};
 
-<<<<<<< HEAD
-	Scanner filename=new Scanner(System.in);
+	/*Scanner filename=new Scanner(System.in);
 	System.out.print("Entrez un nom de fichier pour le load dans le jeu, sinon rien pour avoir la config par défaut : ");
 	String file=filename.next();
 	filename.close();
@@ -165,24 +171,13 @@ public class DrawLevel extends JPanel implements Runnable{
 	} catch (FileNotFoundException efnd) {
 		System.out.println(efnd.getMessage());
 		System.exit(1);
-	}
-=======
-        Scanner filename=new Scanner(System.in);
-        System.out.print("Entrez un nom de fichier pour le load dans le jeu, sinon rien pour avoir la config par défaut : ");
-        String file=filename.next();
-        filename.close();
-        
-        if(file.length()!=0){
-            lvl=loadLvl(null, file);
-                matriceP=lvl;
-        } else {
-                lvl=new Matrice("lvl", 'l', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
-                matriceP=new Matrice("P", 'p', false, tab_lvl.length, tab_lvl,2,1, true, true,-1,-1);
-        }
-
->>>>>>> 396e9f400a7ef093266e50fdbd0c50c3b8d10451
+	}*/
+	lvl=loadLvl(null, niv[0]);
+        matriceP=lvl;
         //taille des images
         sizeImg=(int)getToolkit().getScreenSize().getHeight()/(2*lvl.getSize());
+	if(lvl.getSize()<=10)
+		sizeImg-=1;
         
         /*on recupère les images qu'on va utiliser
          * nomC[0]='B' et monde[0]=l'image du mondeB
@@ -219,7 +214,7 @@ public class DrawLevel extends JPanel implements Runnable{
 
     public Matrice loadLvl(Matrice[] monde, String fileName) throws IOException, FileNotFoundException {
         int player_x=0, player_y=0;
-	    FileReader filereader=new FileReader(fileName);
+	FileReader filereader=new FileReader("package_sokoban/outlevels/" + fileName);
         BufferedReader br = new BufferedReader(filereader);
         String line = br.readLine();
         String[] parts = line.split(" ");
@@ -386,11 +381,8 @@ public class DrawLevel extends JPanel implements Runnable{
             next=JOptionPane.showConfirmDialog(this, "Félicitation vous avez terminer le niveau.\nVoulez-vous passez au niveau suivant ?");
             if(next==0){
                 try {
-<<<<<<< HEAD
-                    lvl=loadLvl(null, "package_sokoban/outlevels/2.txt");
-=======
-                    lvl=loadLvl(matrice, "package_sokoban/outlevels/4.txt");
->>>>>>> 396e9f400a7ef093266e50fdbd0c50c3b8d10451
+                    lvl=loadLvl(matrice, niv[++lvl_courant]);
+		    matriceP=lvl;
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -600,22 +592,20 @@ public class DrawLevel extends JPanel implements Runnable{
                 if(Character.isUpperCase(e.getSign())){
                     for (int k = 0; k < 9; k++) {
                         if(e.getSign()==nomC[k]){
-                            a=k;
+                    	    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
+                    	    g2.drawImage(monde[a], pos_x, pos_y, ecart, ecart, this);
                             break;
                         }
                     }
-                    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
-                    g2.drawImage(monde[a], pos_x, pos_y, ecart, ecart, this);
                 }else{
                     for (int k = 0; k < 9; k++) {
                         if(e.getSign()==nomC[k]){
-                            a=k;
+                    	    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
+                    	    g2.drawImage(monde[a], pos_x, pos_y, ecart, ecart, this);
+                    	    g2.drawImage(cible, pos_x , pos_y, ecart, ecart, this);
                             break;
                         }
                     }
-                    g2.drawImage(vide, pos_x, pos_y, ecart, ecart, c, this);
-                    g2.drawImage(monde[a], pos_x, pos_y, ecart, ecart, this);
-                    g2.drawImage(cible, pos_x , pos_y, ecart, ecart, this);
                 }
             }
         }
