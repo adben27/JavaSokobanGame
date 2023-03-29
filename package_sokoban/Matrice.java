@@ -73,7 +73,8 @@ public class Matrice extends Element{
     //  constructeur qui initialise pos_x et pos_y a 0 utilisé par nandan pour la lecture de niveau
     public Matrice(String name, char sign , boolean on_target, int size){
         super(Character.toUpperCase(sign),true,on_target,Character.toLowerCase(sign));// On donne au constructeur un signe en majuscule mais l'affichage de base sera en minuscule et sur la cible sera en majuscule
-    	this.name=name;
+    	this.level=new Element[0][0];
+		this.name=name;
         this.size=size;
         this.pos_x=pos_x_copie=0;
         this.pos_y=pos_y_copie=0;
