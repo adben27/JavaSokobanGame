@@ -86,7 +86,6 @@ public class Matrice extends Element{
 		pos_x_cible=new int[11];
 		pos_y_cible=new int[11];
 		nb_cible=0;
-		set_Cibles();
 
 		//on genere 3 nombres aleatoires qui feront la couleur du niveau
         Random random = new Random();

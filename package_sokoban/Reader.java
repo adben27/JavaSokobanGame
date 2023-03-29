@@ -127,7 +127,7 @@ public class Reader {
 			Element.afficherElements(tab_actuel);
 			if(niv_actuel + 1 < lesniv.getNiv_memoire().size()){
 				System.out.println("\n\t*************************************************************************	");  
-				System.out.println("****	    Vous avez validé ce niveau. Passage au niveau prochain Sensei !!!        ****");
+				System.out.println("****	    Vous avez validé ce niveau. Passage au prochain niveau Sensei !!!        ****");
 				System.out.println("\t*************************************************************************	\n");
 				niv_actuel++;
 				String[] map = sousMap(envoyerLaMapEntiere());

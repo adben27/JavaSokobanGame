@@ -27,7 +27,7 @@ public class FirstApp extends JFrame implements KeyListener{
         info_image = new JDialog(this, "Description image");
         
         info_image.setSize(400, 400);
-        info_commande.setSize(425, 130);
+        info_commande.setSize(435, 130);
 
         info_image.add(information_image());
         info_commande.add(information_commande());
@@ -57,7 +57,7 @@ public class FirstApp extends JFrame implements KeyListener{
         info_image.setIconImage(icone);
 
         //on cree le JPanel qui contiendra le niveau et on l'ajoute dans la JFrame
-	niveau= new DrawLevel();
+        niveau= new DrawLevel();
         niveau.setLayout(null);
         add(niveau);
        
@@ -147,10 +147,13 @@ public class FirstApp extends JFrame implements KeyListener{
         if (keyCode == KeyEvent.VK_R) {
             reset.doClick();
         }
+        if (keyCode == KeyEvent.VK_S) {
+            setSize(600, 600);
+        }
         if (e.isControlDown() && keyCode == KeyEvent.VK_Z) {
             niveau.setCtrlZ(true);
         }
-        if (keyCode != KeyEvent.VK_R && keyCode != KeyEvent.VK_CONTROL && keyCode != KeyEvent.VK_Z && keyCode != KeyEvent.VK_C && keyCode != KeyEvent.VK_RIGHT && keyCode != KeyEvent.VK_I && keyCode != KeyEvent.VK_LEFT && keyCode != KeyEvent.VK_DOWN && keyCode != KeyEvent.VK_UP && keyCode != KeyEvent.VK_ESCAPE && keyCode != KeyEvent.VK_ENTER) {
+        if (keyCode != KeyEvent.VK_S && keyCode != KeyEvent.VK_R && keyCode != KeyEvent.VK_CONTROL && keyCode != KeyEvent.VK_Z && keyCode != KeyEvent.VK_C && keyCode != KeyEvent.VK_RIGHT && keyCode != KeyEvent.VK_I && keyCode != KeyEvent.VK_LEFT && keyCode != KeyEvent.VK_DOWN && keyCode != KeyEvent.VK_UP && keyCode != KeyEvent.VK_ESCAPE && keyCode != KeyEvent.VK_ENTER) {
             JOptionPane.showMessageDialog(this,"Seuls les flèches directionnelles peuvent être utilisé\n(Si vous ne voulez pas utiliser les flèches directionnelles\nutilisez les bouttons haut, bas, gauche, droite)","Information", JOptionPane.INFORMATION_MESSAGE);
         }
     }
@@ -217,7 +220,7 @@ public class FirstApp extends JFrame implements KeyListener{
     public JPanel information_commande() {
         JPanel info = new JPanel(new BorderLayout());
 
-        JTextArea commande = new JTextArea("Pour vous déplacez utiliser les flèches directionelles ou les boutons\nSi vous appuiez sur 'i' le boutton 'information' sera appuié\nSi vous appuiez sur 'c' le boutton 'commande' sera appuié\nSi vous vous appuiez sur 'ctrl+z' vous allez retourner d'une action en arrière\nSi vous appuiez sur 'r' vous recommencerez le niveau");
+        JTextArea commande = new JTextArea("Pour vous déplacez utiliser les flèches directionelles ou les boutons\nSi vous appuiez sur 'i' le boutton 'information' sera appuié\nSi vous appuiez sur 'c' le boutton 'commande' sera appuié\nSi vous vous appuiez sur 'ctrl+z' vous allez retourner d'une action en arrière\nSi vous appuiez sur 'r' vous recommencerez le niveau\nSi vous appuiez sur 's' la fentere sera redimensionner");
         commande.setEditable(false);
         info.add(commande);
 
