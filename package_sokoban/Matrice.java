@@ -145,7 +145,7 @@ public class Matrice extends Element{
 	*/
 	public boolean all_ontarget() {
 		if(nb_cible==0)
-			return false;//true; // normalement on met ca true comme ca dès qu'il y'a un niveau sans cible ca affiche WIN mais nous on l'avait mis a false avant juste pour faire des tests
+			return true; // normalement on met ca true comme ca dès qu'il y'a un niveau sans cible ca affiche WIN mais nous on l'avait mis a false avant juste pour faire des tests
 
 		boolean res=true;
 
