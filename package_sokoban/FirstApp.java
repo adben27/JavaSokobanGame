@@ -147,13 +147,10 @@ public class FirstApp extends JFrame implements KeyListener{
         if (keyCode == KeyEvent.VK_R) {
             reset.doClick();
         }
-        if (keyCode == KeyEvent.VK_S) {
-            setSize(600, 600);
-        }
         if (e.isControlDown() && keyCode == KeyEvent.VK_Z) {
             niveau.setCtrlZ(true);
         }
-        if (keyCode != KeyEvent.VK_S && keyCode != KeyEvent.VK_R && keyCode != KeyEvent.VK_CONTROL && keyCode != KeyEvent.VK_Z && keyCode != KeyEvent.VK_C && keyCode != KeyEvent.VK_RIGHT && keyCode != KeyEvent.VK_I && keyCode != KeyEvent.VK_LEFT && keyCode != KeyEvent.VK_DOWN && keyCode != KeyEvent.VK_UP && keyCode != KeyEvent.VK_ESCAPE && keyCode != KeyEvent.VK_ENTER) {
+        if (keyCode != KeyEvent.VK_R && keyCode != KeyEvent.VK_CONTROL && keyCode != KeyEvent.VK_Z && keyCode != KeyEvent.VK_C && keyCode != KeyEvent.VK_RIGHT && keyCode != KeyEvent.VK_I && keyCode != KeyEvent.VK_LEFT && keyCode != KeyEvent.VK_DOWN && keyCode != KeyEvent.VK_UP && keyCode != KeyEvent.VK_ESCAPE && keyCode != KeyEvent.VK_ENTER) {
             JOptionPane.showMessageDialog(this,"Seuls les flèches directionnelles peuvent être utilisé\n(Si vous ne voulez pas utiliser les flèches directionnelles\nutilisez les bouttons haut, bas, gauche, droite)","Information", JOptionPane.INFORMATION_MESSAGE);
         }
     }
@@ -220,7 +217,7 @@ public class FirstApp extends JFrame implements KeyListener{
     public JPanel information_commande() {
         JPanel info = new JPanel(new BorderLayout());
 
-        JTextArea commande = new JTextArea("Pour vous déplacez utiliser les flèches directionelles ou les boutons\nSi vous appuiez sur 'i' le boutton 'information' sera appuié\nSi vous appuiez sur 'c' le boutton 'commande' sera appuié\nSi vous vous appuiez sur 'ctrl+z' vous allez retourner d'une action en arrière\nSi vous appuiez sur 'r' vous recommencerez le niveau\nSi vous appuiez sur 's' la fentere sera redimensionner");
+        JTextArea commande = new JTextArea("Pour vous déplacez utiliser les flèches directionelles ou les boutons\nSi vous appuiez sur 'i' le boutton 'information' sera appuié\nSi vous appuiez sur 'c' le boutton 'commande' sera appuié\nSi vous vous appuiez sur 'ctrl+z' vous allez retourner d'une action en arrière\nSi vous appuiez sur 'r' vous recommencerez le niveau");
         commande.setEditable(false);
         info.add(commande);
 
