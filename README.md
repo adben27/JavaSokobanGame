@@ -13,5 +13,7 @@ Tout d'abord, allez au répetroire parent de 'package_sokoban' et compilez le co
 Puis pour utiliser l'interface textuelle allez au répetroire parent de 'package_sokoban' et faite :
 `java package_sokoban.Reader`
 
-Et pour utiliser l'interface graphique allez au répetroire parent de 'package_sokoban' et faite:
+Pour utiliser l'interface graphique allez au répetroire parent de 'package_sokoban' et faite:
 `java package_sokoban.FirstApp`
+
+Pour tester la version récursive du jeu ``mettez en commentaire les lignes 152,153 et 366 jusqu'a 368 de la classe DrawLevel` et `enlevez les commentaire de la ligne 155 et 156`, pour finir `mettez à la ligne 148 de la classe Matrice 'return false' au lieu de 'return true'`, puis `faites les étapes d'installation qui ce trouve au dessus`. Ce niveau est un niveau de test donc il n'y aura pas de cible.
