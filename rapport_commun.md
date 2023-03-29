@@ -17,7 +17,7 @@ Tandis qu'Adel a aidé à été l'interlocuteur principal lorsqu'il y avait un s
 - Interface graphique et modèle mémoire réalisés rapidement
 
 ### Faibles
-
+- Un chargement de niveau incomplet
 
 ## Difficultés principales
 Faire entrer des sous mondes dans des sous mondes.
