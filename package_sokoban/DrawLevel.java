@@ -152,6 +152,9 @@ public class DrawLevel extends JPanel implements Runnable{
         lvl=loadLvl(null, niv[0]);
         matriceP=lvl;
 
+        //lvl=new Matrice("lvl", 'l', false, tab_lvl.length, tab_lvl, 2, 1, true, true, -1, -1);
+        //matriceP=new Matrice("P", 'p', false, tab_lvl.length, tab_lvl, 2, 1, true, true, -1, -1);
+
         //taille des images
         sizeImg=(int)getToolkit().getScreenSize().getHeight()/(2*lvl.getSize());
         if(lvl.getSize()>=10)
@@ -284,7 +287,7 @@ public class DrawLevel extends JPanel implements Runnable{
             }
             /*y+1<lvl.getSize() pour ne pas avoir d'execption du type on depasse le tableau 
              *si on ne paut pas bouger mais que l'on peut rentrer dans la matrice en bas du joueur alors on fait rentrer le joueur
-            */ 
+             */ 
             if (y+1<lvl.getSize() && lvl.getElem(y+1, x).getClass() == Matrice.class)
                 if(!lvl.can_move_down(x, y) && lvl.can_enter_up((Matrice) lvl.getElem(y+1, x))){
                     m.push(lvl);//on met la matrice pere dans une pile
