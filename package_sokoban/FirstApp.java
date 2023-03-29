@@ -57,7 +57,7 @@ public class FirstApp extends JFrame implements KeyListener{
         info_image.setIconImage(icone);
 
         //on cree le JPanel qui contiendra le niveau et on l'ajoute dans la JFrame
-        niveau= new DrawLevel();
+	niveau= new DrawLevel();
         niveau.setLayout(null);
         add(niveau);
        

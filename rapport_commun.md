@@ -20,6 +20,7 @@ Tandis qu'Adel a aidé à été l'interlocuteur principal lorsqu'il y avait un s
 
 
 ## Difficultés principales
-Faire entrer des sous mondes dans des sous mondes
-
-
+Faire entrer des sous mondes dans des sous mondes.
+Corriger un bug en lien avec 'ctrl+z'.
+Afficher le contenu des boites avec une profondeur de 4 et le contenu exterieur de la boite courante de 1/4 de cases de chaque côté.
+Lire un fichier qui contient un niveau récursive.
