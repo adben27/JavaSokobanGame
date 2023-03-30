@@ -4,6 +4,8 @@ Ce dépôt contient le code du jeu Sokoban et nos rapports. Nous avons réalisé
 ## Description
 Le jeu contient une interface graphique, ainsi qu'une interface textuelle.
 
+Bien que le chargement de niveau récursif ne soit pas présent, les niveau récursifs fonctionnement sur l'interface graphique.
+
 ## Installation
 Vous aurez besoin de `java` pour faire tourner le jeu.
 
